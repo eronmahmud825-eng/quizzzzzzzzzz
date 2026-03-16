@@ -906,6 +906,13 @@ async function dbWrite(catId, lvl, arr) { return fbREST('/questions/'+catId+'/'+
 let fbOK = false;
 
 function fbLoad() {
+  // Detect file:// protocol — fetch() won't work
+  if (window.location.protocol === 'file:') {
+    fbOK = true;
+    allQ = lsLoad();
+    setFbStatus('⚠️ فایل:// — Firebase کارناکات. بە سێرڤەر بکەرەوە', '#f97316');
+    return;
+  }
   setFbStatus('⏳ Firebase بارکردن...', '#f0b429');
   dbReadAll()
     .then(data => {
@@ -918,15 +925,19 @@ function fbLoad() {
       allQ = lsLoad();
       const msg = err.message.includes('401') || err.message.includes('403')
         ? '🔴 Firebase Rules بگۆڕە بۆ true'
-        : '🔴 ' + err.message;
+        : err.message.includes('Failed to fetch')
+          ? '🔴 ئینتەرنەت پشکنی بکە'
+          : '🔴 ' + err.message;
       setFbStatus(msg, '#e63946');
-      console.error('Firebase:', err);
+      console.error('Firebase error:', err.message);
     });
 }
 
 function setFbStatus(msg, color) {
   const el = document.getElementById('fb-status');
-  el.textContent = msg; el.style.color = color;
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = color || '#fff';
 }
 
 // Normalise Firestore data — each doc is {level: [qArray]}
@@ -1891,7 +1902,9 @@ function playSound(type) {
 // ──────────────────────────────────────────────
 //  BOOT
 // ──────────────────────────────────────────────
-fbLoad();
+document.addEventListener('DOMContentLoaded', function() {
+  fbLoad();
+});
 </script>
 </body>
 </html>
