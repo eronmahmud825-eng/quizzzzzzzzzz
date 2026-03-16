@@ -934,10 +934,12 @@ function fbLoad() {
 }
 
 function setFbStatus(msg, color) {
-  const el = document.getElementById('fb-status');
-  if (!el) return;
-  el.textContent = msg;
-  el.style.color = color || '#fff';
+  const trySet = () => {
+    const el = document.getElementById('fb-status');
+    if (el) { el.textContent = msg; el.style.color = color || '#fff'; }
+    else setTimeout(trySet, 50);
+  };
+  trySet();
 }
 
 // Normalise Firestore data — each doc is {level: [qArray]}
@@ -1397,68 +1399,90 @@ function updTimer(total) {
 }
 
 function timeUp() {
-  answered = true; clearTs(); disableAnswers(); hlCorrect();
-  playSound('wrong');
+  answered = true;
+  clearTs();
+  disableAnswers();
+  hlCorrect();
+
+  // Show "time up" banner
   const banner = document.getElementById('waitBanner');
-  if (banner) {
-    banner.style.display = 'flex';
-    banner.className = 'wait-banner wait-ng';
-    banner.innerHTML = '⏰ کاتی تەواو بوو! &nbsp;❌';
-  }
-  setTimeout(() => { if (banner) banner.style.display = 'none'; showResult(false); }, 1400);
+  banner.style.display = 'flex';
+  banner.className = 'wait-banner wait-ng';
+  banner.innerHTML = '⏰ &nbsp; کاتی تەواو بوو! &nbsp; — &nbsp; وەڵامی غەڵەت';
+  document.getElementById('tFill').style.stroke = 'var(--ng)';
+
+  setTimeout(() => {
+    banner.style.display = 'none';
+    showResult(false);
+  }, 1500);
 }
 
 
 function pickAnswer(idx, btn) {
   if (answered) return;
-  answered = true; clearTs(); disableAnswers();
+  answered = true;
+  clearTs();
+  disableAnswers();
+
   const ok = idx === curQ.correct;
 
-  // Play click sound immediately
-  playSound('click');
-
-  // Mark selected answer as "pending" — no color yet
+  // Step 1: Mark selected button as PURPLE "pending" — no right/wrong shown yet
   btn.classList.add('selected-pending');
 
-  // Show countdown banner (no answer revealed yet)
+  // Step 2: Show 10-second countdown banner
   const banner = document.getElementById('waitBanner');
   banner.style.display = 'flex';
   banner.className = 'wait-banner wait-pending';
-  banner.innerHTML = '⏳ <span id="waitCount" style="font-family:'Oxanium',monospace;font-size:2rem;font-weight:900">10</span> <span style="font-size:1rem;opacity:0.7">چرکە</span>';
 
-  // Timer countdown ring
-  document.getElementById('tFill').style.stroke = '#a78bfa';
   let c = 10;
+  // Update timer circle to purple
+  const tFill = document.getElementById('tFill');
+  tFill.style.stroke = '#a78bfa';
   document.getElementById('tNum').textContent = c;
 
+  function updateBanner() {
+    banner.innerHTML =
+      '<span style="font-size:1.1rem;opacity:0.8">وەڵام هەڵبژێردرا</span>' +
+      '&nbsp;&nbsp;' +
+      '<span style="font-family:Oxanium,monospace;font-size:2.2rem;font-weight:900;color:#c4b5fd">' + c + '</span>' +
+      '<span style="font-size:0.9rem;opacity:0.6">چرکە</span>';
+  }
+  updateBanner();
+
+  // Step 3: Count down 10 seconds
   waitI = setInterval(() => {
     c--;
     document.getElementById('tNum').textContent = c;
-    const wc = document.getElementById('waitCount');
-    if (wc) wc.textContent = c;
+    updateBanner();
+
     if (c <= 0) {
       clearInterval(waitI);
-      // NOW reveal colors
+
+      // Step 4: Reveal correct/wrong with color
       btn.classList.remove('selected-pending');
       if (ok) {
         btn.classList.add('ok');
-        playSound('correct');
+        tFill.style.stroke = 'var(--ok)';
+        banner.className = 'wait-banner wait-ok';
+        banner.innerHTML = '✅ &nbsp; وەڵامی ڕاست!';
       } else {
         btn.classList.add('sw');
         hlCorrect();
-        playSound('wrong');
+        tFill.style.stroke = 'var(--ng)';
+        banner.className = 'wait-banner wait-ng';
+        banner.innerHTML = '❌ &nbsp; وەڵامی غەلەت!';
       }
-      // Update banner with result
-      banner.className = 'wait-banner ' + (ok ? 'wait-ok' : 'wait-ng');
-      banner.innerHTML = ok ? '✅ وەڵامی ڕاست!' : '❌ وەڵامی غەلەت!';
-      // Show result after 1.2s
+
+      // Step 5: After 1.5 seconds show result overlay and advance
       setTimeout(() => {
         banner.style.display = 'none';
         showResult(ok);
-      }, 1200);
+      }, 1500);
     }
   }, 1000);
+
 }
+
 
 function hlCorrect() {
   document.querySelectorAll('.a-btn').forEach(b => {
@@ -1902,9 +1926,8 @@ function playSound(type) {
 // ──────────────────────────────────────────────
 //  BOOT
 // ──────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-  fbLoad();
-});
+// Call after slight delay to ensure DOM is painted
+setTimeout(fbLoad, 100);
 </script>
 </body>
 </html>
