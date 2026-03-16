@@ -883,60 +883,155 @@ body::after {
 // ══════════════════════════════════════════════
 //  FIREBASE — REST API (no SDK, always works)
 // ══════════════════════════════════════════════
-const FB_DB = "https://quizgame2-cd4d5-default-rtdb.firebaseio.com";
+// ══════════════════════════════════════════════
+//  SUPABASE DATABASE
+//  Project: https://pjtmlojjtbyuydahfkvc.supabase.co
+// ══════════════════════════════════════════════
+const SB_URL = "https://pjtmlojjtbyuydahfkvc.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdG1sb2pqdGJ5dXlkYWhma3ZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MTUzMDgsImV4cCI6MjA4OTE5MTMwOH0.Qf_7yr5mx92JmpW4iTMEjTuKE5loQqNm2i7N6AIALyM";
 
-async function fbREST(path, method, body) {
-  const url  = FB_DB + path + '.json';
-  const opts = { method: method || 'GET' };
-  if (body !== undefined) {
-    opts.headers = { 'Content-Type': 'application/json' };
-    opts.body    = JSON.stringify(body);
-  }
-  const r = await fetch(url, opts);
-  if (!r.ok) {
-    const txt = await r.text();
-    throw new Error('HTTP ' + r.status + ' — ' + txt);
-  }
-  return r.json();
-}
-
-async function dbReadAll()              { return fbREST('/questions'); }
-async function dbWrite(catId, lvl, arr) { return fbREST('/questions/'+catId+'/'+lvl, 'PUT', arr); }
+// localStorage fallback key
+const LS_Q = 'quizgame_questions_v6';
+function lsLoadQ() { try { return JSON.parse(localStorage.getItem(LS_Q)||'{}'); } catch(e) { return {}; } }
+function lsSaveQ() { localStorage.setItem(LS_Q, JSON.stringify(allQ)); }
 
 let fbOK = false;
 
-function fbLoad() {
-  // Detect file:// protocol — fetch() won't work
-  if (window.location.protocol === 'file:') {
-    fbOK = true;
-    allQ = lsLoad();
-    setFbStatus('⚠️ فایل:// — Firebase کارناکات. بە سێرڤەر بکەرەوە', '#f97316');
-    return;
+// ── Supabase REST helpers ──
+async function sbFetch(path, opts) {
+  const r = await fetch(SB_URL + '/rest/v1/' + path, {
+    ...opts,
+    headers: {
+      'apikey':        SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type':  'application/json',
+      'Prefer':        'return=representation',
+      ...(opts && opts.headers),
+    }
+  });
+  if (!r.ok) {
+    const t = await r.text();
+    throw new Error('HTTP ' + r.status + ': ' + t);
   }
-  setFbStatus('⏳ Firebase بارکردن...', '#f0b429');
-  dbReadAll()
+  const txt = await r.text();
+  return txt ? JSON.parse(txt) : null;
+}
+
+// ── Load all questions from Supabase ──
+async function sbLoadAll() {
+  const rows = await sbFetch('questions?select=*&order=id.asc', { method: 'GET' });
+  const out = {};
+  if (!rows) return out;
+  rows.forEach(row => {
+    if (!out[row.cat_id])          out[row.cat_id]          = {};
+    if (!out[row.cat_id][row.level]) out[row.cat_id][row.level] = [];
+    out[row.cat_id][row.level].push({
+      _sbid:    row.id,
+      question: row.question,
+      answers:  Array.isArray(row.answers) ? row.answers : JSON.parse(row.answers||'[]'),
+      correct:  row.correct,
+    });
+  });
+  return out;
+}
+
+// ── Save one question ──
+async function dbSave(catId, level, qObj) {
+  if (fbOK) {
+    try {
+      const row = {
+        cat_id:   catId,
+        level:    level,
+        question: qObj.question,
+        answers:  qObj.answers,
+        correct:  qObj.correct,
+      };
+      await sbFetch('questions', { method: 'POST', body: JSON.stringify(row) });
+      // Reload from DB
+      allQ = await sbLoadAll();
+      lsSaveQ();
+      return true;
+    } catch(e) {
+      console.error('Supabase save error:', e);
+      notif('هەڵەی Supabase: ' + e.message, 'err');
+    }
+  }
+  // Fallback to localStorage
+  if (!allQ[catId])        allQ[catId]        = {};
+  if (!allQ[catId][level]) allQ[catId][level] = [];
+  allQ[catId][level].push(qObj);
+  lsSaveQ();
+  return true;
+}
+
+// ── Delete one question ──
+async function dbDelete(catId, level, idx) {
+  const arr = (allQ[catId] && allQ[catId][level]) ? allQ[catId][level] : [];
+  const qObj = arr[idx];
+  if (fbOK && qObj && qObj._sbid) {
+    try {
+      await sbFetch('questions?id=eq.' + qObj._sbid, { method: 'DELETE' });
+      allQ = await sbLoadAll();
+      lsSaveQ();
+      return true;
+    } catch(e) {
+      console.error('Supabase delete error:', e);
+    }
+  }
+  // Fallback
+  if (allQ[catId] && allQ[catId][level]) {
+    allQ[catId][level].splice(idx, 1);
+    lsSaveQ();
+  }
+  return true;
+}
+
+// ── Admin reload ──
+async function adminReload() {
+  setFbStatus('⏳ بارکردن...', '#f0b429');
+  try {
+    allQ = await sbLoadAll();
+    fbOK = true;
+    lsSaveQ();
+    setFbStatus('🟢 Supabase یەکگیراوە', '#06d6a0');
+    adminRenderList();
+    notif('نوێ کرایەوە ✓', 'suc');
+  } catch(e) {
+    setFbStatus('🔴 ' + e.message, '#e63946');
+    notif('هەڵە: ' + e.message, 'err');
+  }
+}
+
+// ── Boot loader ──
+function fbLoad() {
+  setFbStatus('⏳ Supabase بارکردن...', '#f0b429');
+  // Load from Supabase first, fall back to localStorage
+  sbLoadAll()
     .then(data => {
-      allQ = normalizeQ(data || {});
+      allQ = data;
       fbOK = true;
-      setFbStatus('🟢 Firebase یەکگیراوە', '#06d6a0');
+      lsSaveQ();
+      setFbStatus('🟢 Supabase یەکگیراوە', '#06d6a0');
     })
     .catch(err => {
+      // Use localStorage as fallback
+      allQ = lsLoadQ();
       fbOK = false;
-      allQ = lsLoad();
-      const msg = err.message.includes('401') || err.message.includes('403')
-        ? '🔴 Firebase Rules بگۆڕە بۆ true'
-        : err.message.includes('Failed to fetch')
-          ? '🔴 ئینتەرنەت پشکنی بکە'
-          : '🔴 ' + err.message;
-      setFbStatus(msg, '#e63946');
-      console.error('Firebase error:', err.message);
+      setFbStatus('⚠️ Supabase نەکارکرد — localStorage بەکاردێت', '#f97316');
+      console.error('Supabase load error:', err.message);
     });
 }
 
+function fbLoad() {
+  allQ = lsLoadQ();
+  setFbStatus('✅ ئامادەیە — پرسیارەکان پارازدەدرێن', '#06d6a0');
+}
+
 function setFbStatus(msg, color) {
-  const trySet = () => {
-    const el = document.getElementById('fb-status');
-    if (el) { el.textContent = msg; el.style.color = color || '#fff'; }
+  const el = document.getElementById('fb-status');
+  if (el) { el.textContent = msg; el.style.color = color || '#06d6a0'; }
+}
+}
     else setTimeout(trySet, 50);
   };
   trySet();
@@ -1927,7 +2022,7 @@ function playSound(type) {
 //  BOOT
 // ──────────────────────────────────────────────
 // Call after slight delay to ensure DOM is painted
-setTimeout(fbLoad, 100);
+setTimeout(fbLoad, 80);
 </script>
 </body>
 </html>
