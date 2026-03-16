@@ -7,12 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&family=Oxanium:wght@400;600;700;800&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>کوئیز گەیم</title>
-<!-- Firebase Compat SDK (Firestore) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-
-
 <style>
 /* ══════════════════════════════════════
    ROOT VARIABLES
@@ -886,73 +880,47 @@ body::after {
 //  FIREBASE INIT
 // ──────────────────────────────────────────────
 // ── Firebase Firestore (compat SDK via CDN) ──
-const FB_CFG = {
-  apiKey:            "AIzaSyCqbDmeB6hrJ3NmwfPWakxg4z31UwudZ5c",
-  authDomain:        "footballleague-b89e5.firebaseapp.com",
-  projectId:         "footballleague-b89e5",
-  storageBucket:     "footballleague-b89e5.firebasestorage.app",
-  messagingSenderId: "345929896639",
-  appId:             "1:345929896639:web:25e2a47c96a42d5307ac0a"
-};
+// ══════════════════════════════════════════════
+//  FIREBASE — REST API (no SDK, always works)
+// ══════════════════════════════════════════════
+const FB_DB = "https://quizgame2-cd4d5-default-rtdb.firebaseio.com";
+
+async function fbREST(path, method, body) {
+  const url  = FB_DB + path + '.json';
+  const opts = { method: method || 'GET' };
+  if (body !== undefined) {
+    opts.headers = { 'Content-Type': 'application/json' };
+    opts.body    = JSON.stringify(body);
+  }
+  const r = await fetch(url, opts);
+  if (!r.ok) {
+    const txt = await r.text();
+    throw new Error('HTTP ' + r.status + ' — ' + txt);
+  }
+  return r.json();
+}
+
+async function dbReadAll()              { return fbREST('/questions'); }
+async function dbWrite(catId, lvl, arr) { return fbREST('/questions/'+catId+'/'+lvl, 'PUT', arr); }
 
 let fbOK = false;
-let db   = null;
-let allQ = {};
-
-function fbInit() {
-  try {
-    firebase.initializeApp(FB_CFG);
-    db = firebase.firestore();
-    console.log("Firestore ready");
-  } catch(e) {
-    console.error("Firebase init error:", e);
-  }
-}
-
-// ── Firestore helpers ──
-// questions stored as: collection "questions" / doc "{catId}" / field "{level}" = array of question objects
-
-async function fsGetAll() {
-  const snap = await db.collection("questions").get();
-  const out  = {};
-  snap.forEach(doc => { out[doc.id] = doc.data(); });
-  return out;
-}
-
-async function fsSaveQuestion(catId, level, qObj) {
-  const ref = db.collection("questions").doc(catId);
-  const snap = await ref.get();
-  let data = snap.exists ? snap.data() : {};
-  if (!data[level]) data[level] = [];
-  data[level].push(qObj);
-  await ref.set(data, { merge: true });
-}
-
-async function fsDeleteQuestion(catId, level, idx) {
-  const ref  = db.collection("questions").doc(catId);
-  const snap = await ref.get();
-  if (!snap.exists) return;
-  const data = snap.data();
-  const arr  = Array.isArray(data[level]) ? [...data[level]] : [];
-  arr.splice(idx, 1);
-  data[level] = arr;
-  await ref.set(data);
-}
 
 function fbLoad() {
   setFbStatus('⏳ Firebase بارکردن...', '#f0b429');
-  fbInit();
-  fsGetAll()
+  dbReadAll()
     .then(data => {
-      allQ  = data || {};
-      fbOK  = true;
+      allQ = normalizeQ(data || {});
+      fbOK = true;
       setFbStatus('🟢 Firebase یەکگیراوە', '#06d6a0');
     })
     .catch(err => {
-      fbOK  = false;
-      allQ  = lsLoad();
-      setFbStatus('🔴 ' + err.message, '#e63946');
-      console.error('Firebase load error:', err);
+      fbOK = false;
+      allQ = lsLoad();
+      const msg = err.message.includes('401') || err.message.includes('403')
+        ? '🔴 Firebase Rules بگۆڕە بۆ true'
+        : '🔴 ' + err.message;
+      setFbStatus(msg, '#e63946');
+      console.error('Firebase:', err);
     });
 }
 
@@ -962,9 +930,21 @@ function setFbStatus(msg, color) {
 }
 
 // Normalise Firestore data — each doc is {level: [qArray]}
-function toPlain(val) {
-  if (!val || typeof val !== 'object') return val;
+function normalizeQ(val) {
+  if (!val || typeof val !== 'object') return {};
   const out = {};
+  for (const cat in val) {
+    out[cat] = {};
+    const catData = val[cat];
+    if (!catData || typeof catData !== 'object') continue;
+    for (const lvl in catData) {
+      const v = catData[lvl];
+      out[cat][lvl] = Array.isArray(v) ? v.filter(Boolean) : Object.values(v).filter(Boolean);
+    }
+  }
+  return out;
+}
+function toPlain(v) { return normalizeQ(v); };
   for (const catId in val) {
     out[catId] = {};
     const doc = val[catId];
@@ -989,7 +969,15 @@ function lsLoad()  { try { return JSON.parse(localStorage.getItem(LS_KEY)||'{}')
 function lsSave()  { localStorage.setItem(LS_KEY, JSON.stringify(allQ)); }
 
 async function dbSave(catId, level, qObj) {
-  if (!allQ[catId]) allQ[catId] = {};
+  if (!allQ[catId])        allQ[catId]        = {};
+  if (!allQ[catId][level]) allQ[catId][level] = [];
+  allQ[catId][level].push(qObj);
+  if (fbOK) {
+    try   { await dbWrite(catId, level, allQ[catId][level]); return true; }
+    catch (e) { console.error('dbSave:', e); }
+  }
+  lsSave(); return true;
+};
   if (!allQ[catId][level]) allQ[catId][level] = [];
   allQ[catId][level].push(qObj);
   if (fbOK) {
@@ -1005,6 +993,13 @@ async function dbDelete(catId, level, idx) {
   const arr = toArr(allQ[catId]?.[level]);
   arr.splice(idx, 1);
   if (!allQ[catId]) allQ[catId] = {};
+  allQ[catId][level] = arr;
+  if (fbOK) {
+    try   { await dbWrite(catId, level, arr.length ? arr : null); return true; }
+    catch (e) { console.error('dbDelete:', e); }
+  }
+  lsSave(); return true;
+};
   allQ[catId][level] = arr;
   if (fbOK) {
     try {
@@ -1737,16 +1732,18 @@ async function adminSave() {
 }
 
 async function adminReload() {
-  if (fbOK) {
-    try {
-      allQ = await fsGetAll();
-      notif('نوێ کرایەوە ✓', 'suc');
-    } catch(e) { notif('هەڵە: ' + e.message, 'err'); }
-  } else {
-    allQ = lsLoad();
-    notif('localStorage نوێ کرایەوە ✓', 'suc');
+  setFbStatus('⏳ بارکردن...', '#f0b429');
+  try {
+    const data = await dbReadAll();
+    allQ = normalizeQ(data || {});
+    fbOK = true;
+    setFbStatus('🟢 Firebase یەکگیراوە', '#06d6a0');
+    adminRenderList();
+    notif('نوێ کرایەوە ✓', 'suc');
+  } catch(e) {
+    setFbStatus('🔴 ' + e.message, '#e63946');
+    notif('هەڵە: ' + e.message, 'err');
   }
-  adminRenderList();
 }
 
 function adminRenderList() {
