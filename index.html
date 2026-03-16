@@ -4,305 +4,723 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>کوئیز گەیم</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Oxanium:wght@400;600;800&display=swap" rel="stylesheet">
+<!-- Firebase Compat SDK (Firestore) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Oxanium:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+
 <style>
-:root{
-  --red:#e8192c;--blue:#1a3a8f;--gold:#f5c518;
-  --darker:#060810;--glass:rgba(255,255,255,.06);--gb:rgba(255,255,255,.12);
-  --ok:#00c853;--ng:#e8192c;
+/* ══════════════════════════════════════
+   ROOT VARIABLES
+══════════════════════════════════════ */
+:root {
+  --bg:       #07080f;
+  --surface:  #0f1120;
+  --glass:    rgba(255,255,255,0.05);
+  --glass-b:  rgba(255,255,255,0.10);
+  --gold:     #f0b429;
+  --gold2:    #ffd166;
+  --red:      #e63946;
+  --blue:     #1d4ed8;
+  --ok:       #06d6a0;
+  --ng:       #e63946;
+  --purple:   #7c3aed;
+  --orange:   #f97316;
+  --cyan:     #06b6d4;
+  --pink:     #ec4899;
+  --text:     #f0f0f0;
+  --muted:    rgba(240,240,240,0.45);
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Tajawal',sans-serif;background:var(--darker);color:#fff;min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(ellipse 80% 60% at 20% 20%,rgba(232,25,44,.18),transparent 60%),
-             radial-gradient(ellipse 70% 50% at 80% 80%,rgba(26,58,143,.22),transparent 60%);}
-body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:16px; }
+
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+/* Animated background */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 15%, rgba(229,57,70,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 85% 85%, rgba(29,78,216,0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(124,58,237,0.06) 0%, transparent 60%);
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background-image:
-    repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,.015) 40px,rgba(255,255,255,.015) 41px),
-    repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,255,255,.015) 40px,rgba(255,255,255,.015) 41px);}
-
-.screen{display:none;position:relative;z-index:1;min-height:100vh;padding:28px 18px;animation:fi .4s ease;}
-.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;}
-@keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── LOGO ── */
-.logo{text-align:center;margin-bottom:42px;}
-.logo h1{
-  font-family:'Oxanium',sans-serif;font-size:clamp(2rem,6vw,3.8rem);font-weight:800;letter-spacing:4px;
-  background:linear-gradient(135deg,#fff,var(--gold) 50%,var(--red));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 0 28px rgba(245,197,24,.4));
+    repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(255,255,255,0.012) 48px, rgba(255,255,255,0.012) 49px),
+    repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(255,255,255,0.012) 48px, rgba(255,255,255,0.012) 49px);
 }
-.logo p{font-size:.92rem;color:rgba(255,255,255,.4);letter-spacing:6px;margin-top:6px;}
-.logo-sub{font-size:.76rem;margin-top:10px;color:#00c853;}
 
-/* ── BUTTONS ── */
-.btn{position:relative;padding:18px 30px;border:none;border-radius:15px;
-  font-family:'Tajawal',sans-serif;font-size:1.12rem;font-weight:700;
-  cursor:pointer;overflow:hidden;transition:transform .2s,box-shadow .2s;letter-spacing:1px;}
-.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);}
-.btn:hover{transform:translateY(-3px);}
-.btn:active{transform:translateY(0);}
-.btn-r{background:linear-gradient(135deg,#c0152a,var(--red));box-shadow:0 8px 30px rgba(232,25,44,.4);color:#fff;}
-.btn-b{background:linear-gradient(135deg,#102b6e,var(--blue));box-shadow:0 8px 30px rgba(26,58,143,.5);color:#fff;}
-.btn-g{background:linear-gradient(135deg,#c9a200,var(--gold));box-shadow:0 8px 30px rgba(245,197,24,.35);color:#1a1200;}
-.mwrap{display:flex;flex-direction:column;gap:16px;width:100%;max-width:420px;}
+/* ══════════════════════════════════════
+   SCREENS
+══════════════════════════════════════ */
+.screen {
+  display: none;
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  padding: 24px 16px 40px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: fadeUp 0.35s ease;
+}
+.screen.active { display: flex; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
-/* ── CARD ── */
-.card{background:var(--glass);border:1.5px solid var(--gb);border-radius:22px;padding:32px;
-  backdrop-filter:blur(20px);width:100%;max-width:540px;box-shadow:0 18px 55px rgba(0,0,0,.45);}
-.card h2{font-size:1.45rem;font-weight:800;margin-bottom:22px;text-align:center;color:var(--gold);}
+/* ══════════════════════════════════════
+   LOGO
+══════════════════════════════════════ */
+.logo { text-align: center; margin-bottom: 40px; }
+.logo h1 {
+  font-family: 'Oxanium', sans-serif;
+  font-size: clamp(2.2rem, 7vw, 4rem);
+  font-weight: 800;
+  letter-spacing: 6px;
+  background: linear-gradient(135deg, #fff 0%, var(--gold) 45%, var(--red) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 32px rgba(240,180,41,0.4));
+}
+.logo p { font-size: 0.88rem; color: var(--muted); letter-spacing: 8px; margin-top: 6px; }
+#fb-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.75rem; margin-top: 12px;
+  padding: 5px 14px; border-radius: 50px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.4s;
+}
 
-/* ── FORM ── */
-.fg{margin-bottom:16px;}
-.fg label{display:block;font-size:.86rem;color:rgba(255,255,255,.5);margin-bottom:7px;letter-spacing:1px;}
-.fg input,.fg select,.fg textarea{
-  width:100%;padding:13px 17px;background:rgba(255,255,255,.07);
-  border:1.5px solid rgba(255,255,255,.1);border-radius:11px;color:#fff;
-  font-family:'Tajawal',sans-serif;font-size:1rem;outline:none;transition:border-color .2s;}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold);background:rgba(245,197,24,.06);}
-.fg select option{background:#111;color:#fff;}
-.fg textarea{resize:vertical;min-height:85px;}
+/* ══════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════ */
+.btn {
+  position: relative;
+  padding: 17px 32px;
+  border: none; border-radius: 14px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1.08rem; font-weight: 700;
+  cursor: pointer; overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.5px;
+}
+.btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, rgba(255,255,255,0.14) 0%, transparent 60%);
+}
+.btn:hover  { transform: translateY(-3px); }
+.btn:active { transform: translateY(1px); }
 
-/* ── CATEGORIES ── */
-.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;width:100%;max-width:780px;}
-@media(max-width:580px){.cgrid{grid-template-columns:repeat(2,1fr);}}
-.cbtn{padding:18px 10px;border:2px solid rgba(255,255,255,.1);border-radius:17px;
-  background:var(--glass);backdrop-filter:blur(14px);color:#fff;
-  font-family:'Tajawal',sans-serif;font-size:.97rem;font-weight:700;
-  cursor:pointer;text-align:center;transition:all .25s;}
-.cbtn .ci{font-size:1.75rem;display:block;margin-bottom:7px;}
-.cbtn .cl{display:flex;gap:5px;justify-content:center;margin-top:7px;flex-wrap:wrap;}
-.lb{padding:2px 8px;border-radius:20px;font-size:.72rem;font-weight:700;
-  font-family:'Oxanium',sans-serif;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);}
-.lb.used{background:rgba(232,25,44,.25);border-color:rgba(232,25,44,.5);color:rgba(255,255,255,.35);text-decoration:line-through;}
-.lb.avail{background:rgba(26,58,143,.4);border-color:rgba(100,140,255,.5);color:#a0c0ff;}
-.cbtn:hover:not(.dis){border-color:var(--gold);background:rgba(245,197,24,.08);transform:translateY(-3px);}
-.cbtn.dis{opacity:.35;cursor:not-allowed;filter:grayscale(.5);}
+.btn-red    { background: linear-gradient(135deg,#b91c2a,var(--red));   box-shadow:0 8px 28px rgba(230,57,70,.45);  color:#fff; }
+.btn-blue   { background: linear-gradient(135deg,#1034a6,var(--blue));  box-shadow:0 8px 28px rgba(29,78,216,.45);  color:#fff; }
+.btn-gold   { background: linear-gradient(135deg,#c28a00,var(--gold));  box-shadow:0 8px 28px rgba(240,180,41,.4);  color:#1a1000; }
+.btn-purple { background: linear-gradient(135deg,#5b21b6,var(--purple));box-shadow:0 8px 28px rgba(124,58,237,.45); color:#fff; }
+.btn-ghost  { background:var(--glass); border:1.5px solid var(--glass-b); color:var(--muted); backdrop-filter:blur(10px); }
+.btn-ghost:hover { color: #fff; background: rgba(255,255,255,0.09); }
 
-/* ── TURN / SCORE ── */
-.tb{padding:13px 30px;border-radius:50px;font-size:1.05rem;font-weight:800;text-align:center;margin-bottom:22px;}
-.tb.p1{background:rgba(232,25,44,.12);border:2px solid rgba(232,25,44,.5);color:#ff6b7a;}
-.tb.p2{background:rgba(26,58,143,.12);border:2px solid rgba(26,58,143,.6);color:#7ba8ff;}
-.tb.p3{background:rgba(0,180,80,.12);border:2px solid rgba(0,180,80,.6);color:#5dffaa;}
-.sbar{display:flex;gap:14px;width:100%;max-width:780px;margin-bottom:22px;}
-.sc{flex:1;padding:13px 16px;border-radius:15px;text-align:center;background:var(--glass);border:2px solid transparent;transition:border-color .3s;}
-.sc.ap1{border-color:rgba(232,25,44,.6);background:rgba(232,25,44,.08);}
-.sc.ap2{border-color:rgba(26,58,143,.7);background:rgba(26,58,143,.1);}
-.sc.ap3{border-color:rgba(0,180,80,.7);background:rgba(0,180,80,.1);}
-.sc .sn{font-size:.83rem;color:rgba(255,255,255,.5);margin-bottom:3px;}
-.sc .sp{font-family:'Oxanium',sans-serif;font-size:1.9rem;font-weight:800;color:var(--gold);}
+.menu-wrap { display:flex; flex-direction:column; gap:14px; width:100%; max-width:400px; }
 
-/* ── LEVEL PICKER ── */
-.lpwrap{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:18px 0;}
-.lpbtn{padding:17px 36px;border-radius:15px;border:2px solid rgba(255,255,255,.18);
-  background:rgba(255,255,255,.06);color:#fff;
-  font-family:'Oxanium',sans-serif;font-size:1.45rem;font-weight:800;
-  cursor:pointer;transition:all .2s;letter-spacing:2px;}
-.lpbtn:hover:not(:disabled){border-color:var(--gold);background:rgba(245,197,24,.1);color:var(--gold);transform:scale(1.06);}
-.lpbtn:disabled{opacity:.25;cursor:not-allowed;}
+/* ══════════════════════════════════════
+   CARD
+══════════════════════════════════════ */
+.card {
+  background: var(--glass);
+  border: 1.5px solid var(--glass-b);
+  border-radius: 22px;
+  padding: 30px 28px;
+  backdrop-filter: blur(20px);
+  width: 100%; max-width: 560px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.card h2 {
+  font-size: 1.4rem; font-weight: 800;
+  margin-bottom: 20px;
+  text-align: center; color: var(--gold);
+}
 
-/* ── QUESTION ── */
-.qhdr{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:700px;margin-bottom:18px;}
-.qcat{padding:7px 18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:50px;font-size:.84rem;color:rgba(255,255,255,.6);}
-.qpts{padding:7px 18px;background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.4);border-radius:50px;font-family:'Oxanium',sans-serif;font-size:.98rem;font-weight:700;color:var(--gold);}
+/* ══════════════════════════════════════
+   FORMS
+══════════════════════════════════════ */
+.fg { margin-bottom: 15px; }
+.fg label {
+  display: block; font-size: 0.82rem;
+  color: var(--muted); margin-bottom: 6px; letter-spacing: 0.5px;
+}
+.fg input, .fg select, .fg textarea {
+  width: 100%; padding: 12px 16px;
+  background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 10px; color: var(--text);
+  font-family: 'Tajawal', sans-serif; font-size: 0.97rem;
+  outline: none; transition: border-color 0.2s, background 0.2s;
+}
+.fg input:focus, .fg select:focus, .fg textarea:focus {
+  border-color: var(--gold); background: rgba(240,180,41,0.06);
+}
+.fg select option { background: #0f1120; color: #fff; }
+.fg textarea { resize: vertical; min-height: 82px; }
 
-.tw{position:relative;width:96px;height:96px;margin:0 auto 22px;}
-.ts{width:96px;height:96px;transform:rotate(-90deg);}
-.tbg{fill:none;stroke:rgba(255,255,255,.08);stroke-width:6;}
-.tf{fill:none;stroke:var(--gold);stroke-width:6;stroke-linecap:round;stroke-dasharray:251.2;stroke-dashoffset:0;transition:stroke .5s;}
-.tt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family:'Oxanium',sans-serif;font-size:1.85rem;font-weight:800;color:#fff;}
+/* ══════════════════════════════════════
+   PLAYER COUNT PICKER
+══════════════════════════════════════ */
+.count-grid {
+  display: flex; flex-wrap: wrap;
+  gap: 8px; justify-content: center;
+  margin: 8px 0 18px;
+}
+.cnt-btn {
+  width: 50px; height: 50px;
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-family: 'Oxanium', sans-serif; font-size: 1.2rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.cnt-btn:hover { border-color: var(--gold); background: rgba(240,180,41,0.1); color: var(--gold); }
+.cnt-btn.sel   { border-color: var(--gold); background: rgba(240,180,41,0.18); color: var(--gold); box-shadow: 0 0 14px rgba(240,180,41,0.28); }
 
-.qtxt{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);
-  border-radius:18px;padding:24px 28px;font-size:1.18rem;font-weight:700;
-  text-align:center;line-height:1.75;width:100%;max-width:700px;margin-bottom:18px;}
+/* player name rows */
+.pname-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; }
+.pname-row  { display: flex; align-items: center; gap: 10px; }
+.p-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
+.pname-row input {
+  flex: 1; padding: 11px 14px;
+  background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 10px; color: var(--text);
+  font-family: 'Tajawal', sans-serif; font-size: 0.96rem; outline: none;
+  transition: border-color 0.2s;
+}
+.pname-row input:focus { border-color: var(--gold); }
 
-.agrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;width:100%;max-width:700px;}
-@media(max-width:480px){.agrid{grid-template-columns:1fr;}}
-.ab{padding:15px 17px;border-radius:13px;border:2px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.06);color:#fff;
-  font-family:'Tajawal',sans-serif;font-size:1rem;font-weight:600;
-  cursor:pointer;text-align:right;transition:all .2s;display:flex;align-items:center;gap:11px;}
-.ab .al{font-family:'Oxanium',sans-serif;font-weight:800;font-size:.97rem;
-  width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;order:-1;}
-.ab:hover:not(:disabled){border-color:var(--blue);background:rgba(26,58,143,.2);transform:translateX(-3px);}
-.ab:disabled{cursor:default;}
-.ab.ok{border-color:var(--ok)!important;background:rgba(0,200,83,.15)!important;box-shadow:0 0 18px rgba(0,200,83,.3);}
-.ab.ok .al{background:var(--ok);}
-.ab.sw{border-color:var(--ng)!important;background:rgba(232,25,44,.2)!important;box-shadow:0 0 18px rgba(232,25,44,.3);}
-.ab.sw .al{background:var(--ng);}
+/* ══════════════════════════════════════
+   SCORE BAR
+══════════════════════════════════════ */
+.sbar {
+  display: flex; gap: 7px;
+  width: 100%; max-width: 860px;
+  margin-bottom: 16px;
+  flex-wrap: wrap; justify-content: center;
+}
+.sc {
+  flex: 1; min-width: 72px; max-width: 120px;
+  padding: 9px 10px; border-radius: 12px;
+  text-align: center;
+  background: var(--glass); border: 2px solid transparent;
+  transition: all 0.3s;
+}
+.sc.cur {
+  border-color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.09);
+  box-shadow: 0 0 18px rgba(255,255,255,0.1);
+  transform: scale(1.05);
+}
+.sc .s-emoji  { font-size: 1rem; }
+.sc .s-name   { font-size: 0.68rem; color: var(--muted); margin: 2px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sc .s-pts    { font-family: 'Oxanium', sans-serif; font-size: 1.45rem; font-weight: 800; color: var(--gold); }
+.sc .s-curses { font-size: 0.6rem; color: var(--red); min-height: 12px; }
 
-/* ── RESULT OVERLAY ── */
-.ro{display:none;position:fixed;inset:0;z-index:100;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.72);backdrop-filter:blur(8px);}
-.ro.show{display:flex;animation:fi .3s ease;}
-.rb{padding:42px 54px;border-radius:26px;text-align:center;box-shadow:0 28px 75px rgba(0,0,0,.6);}
-.rb.okb{background:linear-gradient(135deg,#003d1f,#005a2c);border:2px solid rgba(0,200,83,.6);}
-.rb.ngb{background:linear-gradient(135deg,#3d0010,#5a0018);border:2px solid rgba(232,25,44,.6);}
-.ri{font-size:3.8rem;margin-bottom:12px;}
-.rt{font-size:1.9rem;font-weight:900;margin-bottom:7px;}
-.rp{font-family:'Oxanium',sans-serif;font-size:1.15rem;color:var(--gold);}
+/* ══════════════════════════════════════
+   TURN BANNER
+══════════════════════════════════════ */
+.turn-banner {
+  padding: 11px 28px; border-radius: 50px;
+  font-size: 1rem; font-weight: 800;
+  text-align: center; margin-bottom: 16px;
+  border: 2px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(10px);
+}
 
-/* ── FINAL ── */
-.pod{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin:26px 0;}
-.pc{padding:28px 38px;border-radius:22px;text-align:center;min-width:185px;}
-.pc.win{background:linear-gradient(135deg,rgba(245,197,24,.15),rgba(245,197,24,.05));border:2px solid rgba(245,197,24,.6);}
-.pc.los{background:var(--glass);border:2px solid var(--gb);}
-.pc .crown{font-size:2.8rem;margin-bottom:10px;}
-.pc .pn{font-size:1.35rem;font-weight:800;margin-bottom:7px;}
-.pc .ps{font-family:'Oxanium',sans-serif;font-size:2.8rem;font-weight:800;color:var(--gold);}
-.pc .pl{font-size:.83rem;color:rgba(255,255,255,.4);}
+/* ══════════════════════════════════════
+   CATEGORIES GRID
+══════════════════════════════════════ */
+.cgrid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 11px; width: 100%; max-width: 780px;
+}
+@media (max-width:560px) { .cgrid { grid-template-columns: repeat(2,1fr); } }
 
-/* ── ADMIN ── */
-.crg{display:flex;gap:9px;flex-wrap:wrap;}
-.crl{cursor:pointer;padding:9px 18px;border-radius:9px;border:2px solid rgba(255,255,255,.1);
-  background:rgba(255,255,255,.04);font-family:'Oxanium',sans-serif;font-weight:700;transition:all .2s;}
-.crl.on{border-color:var(--ok);background:rgba(0,200,83,.12);color:var(--ok);}
-.aigrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
-.aqi{padding:11px 14px;background:rgba(255,255,255,.04);border-radius:9px;
-  border:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;gap:10px;}
-.aqdel{background:rgba(232,25,44,.15);border:1px solid rgba(232,25,44,.3);color:#ff6b7a;
-  padding:5px 11px;border-radius:7px;cursor:pointer;font-size:.78rem;flex-shrink:0;}
-.aqdel:hover{background:rgba(232,25,44,.3);}
+.cbtn {
+  padding: 16px 8px;
+  border: 2px solid rgba(255,255,255,0.09);
+  border-radius: 15px;
+  background: var(--glass); backdrop-filter: blur(14px);
+  color: var(--text); font-family: 'Tajawal', sans-serif;
+  font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; text-align: center; transition: all 0.22s;
+}
+.cbtn .ci { font-size: 1.6rem; display: block; margin-bottom: 6px; }
+.cbtn .cl { display: flex; gap: 4px; justify-content: center; margin-top: 6px; flex-wrap: wrap; }
+.lb {
+  padding: 1px 7px; border-radius: 20px;
+  font-size: 0.68rem; font-weight: 700;
+  font-family: 'Oxanium', sans-serif;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+}
+.lb.used  { background:rgba(230,57,70,.22); border-color:rgba(230,57,70,.45); color:rgba(255,255,255,.32); text-decoration:line-through; }
+.lb.avail { background:rgba(29,78,216,.35); border-color:rgba(100,150,255,.5); color:#a0c0ff; }
+.cbtn:hover:not(.dis) { border-color:var(--gold); background:rgba(240,180,41,0.07); transform:translateY(-3px); }
+.cbtn.dis { opacity:0.3; cursor:not-allowed; filter:grayscale(0.5); }
 
-/* ── NOTIF ── */
-.notif{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
-  padding:13px 26px;border-radius:50px;font-weight:700;font-size:.93rem;
-  z-index:200;transition:transform .3s;pointer-events:none;white-space:nowrap;}
-.notif.show{transform:translateX(-50%) translateY(0);}
-.notif.suc{background:var(--ok);color:#001a0a;}
-.notif.err{background:var(--ng);color:#fff;}
-.notif.inf{background:#1a3a8f;color:#fff;}
+/* ══════════════════════════════════════
+   LEVEL PICKER
+══════════════════════════════════════ */
+.lpwrap { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:16px 0; }
+.lpbtn {
+  padding: 16px 38px; border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.05); color: var(--text);
+  font-family: 'Oxanium', sans-serif; font-size: 1.4rem; font-weight: 800;
+  cursor: pointer; transition: all 0.2s; letter-spacing: 2px;
+}
+.lpbtn:hover:not(:disabled) {
+  border-color: var(--gold); background: rgba(240,180,41,0.1);
+  color: var(--gold); transform: scale(1.06);
+  box-shadow: 0 0 22px rgba(240,180,41,0.28);
+}
+.lpbtn:disabled { opacity: 0.22; cursor: not-allowed; }
 
-.bk{position:fixed;top:18px;right:18px;z-index:50;padding:9px 20px;border-radius:50px;
-  border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);backdrop-filter:blur(12px);
-  color:rgba(255,255,255,.7);font-family:'Tajawal',sans-serif;font-size:.88rem;cursor:pointer;transition:all .2s;}
-.bk:hover{background:rgba(255,255,255,.12);color:#fff;}
-.stitle{font-size:.78rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:22px;text-align:center;}
+/* ══════════════════════════════════════
+   QUESTION SCREEN
+══════════════════════════════════════ */
+.q-hdr {
+  display: flex; justify-content: space-between; align-items: center;
+  width: 100%; max-width: 700px; margin-bottom: 14px;
+  flex-wrap: wrap; gap: 7px;
+}
+.q-badge {
+  padding: 6px 16px; border-radius: 50px; font-size: 0.8rem;
+  font-weight: 700; border: 1.5px solid; backdrop-filter: blur(8px);
+}
+.q-cat   { border-color: rgba(255,255,255,0.14); background:rgba(255,255,255,0.07); color:var(--muted); }
+.q-player{ border-color: rgba(255,255,255,0.22); background:rgba(255,255,255,0.07); }
+.q-pts   { border-color: rgba(240,180,41,0.4); background:rgba(240,180,41,0.12); color:var(--gold); font-family:'Oxanium',sans-serif; }
 
-.ce{position:fixed;pointer-events:none;font-size:2rem;animation:fall linear forwards;z-index:300;}
-@keyframes fall{from{transform:translateY(-55px) rotate(0);opacity:1}to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+/* Timer */
+.timer-wrap { position:relative; width:92px; height:92px; margin:0 auto 16px; }
+.timer-svg  { width:92px; height:92px; transform:rotate(-90deg); }
+.t-bg   { fill:none; stroke:rgba(255,255,255,0.07); stroke-width:6; }
+.t-fill { fill:none; stroke:var(--gold); stroke-width:6; stroke-linecap:round; stroke-dasharray:251.2; stroke-dashoffset:0; transition:stroke 0.5s; }
+.t-num  { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Oxanium',sans-serif; font-size:1.8rem; font-weight:800; }
+
+/* CURSE indicator on timer */
+.curse-ring { position:absolute; inset:-4px; border-radius:50%; border:3px solid var(--red); animation:pulse-red 0.8s infinite alternate; }
+@keyframes pulse-red { from{opacity:0.4;box-shadow:0 0 0 0 rgba(230,57,70,.5)} to{opacity:1;box-shadow:0 0 0 8px rgba(230,57,70,0)} }
+
+.q-text {
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 22px 24px;
+  font-size: 1.14rem; font-weight: 700;
+  text-align: center; line-height: 1.75;
+  width: 100%; max-width: 700px; margin-bottom: 14px;
+}
+
+/* Answer grid */
+.a-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 9px; width: 100%; max-width: 700px;
+}
+@media (max-width:440px) { .a-grid { grid-template-columns: 1fr; } }
+
+.a-btn {
+  padding: 14px 15px; border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.11);
+  background: rgba(255,255,255,0.05); color: var(--text);
+  font-family: 'Tajawal', sans-serif; font-size: 0.96rem; font-weight: 600;
+  cursor: pointer; text-align: right;
+  transition: all 0.18s;
+  display: flex; align-items: center; gap: 10px;
+}
+.a-btn .a-letter {
+  font-family: 'Oxanium', sans-serif; font-weight: 800; font-size: 0.9rem;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; order: -1;
+}
+.a-btn:hover:not(:disabled) { border-color:var(--blue); background:rgba(29,78,216,0.18); transform:translateX(-3px); }
+.a-btn:disabled { cursor: default; }
+.a-btn.ok { border-color:var(--ok)!important; background:rgba(6,214,160,0.14)!important; box-shadow:0 0 16px rgba(6,214,160,0.28); }
+.a-btn.ok .a-letter { background:var(--ok); }
+.a-btn.sw { border-color:var(--ng)!important; background:rgba(230,57,70,0.18)!important; box-shadow:0 0 16px rgba(230,57,70,0.28); }
+.a-btn.sw .a-letter { background:var(--ng); }
+.a-btn.gone { opacity:0.15; pointer-events:none; border-color:transparent!important; background:transparent!important; }
+
+/* Powerup bar */
+.pu-bar { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; width:100%; max-width:700px; margin-bottom:12px; }
+.pu-btn {
+  padding: 7px 15px; border-radius: 50px; border: 2px solid;
+  font-family: 'Tajawal', sans-serif; font-size: 0.8rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 5px;
+}
+.pu-btn:hover:not(:disabled) { transform: scale(1.05); }
+.pu-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.pu-lifeline { border-color:rgba(124,58,237,.6); background:rgba(124,58,237,.14); color:#c49dff; }
+.pu-double   { border-color:rgba(249,115,22,.6); background:rgba(249,115,22,.13); color:#fdba74; }
+.pu-time     { border-color:rgba(6,182,212,.6);  background:rgba(6,182,212,.12);  color:#67e8f9; }
+
+/* ══════════════════════════════════════
+   MARKET SCREEN
+══════════════════════════════════════ */
+.mkt-header { text-align:center; margin-bottom:6px; }
+.mkt-pts-bar {
+  padding: 10px 20px; border-radius: 50px;
+  background: rgba(240,180,41,0.1); border: 1.5px solid rgba(240,180,41,0.3);
+  font-size: 0.88rem; color: var(--muted); margin-bottom: 18px;
+  text-align: center;
+}
+.mkt-pts-bar strong { font-family:'Oxanium',sans-serif; color:var(--gold); font-size:1.1rem; }
+
+.mkt-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 13px; width: 100%; max-width: 620px;
+}
+@media (max-width:460px) { .mkt-grid { grid-template-columns: 1fr; } }
+
+.mkt-card {
+  padding: 18px 14px; border-radius: 16px;
+  border: 2px solid; text-align: center;
+  cursor: pointer; transition: all 0.22s;
+  position: relative; overflow: hidden;
+}
+.mkt-card::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(160deg,rgba(255,255,255,0.05) 0%,transparent 60%);
+}
+.mkt-card:hover:not(.sold-out):not(.owned) { transform:translateY(-3px); }
+.mkt-card.sold-out { opacity:0.35; cursor:not-allowed; }
+.mkt-card.owned    { cursor:default; }
+.mkt-card .mc-icon { font-size:2rem; margin-bottom:7px; display:block; }
+.mkt-card .mc-name { font-size:0.93rem; font-weight:800; margin-bottom:4px; }
+.mkt-card .mc-desc { font-size:0.72rem; color:var(--muted); margin-bottom:8px; line-height:1.55; }
+.mkt-card .mc-price { font-family:'Oxanium',sans-serif; font-size:1rem; font-weight:800; }
+
+.mc-lifeline { border-color:rgba(124,58,237,.45); background:rgba(124,58,237,.08); }
+.mc-double   { border-color:rgba(249,115,22,.45); background:rgba(249,115,22,.07); }
+.mc-time     { border-color:rgba(6,182,212,.45);  background:rgba(6,182,212,.07); }
+.mc-steal    { border-color:rgba(230,57,70,.45);  background:rgba(230,57,70,.07); }
+.mc-curse    { border-color:rgba(236,72,153,.45); background:rgba(236,72,153,.07); }
+
+/* ══════════════════════════════════════
+   STEAL / CURSE PICKER
+══════════════════════════════════════ */
+.target-list { display:flex; flex-direction:column; gap:9px; margin:12px 0; width:100%; max-width:400px; }
+.target-btn {
+  padding: 13px 18px; border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.12);
+  background: var(--glass); color: var(--text);
+  font-family: 'Tajawal', sans-serif; font-size:0.95rem; font-weight:700;
+  cursor: pointer; transition:all 0.2s;
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+.target-btn:hover { border-color:var(--red); background:rgba(230,57,70,0.12); }
+
+/* ══════════════════════════════════════
+   RESULT OVERLAY
+══════════════════════════════════════ */
+.ro {
+  display: none; position:fixed; inset:0; z-index:200;
+  align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.75); backdrop-filter:blur(10px);
+}
+.ro.show { display:flex; animation:fadeUp 0.3s ease; }
+.rb {
+  padding: 40px 52px; border-radius: 24px;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.65);
+  max-width: 420px; width: 90%;
+}
+.rb.ok-b { background:linear-gradient(135deg,#003d22,#005a30); border:2px solid rgba(6,214,160,.6); }
+.rb.ng-b { background:linear-gradient(135deg,#3d0010,#5a0018); border:2px solid rgba(230,57,70,.6); }
+.rb .r-icon  { font-size:3.8rem; margin-bottom:10px; }
+.rb .r-title { font-size:1.8rem; font-weight:900; margin-bottom:6px; }
+.rb .r-pts   { font-family:'Oxanium',sans-serif; font-size:1.15rem; color:var(--gold); }
+.rb .r-curse { font-size:0.82rem; color:var(--red); margin-top:8px; padding:6px 12px; border-radius:8px; background:rgba(230,57,70,.15); border:1px solid rgba(230,57,70,.3); }
+
+/* ══════════════════════════════════════
+   FINAL SCORES
+══════════════════════════════════════ */
+.final-podium {
+  display: flex; gap: 12px;
+  justify-content: center; flex-wrap: wrap;
+  margin: 20px 0; width: 100%; max-width: 700px;
+}
+.pod-card {
+  padding: 20px 22px; border-radius: 18px;
+  text-align: center; min-width: 120px; flex: 1; max-width: 165px;
+}
+.pod-card.win { background:linear-gradient(135deg,rgba(240,180,41,.15),rgba(240,180,41,.04)); border:2px solid rgba(240,180,41,.6); box-shadow:0 0 30px rgba(240,180,41,.18); }
+.pod-card.los { background:var(--glass); border:2px solid var(--glass-b); }
+.pod-card .pd-crown { font-size:2.2rem; margin-bottom:7px; }
+.pod-card .pd-name  { font-size:1rem; font-weight:800; margin-bottom:5px; }
+.pod-card .pd-score { font-family:'Oxanium',sans-serif; font-size:2.4rem; font-weight:800; color:var(--gold); }
+.pod-card .pd-label { font-size:0.75rem; color:var(--muted); }
+
+/* ══════════════════════════════════════
+   ADMIN
+══════════════════════════════════════ */
+.answer-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.cr-group { display:flex; gap:8px; flex-wrap:wrap; }
+.cr-lbl {
+  cursor:pointer; padding:8px 16px; border-radius:8px;
+  border:2px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  font-family:'Oxanium',sans-serif; font-weight:700; transition:all 0.2s;
+}
+.cr-lbl.on { border-color:var(--ok); background:rgba(6,214,160,.12); color:var(--ok); }
+
+.q-item {
+  padding: 10px 13px; background:rgba(255,255,255,0.04);
+  border-radius: 9px; border:1px solid rgba(255,255,255,0.07);
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+}
+.q-del {
+  background:rgba(230,57,70,.14); border:1px solid rgba(230,57,70,.3); color:#ff8888;
+  padding:4px 10px; border-radius:7px; cursor:pointer; font-size:0.76rem; flex-shrink:0;
+}
+.q-del:hover { background:rgba(230,57,70,.3); }
+
+/* ══════════════════════════════════════
+   NOTIFICATION
+══════════════════════════════════════ */
+.notif {
+  position: fixed; bottom:26px; left:50%;
+  transform: translateX(-50%) translateY(80px);
+  padding: 12px 24px; border-radius: 50px;
+  font-weight: 700; font-size: 0.9rem;
+  z-index: 300; transition: transform 0.3s;
+  pointer-events: none; white-space: nowrap;
+  max-width: 90vw; text-align: center;
+}
+.notif.show { transform: translateX(-50%) translateY(0); }
+.notif.suc  { background:var(--ok);    color:#001a0f; }
+.notif.err  { background:var(--ng);    color:#fff; }
+.notif.inf  { background:var(--blue);  color:#fff; }
+.notif.mrk  { background:var(--purple);color:#fff; }
+.notif.crs  { background:var(--pink);  color:#fff; }
+
+/* Back button */
+.bk {
+  position:fixed; top:16px; right:16px; z-index:50;
+  padding: 8px 18px; border-radius:50px;
+  border:1.5px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06);
+  backdrop-filter:blur(10px); color:var(--muted);
+  font-family:'Tajawal',sans-serif; font-size:0.85rem;
+  cursor:pointer; transition:all 0.2s;
+}
+.bk:hover { background:rgba(255,255,255,.12); color:#fff; }
+
+.section-label {
+  font-size: 0.72rem; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 18px; text-align: center;
+}
+
+/* Market open btn on cats screen */
+.mkt-open-btn {
+  margin-bottom: 14px;
+  padding: 9px 22px; font-size: 0.85rem;
+  border-radius: 50px;
+}
+
+/* Confetti */
+.ce { position:fixed; pointer-events:none; font-size:2rem; animation:fall linear forwards; z-index:400; }
+@keyframes fall {
+  from { transform:translateY(-55px) rotate(0deg); opacity:1; }
+  to   { transform:translateY(110vh) rotate(720deg); opacity:0; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(255,255,255,.18); border-radius:3px; }
+
+/* Section divider */
+.divider { border:none; border-top:1px solid rgba(255,255,255,.08); margin:22px 0; }
 </style>
 </head>
 <body>
 
-<!-- MAIN MENU -->
+<!-- ════════════════════════════════════
+     MAIN MENU
+════════════════════════════════════ -->
 <div id="s-menu" class="screen active">
   <div class="logo">
     <h1>QUIZ GAME</h1>
     <p>کوئیز گەیم</p>
-    <div class="logo-sub">✅ ئامادەیە — پرسیارەکان پارازدەدرێن</div>
+    <div id="fb-status">⏳ Firebase بارکردن...</div>
   </div>
-  <div class="mwrap">
-    <button class="btn btn-r" onclick="go('s-players')">👥 &nbsp;ناوی یاریزانەکان</button>
-    <button class="btn btn-b" onclick="startGame()">🎮 &nbsp;دەستپێکردنی پرسیارەکان</button>
-    <button class="btn btn-g" onclick="go('s-admin-login')">🔐 &nbsp;ئەدمین</button>
+  <div class="menu-wrap">
+    <button class="btn btn-red"  onclick="go('s-players')">👥 &nbsp; ناوی یاریزانەکان</button>
+    <button class="btn btn-blue" onclick="startGame()">🎮 &nbsp; دەستپێکردنی یاری</button>
+    <button class="btn btn-gold" onclick="go('s-admin-login')">🔐 &nbsp; ئەدمین</button>
   </div>
 </div>
 
-<!-- PLAYERS -->
+<!-- ════════════════════════════════════
+     PLAYER SETUP
+════════════════════════════════════ -->
 <div id="s-players" class="screen">
   <button class="bk" onclick="go('s-menu')">← گەڕانەوە</button>
-  <div class="card">
-    <h2>👥 ناوی یاریزانەکان</h2>
-    <div class="fg"><label>یاریزانی ١ 🔴</label>
-      <input type="text" id="p1n" placeholder="ناوی یاریزانی یەکەم"/></div>
-    <div class="fg"><label>یاریزانی ٢ 🔵</label>
-      <input type="text" id="p2n" placeholder="ناوی یاریزانی دووەم"/></div>
-    <div class="fg"><label>یاریزانی ٣ 🟢</label>
-      <input type="text" id="p3n" placeholder="ناوی یاریزانی سێیەم"/></div>
-    <button class="btn btn-g" onclick="savePlayers()" style="width:100%;margin-top:8px">✓ &nbsp;پاراستن</button>
+  <div class="card" style="max-width:520px">
+    <h2>👥 دامەزراندنی یاریزانەکان</h2>
+    <div class="fg">
+      <label>چەند یاریزان؟</label>
+      <div class="count-grid" id="countGrid"></div>
+    </div>
+    <div class="pname-list" id="pnameList"></div>
+    <button class="btn btn-gold" onclick="savePlayers()" style="width:100%">✓ &nbsp; پاراستن</button>
   </div>
 </div>
 
-<!-- FIRST TURN -->
+<!-- ════════════════════════════════════
+     FIRST TURN
+════════════════════════════════════ -->
 <div id="s-first" class="screen">
   <div class="card" style="text-align:center">
-    <div style="font-size:3.4rem;margin-bottom:14px">🎲</div>
-    <p class="stitle">دەستپێکردن</p>
-    <h2 style="font-size:1.55rem;margin-bottom:10px;color:#fff">یاریزانی یەکەم دەست دەکات!</h2>
-    <div id="fName" style="font-size:2.4rem;font-weight:900;color:var(--gold);margin-bottom:22px"></div>
-    <button class="btn btn-b" onclick="go('s-cats')" style="width:100%">بردن بۆ پۆلەکان ←</button>
+    <div style="font-size:3rem;margin-bottom:12px">🎲</div>
+    <p class="section-label">دەستپێکردن</p>
+    <h2 style="font-size:1.5rem;color:#fff;margin-bottom:10px">یاریزانی یەکەم دەست دەکات!</h2>
+    <div id="fName" style="font-size:2.2rem;font-weight:900;color:var(--gold);margin-bottom:20px"></div>
+    <button class="btn btn-blue" onclick="go('s-cats')" style="width:100%">بردن بۆ پۆلەکان ←</button>
   </div>
 </div>
 
-<!-- CATEGORIES -->
-<div id="s-cats" class="screen" style="justify-content:flex-start;padding-top:18px">
+<!-- ════════════════════════════════════
+     CATEGORIES
+════════════════════════════════════ -->
+<div id="s-cats" class="screen" style="justify-content:flex-start;padding-top:16px">
   <button class="bk" onclick="go('s-menu')">← گەڕانەوە</button>
-  <div class="sbar">
-    <div class="sc" id="sc1"><div class="sn" id="sn1">یاریزان ١</div><div class="sp" id="sp1">0</div></div>
-    <div class="sc" id="sc2"><div class="sn" id="sn2">یاریزان ٢</div><div class="sp" id="sp2">0</div></div>
-    <div class="sc" id="sc3"><div class="sn" id="sn3">یاریزان ٣</div><div class="sp" id="sp3">0</div></div>
-  </div>
-  <div class="tb" id="tb">دەوری کێ ئێستایە</div>
-  <p class="stitle">پۆلێک هەڵبژێرە</p>
+  <div class="sbar" id="sbar"></div>
+  <div class="turn-banner" id="turnBanner"></div>
+  <button class="btn btn-purple mkt-open-btn" id="mktBtn" onclick="go('s-market')">🛒 &nbsp; بازاڕ</button>
+  <p class="section-label">پۆلێک هەڵبژێرە</p>
   <div class="cgrid" id="cgrid"></div>
 </div>
 
-<!-- LEVEL PICKER -->
+<!-- ════════════════════════════════════
+     LEVEL PICKER
+════════════════════════════════════ -->
 <div id="s-level" class="screen">
   <button class="bk" onclick="go('s-cats')">← گەڕانەوە</button>
   <div class="card" style="text-align:center">
-    <p class="stitle">ئاستێک هەڵبژێرە</p>
-    <div id="lpcat" style="font-size:1.18rem;font-weight:800;color:var(--gold);margin-bottom:16px"></div>
+    <p class="section-label">ئاستێک هەڵبژێرە</p>
+    <div id="lpcat" style="font-size:1.15rem;font-weight:800;color:var(--gold);margin-bottom:14px"></div>
     <div class="lpwrap" id="lpbtns"></div>
   </div>
 </div>
 
-<!-- QUESTION -->
+<!-- ════════════════════════════════════
+     QUESTION
+════════════════════════════════════ -->
 <div id="s-q" class="screen">
-  <div class="qhdr">
-    <div class="qcat" id="qcat">پۆل</div>
-    <div class="qpts">٥٠ خاڵ</div>
+  <div class="q-hdr">
+    <span class="q-badge q-cat"  id="qCat">پۆل</span>
+    <span class="q-badge q-player" id="qPlayer"></span>
+    <span class="q-badge q-pts"  id="qPts">٥٠ خاڵ</span>
   </div>
-  <div class="tw">
-    <svg class="ts" viewBox="0 0 100 100">
-      <circle class="tbg" cx="50" cy="50" r="40"/>
-      <circle class="tf" id="tc" cx="50" cy="50" r="40"/>
+  <div class="timer-wrap">
+    <svg class="timer-svg" viewBox="0 0 100 100">
+      <circle class="t-bg"   cx="50" cy="50" r="40"/>
+      <circle class="t-fill" id="tFill" cx="50" cy="50" r="40"/>
     </svg>
-    <div class="tt" id="tt">40</div>
+    <div class="t-num" id="tNum">40</div>
   </div>
-  <div class="qtxt" id="qtxt"></div>
-  <div class="agrid" id="agrid"></div>
+  <div class="q-text" id="qText"></div>
+  <div class="pu-bar" id="puBar"></div>
+  <div class="a-grid" id="aGrid"></div>
 </div>
 
-<!-- FINAL -->
+<!-- ════════════════════════════════════
+     MARKET
+════════════════════════════════════ -->
+<div id="s-market" class="screen">
+  <button class="bk" onclick="go('s-cats')">← گەڕانەوە</button>
+  <div class="mkt-header">
+    <div style="font-size:2.6rem">🛒</div>
+    <h2 style="color:var(--gold);font-size:1.35rem;margin-top:6px">بازاڕی یارییەکە</h2>
+  </div>
+  <div class="mkt-pts-bar">
+    خاڵی <strong id="mktName">—</strong>: &nbsp;<strong id="mktScore">0</strong> خاڵ
+  </div>
+  <div class="mkt-grid" id="mktGrid"></div>
+</div>
+
+<!-- ════════════════════════════════════
+     TARGET PICKER (steal / curse)
+════════════════════════════════════ -->
+<div id="s-target" class="screen">
+  <button class="bk" onclick="go('s-market')">← گەڕانەوە</button>
+  <div class="card" style="text-align:center;max-width:420px">
+    <div id="targetIcon" style="font-size:2.5rem;margin-bottom:10px">🎯</div>
+    <h2 id="targetTitle">کێ هەڵبژێره؟</h2>
+    <p id="targetDesc" style="color:var(--muted);font-size:0.83rem;margin-bottom:16px"></p>
+    <div class="target-list" id="targetList"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     FINAL SCORES
+════════════════════════════════════ -->
 <div id="s-final" class="screen">
-  <div style="text-align:center;margin-bottom:26px">
-    <div style="font-size:3.8rem">🏆</div>
-    <h2 style="font-size:2.1rem;font-weight:900;color:var(--gold)">کۆتایی یاری!</h2>
-    <p style="color:rgba(255,255,255,.5);margin-top:7px">ئەنجامی کۆتایی</p>
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="font-size:3.5rem">🏆</div>
+    <h2 style="font-size:2rem;font-weight:900;color:var(--gold)">کۆتایی یاری!</h2>
+    <p style="color:var(--muted);margin-top:5px">ئەنجامی کۆتایی</p>
   </div>
-  <div class="pod" id="pod"></div>
-  <button class="btn btn-g" onclick="go('s-menu')" style="width:300px;margin-top:18px">🔄 &nbsp;یارییەکی نوێ</button>
+  <div class="final-podium" id="finalPodium"></div>
+  <button class="btn btn-gold" onclick="go('s-menu')" style="width:280px;margin-top:14px">🔄 &nbsp; یارییەکی نوێ</button>
 </div>
 
-<!-- ADMIN LOGIN -->
+<!-- ════════════════════════════════════
+     ADMIN LOGIN
+════════════════════════════════════ -->
 <div id="s-admin-login" class="screen">
   <button class="bk" onclick="go('s-menu')">← گەڕانەوە</button>
   <div class="card">
-    <div style="text-align:center;font-size:3rem;margin-bottom:14px">🔐</div>
+    <div style="text-align:center;font-size:2.8rem;margin-bottom:12px">🔐</div>
     <h2>وشەی نهێنی بنووسە</h2>
     <div class="fg">
-      <input type="password" id="apw" placeholder="••••••" maxlength="10"
-        style="text-align:center;letter-spacing:8px;font-size:1.4rem;font-family:'Oxanium',sans-serif"
+      <input type="password" id="aPw" placeholder="••••••" maxlength="10"
+        style="text-align:center;letter-spacing:8px;font-size:1.3rem;font-family:'Oxanium',sans-serif"
         onkeydown="if(event.key==='Enter')checkPw()"/>
     </div>
-    <button class="btn btn-r" onclick="checkPw()" style="width:100%">داخلبوون</button>
+    <button class="btn btn-red" onclick="checkPw()" style="width:100%">داخلبوون</button>
   </div>
 </div>
 
-<!-- ADMIN PANEL -->
-<div id="s-admin" class="screen" style="justify-content:flex-start;padding-top:18px;overflow-y:auto">
+<!-- ════════════════════════════════════
+     ADMIN PANEL
+════════════════════════════════════ -->
+<div id="s-admin" class="screen" style="justify-content:flex-start;padding-top:16px;overflow-y:auto">
   <button class="bk" onclick="go('s-menu')">← گەڕانەوە</button>
-  <div class="card" style="max-width:640px;width:100%;margin-top:60px;margin-bottom:40px">
-    <div style="text-align:center;font-size:2rem;margin-bottom:4px">⚙️</div>
+  <div class="card" style="max-width:640px;width:100%;margin-top:54px;margin-bottom:36px">
+    <div style="text-align:center;font-size:1.8rem;margin-bottom:4px">⚙️</div>
     <h2>زیادکردنی پرسیار</h2>
+    <div id="adminSrc" style="text-align:center;font-size:0.76rem;color:var(--muted);margin-bottom:14px"></div>
 
     <div class="fg"><label>پۆل</label>
-      <select id="acat">
+      <select id="aCat">
         <option value="">-- پۆلێک هەڵبژێرە --</option>
         <option value="health">❤️ تەندرووستی</option>
         <option value="sports">⚽ وەرزشی</option>
@@ -317,67 +735,154 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
         <option value="gaming">🎮 گەیمینگ</option>
       </select>
     </div>
-
-    <div class="fg"><label>ئاست — یەکێک بنووسە: A / B / C / D</label>
-      <input type="text" id="alvl" maxlength="1" placeholder="A  /  B  /  C  /  D"
-        style="text-transform:uppercase;letter-spacing:8px;font-family:'Oxanium',sans-serif;font-size:1.3rem;text-align:center"/>
+    <div class="fg"><label>ئاست — A / B / C / D بنووسە</label>
+      <input type="text" id="aLvl" maxlength="1" placeholder="A  /  B  /  C  /  D"
+        style="text-transform:uppercase;letter-spacing:8px;font-family:'Oxanium',sans-serif;font-size:1.2rem;text-align:center"/>
     </div>
-
     <div class="fg"><label>دەقی پرسیار</label>
-      <textarea id="aq" placeholder="پرسیار بنووسە..."></textarea></div>
-
-    <div class="fg"><label>وەڵامەکان &nbsp;(A و B پێویستن، C و D ئارەزوومەندانەن)</label>
-      <div class="aigrid">
+      <textarea id="aQ" placeholder="پرسیار بنووسە..."></textarea>
+    </div>
+    <div class="fg"><label>وەڵامەکان (A و B پێویستن، C و D ئارەزوومەندانەن)</label>
+      <div class="answer-grid-2">
         <input type="text" id="a0" placeholder="A — وەڵامی یەکەم"/>
         <input type="text" id="a1" placeholder="B — وەڵامی دووەم"/>
         <input type="text" id="a2" placeholder="C — ئارەزوومەندانە"/>
         <input type="text" id="a3" placeholder="D — ئارەزوومەندانە"/>
       </div>
     </div>
-
     <div class="fg"><label>وەڵامی ڕاست کوێیە؟</label>
-      <div class="crg">
-        <label class="crl" id="cr0" onclick="pickCr(0)">A</label>
-        <label class="crl" id="cr1" onclick="pickCr(1)">B</label>
-        <label class="crl" id="cr2" onclick="pickCr(2)">C</label>
-        <label class="crl" id="cr3" onclick="pickCr(3)">D</label>
+      <div class="cr-group">
+        <label class="cr-lbl" id="cr0" onclick="pickCr(0)">A</label>
+        <label class="cr-lbl" id="cr1" onclick="pickCr(1)">B</label>
+        <label class="cr-lbl" id="cr2" onclick="pickCr(2)">C</label>
+        <label class="cr-lbl" id="cr3" onclick="pickCr(3)">D</label>
       </div>
     </div>
-
-    <button class="btn btn-g" id="sbtn" onclick="saveQ()" style="width:100%;margin-top:8px">
-      💾 &nbsp;پاراستن
+    <button class="btn btn-gold" id="saveBtn" onclick="adminSave()" style="width:100%;margin-top:6px">
+      💾 &nbsp; پاراستن بۆ Firebase
     </button>
 
-    <hr style="border:none;border-top:1px solid rgba(255,255,255,.08);margin:26px 0">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <h2 style="font-size:1.05rem;color:rgba(255,255,255,.5);margin:0">پرسیارە پاراستراوەکان</h2>
-      <button onclick="renderAdminList()"
-        style="padding:5px 12px;border-radius:7px;border:1px solid rgba(255,255,255,.15);
-               background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);cursor:pointer;font-size:.78rem">
+    <hr class="divider">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-size:1rem;color:var(--muted);font-weight:700">پرسیارە پاراستراوەکان</span>
+      <button onclick="adminReload()"
+        style="padding:4px 10px;border-radius:7px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.06);color:var(--muted);cursor:pointer;font-size:0.75rem">
         🔄 نوێکردنەوە</button>
     </div>
-    <div id="aqlist" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div id="adminList" style="display:flex;flex-direction:column;gap:7px"></div>
   </div>
 </div>
 
-<!-- result overlay -->
+<!-- Result overlay -->
 <div class="ro" id="ro">
   <div class="rb" id="rb">
-    <div class="ri" id="ri"></div>
-    <div class="rt" id="rt"></div>
-    <div class="rp" id="rp"></div>
+    <div class="r-icon"  id="rIcon"></div>
+    <div class="r-title" id="rTitle"></div>
+    <div class="r-pts"   id="rPts"></div>
+    <div class="r-curse" id="rCurse" style="display:none"></div>
   </div>
 </div>
+
 <div class="notif" id="notif"></div>
 
+<!-- ════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════ -->
 <script>
-// ══════════════════════════════════════════
-//  STORAGE  —  localStorage, zero deps
-// ══════════════════════════════════════════
-const LS_KEY = 'quizgame_v3';
+// ──────────────────────────────────────────────
+//  FIREBASE INIT
+// ──────────────────────────────────────────────
+// ── Firebase Firestore (compat SDK via CDN) ──
+const FB_CFG = {
+  apiKey:            "AIzaSyCqbDmeB6hrJ3NmwfPWakxg4z31UwudZ5c",
+  authDomain:        "footballleague-b89e5.firebaseapp.com",
+  projectId:         "footballleague-b89e5",
+  storageBucket:     "footballleague-b89e5.firebasestorage.app",
+  messagingSenderId: "345929896639",
+  appId:             "1:345929896639:web:25e2a47c96a42d5307ac0a"
+};
 
-function loadQ()  { try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch(e) { return {}; } }
-function saveQ_ls() { localStorage.setItem(LS_KEY, JSON.stringify(allQ)); }
+let fbOK = false;
+let db   = null;
+let allQ = {};
+
+function fbInit() {
+  try {
+    firebase.initializeApp(FB_CFG);
+    db = firebase.firestore();
+    console.log("Firestore ready");
+  } catch(e) {
+    console.error("Firebase init error:", e);
+  }
+}
+
+// ── Firestore helpers ──
+// questions stored as: collection "questions" / doc "{catId}" / field "{level}" = array of question objects
+
+async function fsGetAll() {
+  const snap = await db.collection("questions").get();
+  const out  = {};
+  snap.forEach(doc => { out[doc.id] = doc.data(); });
+  return out;
+}
+
+async function fsSaveQuestion(catId, level, qObj) {
+  const ref = db.collection("questions").doc(catId);
+  const snap = await ref.get();
+  let data = snap.exists ? snap.data() : {};
+  if (!data[level]) data[level] = [];
+  data[level].push(qObj);
+  await ref.set(data, { merge: true });
+}
+
+async function fsDeleteQuestion(catId, level, idx) {
+  const ref  = db.collection("questions").doc(catId);
+  const snap = await ref.get();
+  if (!snap.exists) return;
+  const data = snap.data();
+  const arr  = Array.isArray(data[level]) ? [...data[level]] : [];
+  arr.splice(idx, 1);
+  data[level] = arr;
+  await ref.set(data);
+}
+
+function fbLoad() {
+  setFbStatus('⏳ Firebase بارکردن...', '#f0b429');
+  fbInit();
+  fsGetAll()
+    .then(data => {
+      allQ  = data || {};
+      fbOK  = true;
+      setFbStatus('🟢 Firebase یەکگیراوە', '#06d6a0');
+    })
+    .catch(err => {
+      fbOK  = false;
+      allQ  = lsLoad();
+      setFbStatus('🔴 ' + err.message, '#e63946');
+      console.error('Firebase load error:', err);
+    });
+}
+
+function setFbStatus(msg, color) {
+  const el = document.getElementById('fb-status');
+  el.textContent = msg; el.style.color = color;
+}
+
+// Normalise Firestore data — each doc is {level: [qArray]}
+function toPlain(val) {
+  if (!val || typeof val !== 'object') return val;
+  const out = {};
+  for (const catId in val) {
+    out[catId] = {};
+    const doc = val[catId];
+    for (const level in doc) {
+      const arr = doc[level];
+      out[catId][level] = Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr||{}).filter(Boolean);
+    }
+  }
+  return out;
+}
+
 function toArr(v) {
   if (!v) return [];
   if (Array.isArray(v)) return v.filter(x => x != null);
@@ -385,13 +890,110 @@ function toArr(v) {
   return [];
 }
 
-// ══════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════
-const ADMIN_PW  = '112233';
-const Q_TIME    = 40;
-const WAIT_TIME = 10;
+// ── localStorage fallback ──
+const LS_KEY = 'quizgame_v5';
+function lsLoad()  { try { return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); } catch(e) { return {}; } }
+function lsSave()  { localStorage.setItem(LS_KEY, JSON.stringify(allQ)); }
 
+async function dbSave(catId, level, qObj) {
+  if (!allQ[catId]) allQ[catId] = {};
+  if (!allQ[catId][level]) allQ[catId][level] = [];
+  allQ[catId][level].push(qObj);
+  if (fbOK) {
+    try {
+      await fsSaveQuestion(catId, level, qObj);
+      return true;
+    } catch(e) { console.error('dbSave error:', e); }
+  }
+  lsSave(); return true;
+}
+
+async function dbDelete(catId, level, idx) {
+  const arr = toArr(allQ[catId]?.[level]);
+  arr.splice(idx, 1);
+  if (!allQ[catId]) allQ[catId] = {};
+  allQ[catId][level] = arr;
+  if (fbOK) {
+    try {
+      await fsDeleteQuestion(catId, level, idx);
+      return true;
+    } catch(e) { console.error('dbDelete error:', e); }
+  }
+  lsSave(); return true;
+}
+
+// ──────────────────────────────────────────────
+//  PLAYER COLORS + EMOJIS (up to 10)
+// ──────────────────────────────────────────────
+const COLORS = ['#ff6b7a','#5b9cf6','#4ade80','#fbbf24','#fb923c','#a78bfa','#22d3ee','#f472b6','#a3e635','#f87171'];
+const EMOJIS = ['🔴','🔵','🟢','🟡','🟠','🟣','🩵','🩷','🟩','❤️'];
+
+// ──────────────────────────────────────────────
+//  MARKET ITEMS DEFINITION
+// ──────────────────────────────────────────────
+const SHOP = [
+  {
+    id:    'lifeline',
+    icon:  '🔀',
+    name:  '٥٠/٥٠',
+    desc:  '٢ وەڵامی غەلەت لەناو دەبرێت، تەنها ئەو ڕاستە و یەک غەلەت دەمێنێتەوە',
+    price: 45,
+    color: '#a78bfa',
+    cls:   'mc-lifeline',
+    target: false,
+  },
+  {
+    id:    'double',
+    icon:  '✖️',
+    name:  'دوو حەز خاڵ',
+    desc:  'پرسیاری داهاتووت ١٠٠ خاڵ دەبێت لە جێی ٥٠',
+    price: 45,
+    color: '#fb923c',
+    cls:   'mc-double',
+    target: false,
+  },
+  {
+    id:    'time',
+    icon:  '⏱️',
+    name:  '+٢٠ چرکە',
+    desc:  '٢٠ چرکەی زیادە بۆ پرسیاری داهاتووت',
+    price: 30,
+    color: '#22d3ee',
+    cls:   'mc-time',
+    target: false,
+  },
+  {
+    id:    'steal',
+    icon:  '💰',
+    name:  'دزینی خاڵ',
+    desc:  'یاریزانێک هەڵبژێرە — ئەگەر پرسیاری داهاتووی ئەو غەلەت بووبێت، ٣٠ خاڵ لێی دەگرێت. ئەگەر ڕاست بووبێت هیچ نابێت',
+    price: 60,
+    color: '#f87171',
+    cls:   'mc-steal',
+    target: true,
+    targetIcon:  '💰',
+    targetTitle: 'لە کێ خاڵ بدزێیت؟',
+    targetDesc:  'ئەگەر پرسیاری داهاتووی ئەو یاریزانە غەلەت بووبێت، ٣٠ خاڵ لێی دەگرێت',
+  },
+  {
+    id:    'curse',
+    icon:  '⚡',
+    name:  'نەفرەت',
+    desc:  'یاریزانێک هەڵبژێرە — پرسیاری داهاتووی تەنها ١٥ چرکەی هەیە. ئەگەر غەلەت بووبێت ٨٠ خاڵ لێی کەم دەبێت',
+    price: 30,
+    color: '#f472b6',
+    cls:   'mc-curse',
+    target: true,
+    targetIcon:  '⚡',
+    targetTitle: 'کێ نەفرەت بکەیت؟',
+    targetDesc:  'پرسیاری داهاتووی تەنها ١٥ چرکەی هەیە. ئەگەر غەلەت بووبێت ٨٠ خاڵ لێی کەم دەبێت',
+  },
+];
+
+// ──────────────────────────────────────────────
+//  GAME STATE
+// ──────────────────────────────────────────────
+const ADMIN_PW  = '112233';
 const CATS = [
   {id:'health',    name:'تەندرووستی', icon:'❤️'},
   {id:'sports',    name:'وەرزشی',     icon:'⚽'},
@@ -406,63 +1008,137 @@ const CATS = [
   {id:'gaming',    name:'گەیمینگ',    icon:'🎮'},
 ];
 
-let allQ     = loadQ();
-let players  = {p1:'یاریزان ١', p2:'یاریزان ٢', p3:'یاریزان ٣'};
-let scores   = {p1:0, p2:0, p3:0};
-let turnIdx  = 0; // 0=p1, 1=p2, 2=p3
-const PKEYS  = ['p1','p2','p3'];
-const PCOLORS= ['#ff6b7a','#7ba8ff','#5dffaa'];
-let turn     = 'p1';
+// players = [{name,color,emoji}]
+// powerups = [{lifeline,double,time,steal,curse}]   (owned for THIS question)
+// effects  = [{stealBy: playerIdx|null, curseBy: playerIdx|null}]  (applied for next question)
+
+let numP     = 3;
+let players  = [];
+let scores   = [];
+let powerups = [];
+let effects  = [];   // effects[i] = {stealBy, curseBy}
+
+let turnIdx  = 0;
 let usedLvl  = {};
 let curCat   = null, curLvl = null, curQ = null;
 let qUsage   = {};
 let answered = false;
 let timerI   = null, waitI = null;
-let tLeft    = Q_TIME;
+let tLeft    = 40;
 let selCr    = -1;
 
-// ══════════════════════════════════════════
-//  NAVIGATION
-// ══════════════════════════════════════════
-function go(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  if (id === 's-cats') { updateSBar(); renderCats(); }
+// pending target action
+let pendingAction = null; // {type:'steal'|'curse', buyerIdx}
+
+// ──────────────────────────────────────────────
+//  PLAYER COUNT PICKER
+// ──────────────────────────────────────────────
+function initCountGrid() {
+  const g = document.getElementById('countGrid'); g.innerHTML = '';
+  for (let i = 1; i <= 10; i++) {
+    const b = document.createElement('button');
+    b.className = 'cnt-btn' + (i === numP ? ' sel' : '');
+    b.textContent = i;
+    b.onclick = () => { numP = i; initCountGrid(); buildNameFields(); };
+    g.appendChild(b);
+  }
 }
 
-// ══════════════════════════════════════════
-//  PLAYERS
-// ══════════════════════════════════════════
+function buildNameFields() {
+  const list = document.getElementById('pnameList'); list.innerHTML = '';
+  for (let i = 0; i < numP; i++) {
+    const row = document.createElement('div'); row.className = 'pname-row';
+    const dot = document.createElement('div'); dot.className = 'p-dot'; dot.style.background = COLORS[i];
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.id = 'pn' + i;
+    inp.placeholder = EMOJIS[i] + ' یاریزانی ' + (i + 1);
+    inp.value = players[i] ? players[i].name : '';
+    row.appendChild(dot); row.appendChild(inp);
+    list.appendChild(row);
+  }
+}
+
 function savePlayers() {
-  const p1 = document.getElementById('p1n').value.trim();
-  const p2 = document.getElementById('p2n').value.trim();
-  const p3 = document.getElementById('p3n').value.trim();
-  if (!p1 || !p2 || !p3) { notif('تکایە ناوی هەر سێ یاریزان بنووسە', 'err'); return; }
-  players.p1 = p1; players.p2 = p2; players.p3 = p3;
+  const arr = [];
+  for (let i = 0; i < numP; i++) {
+    const n = document.getElementById('pn' + i).value.trim();
+    if (!n) { notif('تکایە هەموو ناوەکان بنووسە', 'err'); return; }
+    arr.push({ name: n, color: COLORS[i], emoji: EMOJIS[i] });
+  }
+  players = arr;
   notif('ناوەکان پارازران ✓', 'suc');
   setTimeout(() => go('s-menu'), 700);
 }
 
-// ══════════════════════════════════════════
-//  GAME
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
+//  SCREEN NAV
+// ──────────────────────────────────────────────
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 's-players') { initCountGrid(); buildNameFields(); }
+  if (id === 's-cats')    { updateSBar(); renderCats(); }
+  if (id === 's-market')  { renderMarket(); }
+}
+
+// ──────────────────────────────────────────────
+//  START GAME
+// ──────────────────────────────────────────────
 function startGame() {
+  if (!players.length)  { notif('تکایە سەرەتا ناوی یاریزانەکان بنووسە', 'err'); return; }
   const withQ = CATS.filter(c => getLevels(c.id).length > 0);
-  if (withQ.length === 0) {
-    notif('تکایە سەرەتا پرسیار زیاد بکە لە ئەدمین', 'err');
-    return;
-  }
-  scores = {p1:0,p2:0,p3:0}; usedLvl={}; qUsage={};
-  turnIdx = Math.floor(Math.random()*3);
-  turn = PKEYS[turnIdx];
-  document.getElementById('fName').textContent = players[turn];
-  document.getElementById('fName').style.color = PCOLORS[turnIdx];
+  if (!withQ.length)    { notif('تکایە سەرەتا پرسیار زیاد بکە لە ئەدمین', 'err'); return; }
+
+  scores   = players.map(() => 0);
+  powerups = players.map(() => ({ lifeline: false, double: false, time: false }));
+  effects  = players.map(() => ({ stealBy: null, curseBy: null }));
+  usedLvl  = {}; qUsage = {};
+  turnIdx  = Math.floor(Math.random() * players.length);
+
+  document.getElementById('fName').textContent = players[turnIdx].name;
+  document.getElementById('fName').style.color = players[turnIdx].color;
   updateSBar(); go('s-first');
 }
 
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
+//  SCORE BAR
+// ──────────────────────────────────────────────
+function updateSBar() {
+  const bar = document.getElementById('sbar'); bar.innerHTML = '';
+  players.forEach((p, i) => {
+    const d = document.createElement('div');
+    d.className = 'sc' + (i === turnIdx ? ' cur' : '');
+    if (i === turnIdx) d.style.borderColor = p.color;
+
+    // curses indicator
+    const hasCurse = effects[i].curseBy !== null;
+    const hasSteal = effects[i].stealBy !== null;
+    let badges = '';
+    if (hasCurse) badges += '⚡';
+    if (hasSteal) badges += '💰';
+
+    d.innerHTML = `
+      <div class="s-emoji">${p.emoji}</div>
+      <div class="s-name">${p.name}</div>
+      <div class="s-pts">${scores[i]}</div>
+      <div class="s-curses">${badges}</div>`;
+    bar.appendChild(d);
+  });
+
+  const tb = document.getElementById('turnBanner');
+  const p  = players[turnIdx];
+  tb.textContent   = 'دەوری ' + p.emoji + ' ' + p.name;
+  tb.style.color   = p.color;
+  tb.style.borderColor = p.color;
+
+  // market button shows current pts
+  const mb = document.getElementById('mktBtn');
+  if (mb) mb.innerHTML = '🛒 &nbsp; بازاڕ &nbsp;(' + scores[turnIdx] + ' خاڵ)';
+}
+
+// ──────────────────────────────────────────────
 //  CATEGORIES
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
 function getLevels(catId) {
   if (!allQ[catId]) return [];
   return Object.keys(allQ[catId]).filter(l => toArr(allQ[catId][l]).length > 0).sort();
@@ -471,16 +1147,19 @@ function getLevels(catId) {
 function renderCats() {
   const grid = document.getElementById('cgrid'); grid.innerHTML = '';
   CATS.forEach(cat => {
-    const avail = getLevels(cat.id), usedSet = usedLvl[cat.id] || new Set();
-    const remain = avail.filter(l => !usedSet.has(l));
+    const avail   = getLevels(cat.id);
+    const usedSet = usedLvl[cat.id] || new Set();
+    const remain  = avail.filter(l => !usedSet.has(l));
+
     const btn = document.createElement('button');
     btn.className = 'cbtn' + (remain.length === 0 ? ' dis' : '');
-    let lh = avail.map(l => `<span class="lb ${usedSet.has(l)?'used':'avail'}">${l}</span>`).join('');
-    if (!avail.length) lh = `<span style="font-size:.7rem;color:rgba(255,255,255,.25)">پرسیار نییە</span>`;
+    let lh = avail.map(l => `<span class="lb ${usedSet.has(l) ? 'used' : 'avail'}">${l}</span>`).join('');
+    if (!avail.length) lh = `<span style="font-size:.68rem;color:rgba(255,255,255,.25)">پرسیار نییە</span>`;
     btn.innerHTML = `<span class="ci">${cat.icon}</span><span>${cat.name}</span><div class="cl">${lh}</div>`;
     if (remain.length > 0) btn.onclick = () => openLP(cat.id);
     grid.appendChild(btn);
   });
+
   // all done?
   const withQ = CATS.filter(c => getLevels(c.id).length > 0);
   if (withQ.length > 0 && withQ.every(cat => {
@@ -489,24 +1168,13 @@ function renderCats() {
   })) setTimeout(showFinal, 500);
 }
 
-function updateSBar() {
-  PKEYS.forEach((p,i) => {
-    document.getElementById('sn'+(i+1)).textContent = players[p];
-    document.getElementById('sp'+(i+1)).textContent = scores[p];
-    document.getElementById('sc'+(i+1)).className   = 'sc' + (turn===p?' ap'+(i+1):'');
-  });
-  const tb = document.getElementById('tb');
-  tb.textContent = 'دەوری ' + players[turn];
-  tb.className   = 'tb ' + turn;
-}
-
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
 //  LEVEL PICKER
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
 function openLP(catId) {
   curCat = catId;
-  const cat = CATS.find(c => c.id === catId);
-  const avail = getLevels(catId);
+  const cat     = CATS.find(c => c.id === catId);
+  const avail   = getLevels(catId);
   const usedSet = usedLvl[catId] || new Set();
   document.getElementById('lpcat').textContent = cat.icon + ' ' + cat.name;
   const wrap = document.getElementById('lpbtns'); wrap.innerHTML = '';
@@ -518,221 +1186,483 @@ function openLP(catId) {
   });
   go('s-level');
 }
-function selectLvl(lvl) { curLvl = lvl; loadQuestion(); }
+function selectLvl(lvl) { curLvl = lvl; loadQ(); }
 
-// ══════════════════════════════════════════
-//  QUESTION
-// ══════════════════════════════════════════
-function loadQuestion() {
-  const pool = toArr(allQ[curCat] && allQ[curCat][curLvl]);
-  if (!pool.length) { notif('ئەم ئاستە پرسیاری نییە!','err'); markUsed(curCat,curLvl); back2cats(); return; }
-  const key = curCat+'_'+curLvl, idx = (qUsage[key]||0) % pool.length;
-  qUsage[key] = idx+1; curQ = pool[idx]; answered = false;
-  clearTs(); renderQuestion(); go('s-q'); startTimer();
+// ──────────────────────────────────────────────
+//  LOAD QUESTION
+// ──────────────────────────────────────────────
+function loadQ() {
+  const pool = toArr(allQ[curCat]?.[curLvl]);
+  if (!pool.length) { notif('ئەم ئاستە پرسیاری نییە!', 'err'); markUsed(curCat, curLvl); back2cats(); return; }
+
+  const key   = curCat + '_' + curLvl;
+  const idx   = (qUsage[key] || 0) % pool.length;
+  qUsage[key] = idx + 1;
+  curQ        = pool[idx];
+  answered    = false;
+
+  clearTs();
+  renderQ();
+  go('s-q');
+  startTimer();
 }
 
-function renderQuestion() {
+function renderQ() {
   const cat = CATS.find(c => c.id === curCat);
-  document.getElementById('qcat').textContent = (cat?cat.name:'') + ' — ' + curLvl;
-  document.getElementById('qtxt').textContent = curQ.question;
-  const grid = document.getElementById('agrid'); grid.innerHTML = '';
+  const p   = players[turnIdx];
+
+  // check effects on current player
+  const eff       = effects[turnIdx];
+  const isCursed  = eff.curseBy !== null;
+  const isSteal   = eff.stealBy !== null;
+
+  // points this question
+  const hasDbl    = powerups[turnIdx].double;
+  const pts       = hasDbl ? 100 : 50;
+
+  document.getElementById('qCat').textContent  = (cat ? cat.name : '') + ' — ' + curLvl;
+  document.getElementById('qPlayer').textContent = p.emoji + ' ' + p.name;
+  document.getElementById('qPlayer').style.color = p.color;
+  document.getElementById('qPts').textContent  = pts + ' خاڵ' + (hasDbl ? ' ✖️' : '');
+  document.getElementById('qText').textContent = curQ.question;
+
+  // curse ring on timer
+  const tw = document.querySelector('.timer-wrap');
+  let ring = tw.querySelector('.curse-ring');
+  if (isCursed) {
+    if (!ring) { ring = document.createElement('div'); ring.className = 'curse-ring'; tw.appendChild(ring); }
+  } else {
+    if (ring) ring.remove();
+  }
+
+  // answers
+  const grid = document.getElementById('aGrid'); grid.innerHTML = '';
   const L = ['A','B','C','D'];
   curQ.answers.forEach((ans, i) => {
     if (!ans || !String(ans).trim()) return;
     const b = document.createElement('button');
-    b.className='ab'; b.dataset.idx=i;
-    b.innerHTML=`<span class="al">${L[i]}</span>${ans}`;
-    b.onclick=()=>pick(i,b);
+    b.className = 'a-btn'; b.dataset.idx = i;
+    b.innerHTML = `<span class="a-letter">${L[i]}</span>${ans}`;
+    b.onclick   = () => pickAnswer(i, b);
     grid.appendChild(b);
   });
+
+  // powerup bar
+  renderPuBar();
 }
 
-// ══════════════════════════════════════════
+function renderPuBar() {
+  const bar = document.getElementById('puBar'); bar.innerHTML = '';
+  const pu  = powerups[turnIdx];
+
+  if (pu.lifeline) {
+    const b = document.createElement('button');
+    b.className = 'pu-btn pu-lifeline';
+    b.innerHTML = '🔀 ٥٠/٥٠ بەکاربێنە';
+    b.onclick   = useLifeline;
+    bar.appendChild(b);
+  }
+}
+
+// ──────────────────────────────────────────────
 //  TIMER
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
 function clearTs() { clearInterval(timerI); clearInterval(waitI); }
+
 function startTimer() {
-  tLeft = Q_TIME; updT();
+  const eff     = effects[turnIdx];
+  const isCursed = eff.curseBy !== null;
+  const hasTime  = powerups[turnIdx].time;
+
+  let total = isCursed ? 15 : 40;
+  if (hasTime) total += 20;
+  powerups[turnIdx].time = false; // consume
+
+  tLeft = total;
+  updTimer(total);
+
   timerI = setInterval(() => {
-    tLeft--; updT();
+    tLeft--;
+    updTimer(total);
     if (tLeft <= 0) { clearInterval(timerI); if (!answered) timeUp(); }
   }, 1000);
 }
-function updT() {
-  document.getElementById('tc').style.strokeDashoffset = 251.2*(1-tLeft/Q_TIME);
-  document.getElementById('tt').textContent = tLeft;
-  document.getElementById('tc').style.stroke = tLeft<=10?'#e8192c':tLeft<=20?'#f5c518':'var(--gold)';
-}
-function timeUp() { answered=true; clearTs(); disableA(); hlOk(); setTimeout(()=>showResult(false), 900); }
 
-// ══════════════════════════════════════════
-//  ANSWER
-// ══════════════════════════════════════════
-function pick(idx, btn) {
+function updTimer(total) {
+  const off = 251.2 * (1 - tLeft / total);
+  document.getElementById('tFill').style.strokeDashoffset = off;
+  document.getElementById('tNum').textContent = tLeft;
+  document.getElementById('tFill').style.stroke = tLeft <= 8 ? '#e63946' : tLeft <= 15 ? '#f0b429' : 'var(--gold)';
+}
+
+function timeUp() {
+  answered = true; clearTs(); disableAnswers(); hlCorrect();
+  setTimeout(() => showResult(false), 900);
+}
+
+// ──────────────────────────────────────────────
+//  ANSWER SELECTION
+// ──────────────────────────────────────────────
+function pickAnswer(idx, btn) {
   if (answered) return;
-  answered=true; clearTs(); disableA();
+  answered = true; clearTs(); disableAnswers();
   const ok = idx === curQ.correct;
-  btn.classList.add(ok?'ok':'sw'); if(!ok) hlOk();
-  let c = WAIT_TIME;
-  document.getElementById('tc').style.stroke = ok?'var(--ok)':'var(--ng)';
-  document.getElementById('tt').textContent  = c;
-  waitI = setInterval(()=>{ c--; document.getElementById('tt').textContent=c; if(c<=0){clearInterval(waitI);showResult(ok);} },1000);
-}
-function hlOk() { document.querySelectorAll('.ab').forEach(b=>{ if(parseInt(b.dataset.idx)===curQ.correct) b.classList.add('ok'); }); }
-function disableA() { document.querySelectorAll('.ab').forEach(b=>b.disabled=true); }
+  btn.classList.add(ok ? 'ok' : 'sw');
+  if (!ok) hlCorrect();
 
-// ══════════════════════════════════════════
-//  RESULT
-// ══════════════════════════════════════════
+  let c = 10;
+  document.getElementById('tFill').style.stroke = ok ? 'var(--ok)' : 'var(--ng)';
+  document.getElementById('tNum').textContent   = c;
+  waitI = setInterval(() => {
+    c--; document.getElementById('tNum').textContent = c;
+    if (c <= 0) { clearInterval(waitI); showResult(ok); }
+  }, 1000);
+}
+
+function hlCorrect() {
+  document.querySelectorAll('.a-btn').forEach(b => {
+    if (parseInt(b.dataset.idx) === curQ.correct) b.classList.add('ok');
+  });
+}
+function disableAnswers() { document.querySelectorAll('.a-btn').forEach(b => b.disabled = true); }
+
+// 50/50 lifeline
+function useLifeline() {
+  powerups[turnIdx].lifeline = false;
+  renderPuBar();
+  const correct = curQ.correct;
+  const btns    = [...document.querySelectorAll('.a-btn')].filter(b => !b.disabled);
+  const wrongs  = btns.filter(b => parseInt(b.dataset.idx) !== correct);
+  wrongs.sort(() => Math.random() - 0.5);
+  wrongs.slice(0, 2).forEach(b => { b.classList.add('gone'); b.disabled = true; });
+  notif('٥٠/٥٠ بەکارهات ✓', 'mrk');
+}
+
+// ──────────────────────────────────────────────
+//  SHOW RESULT
+// ──────────────────────────────────────────────
 function showResult(ok) {
-  if (ok) scores[turn] += 50;
-  document.getElementById('ri').textContent = ok?'✅':'❌';
-  document.getElementById('rt').textContent = ok?'وەڵامی ڕاست!':'وەڵامی غەلەت!';
-  document.getElementById('rp').textContent = ok?'+٥٠ خاڵ':'+٠ خاڵ';
-  document.getElementById('rb').className   = 'rb '+(ok?'okb':'ngb');
+  const eff      = effects[turnIdx];
+  const isCursed = eff.curseBy !== null;
+  const isSteal  = eff.stealBy !== null;
+  const hasDbl   = powerups[turnIdx].double;
+  const pts      = hasDbl ? 100 : 50;
+
+  // ── Points logic ──
+  let gained   = 0;
+  let lostMsg  = '';
+  let extraMsg = '';
+
+  if (ok) {
+    gained = pts;
+    scores[turnIdx] += gained;
+    // steal: if correct, attacker gains nothing extra (as per rules)
+    // curse: if correct, nothing happens
+  } else {
+    // wrong
+    if (isCursed) {
+      // -80 from cursed player
+      const deduct = Math.min(80, scores[turnIdx]);
+      scores[turnIdx] = Math.max(0, scores[turnIdx] - deduct);
+      lostMsg = '⚡ نەفرەت! ' + deduct + ' خاڵت لەدەستچوو';
+    }
+    if (isSteal) {
+      // attacker steals 30 from this player
+      const stealAmt = Math.min(30, scores[turnIdx]);
+      scores[turnIdx]    = Math.max(0, scores[turnIdx] - stealAmt);
+      scores[eff.stealBy] += stealAmt;
+      extraMsg = '💰 ' + players[eff.stealBy].name + ' ' + stealAmt + ' خاڵی لێت برد!';
+    }
+  }
+
+  // consume powerups
+  powerups[turnIdx].double   = false;
+  powerups[turnIdx].lifeline = false;
+
+  // clear effects on this player
+  effects[turnIdx] = { stealBy: null, curseBy: null };
+
+  // UI
+  const rb    = document.getElementById('rb');
+  const rCurse = document.getElementById('rCurse');
+  document.getElementById('rIcon').textContent  = ok ? '✅' : '❌';
+  document.getElementById('rTitle').textContent = ok ? 'وەڵامی ڕاست!' : 'وەڵامی غەلەت!';
+  document.getElementById('rPts').textContent   = ok ? '+' + pts + ' خاڵ' : '+٠ خاڵ';
+  rb.className = 'rb ' + (ok ? 'ok-b' : 'ng-b');
+
+  if (!ok && (lostMsg || extraMsg)) {
+    rCurse.style.display = 'block';
+    rCurse.textContent   = [lostMsg, extraMsg].filter(Boolean).join('  ·  ');
+  } else {
+    rCurse.style.display = 'none';
+  }
+
   if (ok) confetti();
   document.getElementById('ro').classList.add('show');
-  setTimeout(()=>{
-    document.getElementById('ro').classList.remove('show');
-    markUsed(curCat,curLvl);
-    turnIdx = (turnIdx + 1) % 3;
-    turn = PKEYS[turnIdx];
-    back2cats();
-  },2200);
-}
-function markUsed(c,l) { if(!usedLvl[c]) usedLvl[c]=new Set(); usedLvl[c].add(l); }
-function back2cats()   { updateSBar(); renderCats(); go('s-cats'); }
 
-// ══════════════════════════════════════════
-//  FINAL
-// ══════════════════════════════════════════
-function showFinal() {
-  const pod = document.getElementById('pod'); pod.innerHTML='';
-  // sort players by score descending
-  const sorted = [...PKEYS].sort((a,b) => scores[b]-scores[a]);
-  const medals = ['👑','🥈','🥉'];
-  sorted.forEach((p,rank) => {
+  setTimeout(() => {
+    document.getElementById('ro').classList.remove('show');
+    markUsed(curCat, curLvl);
+    // advance turn
+    turnIdx = (turnIdx + 1) % players.length;
+    back2cats();
+  }, 2400);
+}
+
+function markUsed(c, l) { if (!usedLvl[c]) usedLvl[c] = new Set(); usedLvl[c].add(l); }
+function back2cats()    { updateSBar(); renderCats(); go('s-cats'); }
+
+// ──────────────────────────────────────────────
+//  MARKET
+// ──────────────────────────────────────────────
+function renderMarket() {
+  const p = players[turnIdx];
+  document.getElementById('mktName').textContent  = p.emoji + ' ' + p.name;
+  document.getElementById('mktScore').textContent = scores[turnIdx];
+
+  const grid = document.getElementById('mktGrid'); grid.innerHTML = '';
+  SHOP.forEach(item => {
+    let owned;
+    if (item.target) {
+      owned = players.some((_, vi) => vi !== turnIdx &&
+        ((item.id === 'steal' && effects[vi].stealBy === turnIdx) ||
+         (item.id === 'curse' && effects[vi].curseBy === turnIdx)));
+    } else {
+      owned = !!powerups[turnIdx][item.id];
+    }
+    const cantBuy = scores[turnIdx] < item.price || owned;
+
     const d = document.createElement('div');
-    d.className = 'pc ' + (rank===0?'win':'los');
-    d.innerHTML = `<div class="crown">${medals[rank]}</div>
-      <div class="pn" style="color:${PCOLORS[PKEYS.indexOf(p)]}">${players[p]}</div>
-      <div class="ps">${scores[p]}</div><div class="pl">خاڵ</div>`;
+    d.className = 'mkt-card ' + item.cls + (cantBuy ? ' sold-out' : '') + (owned ? ' owned' : '');
+    d.innerHTML = `
+      <span class="mc-icon">${item.icon}</span>
+      <div class="mc-name" style="color:${item.color}">${item.name}</div>
+      <div class="mc-desc">${item.desc}</div>
+      <div class="mc-price" style="color:${item.color}">${owned ? '✅ کڕاوە' : item.price + ' خاڵ'}</div>`;
+    if (!cantBuy) d.onclick = () => buyItem(item);
+    grid.appendChild(d);
+  });
+}
+
+function buyItem(item) {
+  if (scores[turnIdx] < item.price) { notif('خاڵی تەمەن نییە', 'err'); return; }
+  if (!item.target && powerups[turnIdx][item.id]) { notif('پێشتر کڕاوتە', 'err'); return; }
+  if (item.target) {
+    const already = players.some((_, vi) => vi !== turnIdx &&
+      ((item.id === 'steal' && effects[vi].stealBy === turnIdx) ||
+       (item.id === 'curse' && effects[vi].curseBy === turnIdx)));
+    if (already) { notif('پێشتر کڕاوتە', 'err'); return; }
+  }
+
+  scores[turnIdx] -= item.price;
+  updateSBar();
+
+  if (item.target) {
+    pendingAction = { type: item.id, buyerIdx: turnIdx };
+    showTargetPicker(item);
+    return;
+  }
+
+  // non-target items go into powerups
+  powerups[turnIdx][item.id] = true;
+  notif('✅ کڕاوە — ' + item.name, 'mrk');
+  renderMarket();
+}
+
+function showTargetPicker(item) {
+  document.getElementById('targetIcon').textContent  = item.targetIcon;
+  document.getElementById('targetTitle').textContent = item.targetTitle;
+  document.getElementById('targetDesc').textContent  = item.targetDesc;
+
+  const list = document.getElementById('targetList'); list.innerHTML = '';
+  players.forEach((p, i) => {
+    if (i === turnIdx) return;
+    const b = document.createElement('button');
+    b.className = 'target-btn';
+    b.style.borderColor = p.color;
+    b.innerHTML = `<span>${p.emoji} ${p.name}</span><span style="font-family:Oxanium;color:${p.color}">${scores[i]} خاڵ</span>`;
+    b.onclick   = () => applyTarget(i);
+    list.appendChild(b);
+  });
+  go('s-target');
+}
+
+function applyTarget(victimIdx) {
+  if (!pendingAction) return;
+  const { type, buyerIdx } = pendingAction;
+  pendingAction = null;
+
+  if (type === 'steal') {
+    effects[victimIdx].stealBy = buyerIdx;
+    notif(`✅ دزینی خاڵ لە ${players[victimIdx].name} — پرسیاری داهاتووی`, 'mrk');
+  } else if (type === 'curse') {
+    effects[victimIdx].curseBy = buyerIdx;
+    notif(`⚡ نەفرەت لە ${players[victimIdx].name} — پرسیاری داهاتووی ١٥ چرکە`, 'crs');
+  }
+
+  updateSBar();
+  go('s-cats');
+}
+
+// ──────────────────────────────────────────────
+//  FINAL
+// ──────────────────────────────────────────────
+function showFinal() {
+  const sorted = players
+    .map((p, i) => ({ p, i, s: scores[i] }))
+    .sort((a, b) => b.s - a.s);
+
+  const medals = ['👑','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+  const pod = document.getElementById('finalPodium'); pod.innerHTML = '';
+  sorted.forEach(({ p, s }, rank) => {
+    const d = document.createElement('div');
+    d.className = 'pod-card ' + (rank === 0 ? 'win' : 'los');
+    d.innerHTML = `
+      <div class="pd-crown">${medals[rank] || '—'}</div>
+      <div class="pd-name" style="color:${p.color}">${p.emoji} ${p.name}</div>
+      <div class="pd-score">${s}</div>
+      <div class="pd-label">خاڵ</div>`;
     pod.appendChild(d);
   });
-  // tie check
-  if (scores[sorted[0]] === scores[sorted[1]]) {
-    const t=document.createElement('div');
-    t.style.cssText='width:100%;text-align:center;font-size:1rem;color:var(--gold);font-weight:700;margin-top:10px';
-    t.textContent='🤝 ئەنجامی یەکسان!'; pod.appendChild(t);
-  } else confetti();
+
+  if (sorted[0].s === (sorted[1]?.s ?? -1)) {
+    const tie = document.createElement('div');
+    tie.style.cssText = 'width:100%;text-align:center;color:var(--gold);font-weight:700;margin-top:10px';
+    tie.textContent = '🤝 یەکسان!';
+    pod.appendChild(tie);
+  } else {
+    confetti();
+  }
   go('s-final');
 }
 
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
 //  CONFETTI
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
 function confetti() {
-  const em=['🎉','⭐','🏆','✨','🎊','💫','🌟'];
-  for (let i=0;i<16;i++) setTimeout(()=>{
-    const e=document.createElement('div'); e.className='ce';
-    e.textContent=em[Math.floor(Math.random()*em.length)];
-    e.style.left=Math.random()*100+'vw';
-    e.style.animationDuration=(1.5+Math.random()*2)+'s';
-    document.body.appendChild(e); e.addEventListener('animationend',()=>e.remove());
-  },i*75);
+  const em = ['🎉','⭐','🏆','✨','🎊','💫','🌟'];
+  for (let i = 0; i < 18; i++) setTimeout(() => {
+    const e = document.createElement('div'); e.className = 'ce';
+    e.textContent = em[Math.floor(Math.random() * em.length)];
+    e.style.left  = Math.random() * 100 + 'vw';
+    e.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+    document.body.appendChild(e);
+    e.addEventListener('animationend', () => e.remove());
+  }, i * 70);
 }
 
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
 //  ADMIN
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
 function checkPw() {
-  if (document.getElementById('apw').value === ADMIN_PW) {
-    document.getElementById('apw').value='';
-    renderAdminList(); go('s-admin');
-  } else notif('وشەی نهێنی غەلەتە!','err');
+  if (document.getElementById('aPw').value === ADMIN_PW) {
+    document.getElementById('aPw').value = '';
+    const src = document.getElementById('adminSrc');
+    src.textContent = fbOK ? '🟢 Firebase یەکگیراوە — پرسیارەکان لە Firebase پارازدەدرێن' : '🟡 localStorage';
+    adminRenderList(); go('s-admin');
+  } else notif('وشەی نهێنی غەلەتە!', 'err');
 }
 
 function pickCr(idx) {
-  selCr=idx;
-  for(let i=0;i<4;i++) document.getElementById('cr'+i).classList.toggle('on',i===idx);
+  selCr = idx;
+  for (let i = 0; i < 4; i++) document.getElementById('cr' + i).classList.toggle('on', i === idx);
 }
 
-function saveQ() {
-  const catId    = document.getElementById('acat').value;
-  const level    = document.getElementById('alvl').value.trim().toUpperCase();
-  const question = document.getElementById('aq').value.trim();
-  const answers  = ['a0','a1','a2','a3'].map(id=>document.getElementById(id).value.trim());
+async function adminSave() {
+  const catId    = document.getElementById('aCat').value;
+  const level    = document.getElementById('aLvl').value.trim().toUpperCase();
+  const question = document.getElementById('aQ').value.trim();
+  const answers  = ['a0','a1','a2','a3'].map(id => document.getElementById(id).value.trim());
 
-  if (!catId)                    { notif('پۆلێک هەڵبژێرە','err'); return; }
-  if (!level)                    { notif('ئاستێک بنووسە: A / B / C / D','err'); return; }
-  if (!question)                 { notif('پرسیار بنووسە','err'); return; }
-  if (!answers[0]||!answers[1])  { notif('لانیکەم دوو وەڵام پێویستە','err'); return; }
-  if (selCr < 0)                 { notif('وەڵامی ڕاست دیاری بکە','err'); return; }
-  if (!answers[selCr])           { notif('وەڵامی ڕاستەکەت بەتاڵە','err'); return; }
+  if (!catId)                      { notif('پۆلێک هەڵبژێرە', 'err'); return; }
+  if (!level)                      { notif('ئاستێک بنووسە', 'err'); return; }
+  if (!question)                   { notif('پرسیار بنووسە', 'err'); return; }
+  if (!answers[0] || !answers[1])  { notif('لانیکەم دوو وەڵام', 'err'); return; }
+  if (selCr < 0)                   { notif('وەڵامی ڕاست دیاری بکە', 'err'); return; }
+  if (!answers[selCr])             { notif('وەڵامی ڕاستەکەت بەتاڵە', 'err'); return; }
 
-  if (!allQ[catId]) allQ[catId]={};
-  if (!allQ[catId][level]) allQ[catId][level]=[];
-  allQ[catId][level].push({question, answers, correct:selCr});
-  saveQ_ls();
+  const btn = document.getElementById('saveBtn');
+  btn.textContent = '⏳ پارازتن...'; btn.disabled = true;
 
-  // clear form
-  document.getElementById('alvl').value='';
-  document.getElementById('aq').value='';
-  ['a0','a1','a2','a3'].forEach(id=>document.getElementById(id).value='');
-  for(let i=0;i<4;i++) document.getElementById('cr'+i).classList.remove('on');
-  selCr=-1;
+  const ok = await dbSave(catId, level, { question, answers, correct: selCr });
 
-  notif('✅ پرسیار پارازرا','suc');
-  renderAdminList();
+  btn.textContent = '💾 پاراستن بۆ Firebase'; btn.disabled = false;
+
+  if (ok) {
+    document.getElementById('aLvl').value = '';
+    document.getElementById('aQ').value   = '';
+    ['a0','a1','a2','a3'].forEach(id => document.getElementById(id).value = '');
+    for (let i = 0; i < 4; i++) document.getElementById('cr' + i).classList.remove('on');
+    selCr = -1;
+    notif('✅ پرسیار پارازرا' + (fbOK ? ' Firebase' : ' localStorage'), 'suc');
+    adminRenderList();
+  } else {
+    notif('❌ هەڵە — دووبارە هەوڵ بدەوە', 'err');
+  }
 }
 
-function renderAdminList() {
-  allQ = loadQ(); // refresh from storage
-  const list=document.getElementById('aqlist'); list.innerHTML='';
-  let total=0;
-  CATS.forEach(cat=>{
-    const cd=allQ[cat.id]; if(!cd) return;
-    Object.keys(cd).sort().forEach(level=>{
-      const qs=toArr(cd[level]); if(!qs.length) return;
-      qs.forEach((qi,idx)=>{
-        if(!qi||!qi.question) return;
+async function adminReload() {
+  if (fbOK) {
+    try {
+      allQ = await fsGetAll();
+      notif('نوێ کرایەوە ✓', 'suc');
+    } catch(e) { notif('هەڵە: ' + e.message, 'err'); }
+  } else {
+    allQ = lsLoad();
+    notif('localStorage نوێ کرایەوە ✓', 'suc');
+  }
+  adminRenderList();
+}
+
+function adminRenderList() {
+  const list = document.getElementById('adminList'); list.innerHTML = '';
+  let total = 0;
+  CATS.forEach(cat => {
+    const cd = allQ[cat.id]; if (!cd) return;
+    Object.keys(cd).sort().forEach(level => {
+      const qs = toArr(cd[level]); if (!qs.length) return;
+      qs.forEach((qi, idx) => {
+        if (!qi || !qi.question) return;
         total++;
-        const d=document.createElement('div'); d.className='aqi';
-        d.innerHTML=`
+        const d = document.createElement('div'); d.className = 'q-item';
+        d.innerHTML = `
           <div style="flex:1;min-width:0">
-            <span style="font-size:.75rem;color:var(--gold);font-weight:700;display:block;margin-bottom:3px">
+            <span style="font-size:.72rem;color:var(--gold);font-weight:700;display:block;margin-bottom:2px">
               ${cat.name} — ئاست ${level}</span>
-            <div style="font-size:.88rem;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${qi.question}</div>
-            <div style="font-size:.73rem;color:rgba(255,255,255,.35);margin-top:3px">
-              وەڵامی ڕاست: ${['A','B','C','D'][qi.correct]} — ${(qi.answers&&qi.answers[qi.correct])||''}</div>
+            <div style="font-size:.84rem;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${qi.question}</div>
+            <div style="font-size:.7rem;color:var(--muted);margin-top:2px">
+              وەڵامی ڕاست: ${['A','B','C','D'][qi.correct]} — ${qi.answers[qi.correct]||''}</div>
           </div>
-          <button class="aqdel" onclick="delQ('${cat.id}','${level}',${idx})">🗑 سڕین</button>`;
+          <button class="q-del" onclick="adminDel('${cat.id}','${level}',${idx})">🗑</button>`;
         list.appendChild(d);
       });
     });
   });
-  if(!total) list.innerHTML='<p style="color:rgba(255,255,255,.3);text-align:center;padding:18px 0">هێچ پرسیارێک نەپارازراوە — پرسیار زیاد بکە!</p>';
+  if (!total) list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:16px 0">هێچ پرسیارێک نەپارازراوە</p>';
 }
 
-function delQ(catId, lvl, idx) {
-  if(!confirm('دڵنیایت لە سڕینەوەی ئەم پرسیارە؟')) return;
-  const arr=toArr(allQ[catId]&&allQ[catId][lvl]);
-  arr.splice(idx,1);
-  if(!allQ[catId]) allQ[catId]={};
-  allQ[catId][lvl]=arr;
-  saveQ_ls();
-  notif('پرسیار سڕایەوە ✓','suc');
-  renderAdminList();
+async function adminDel(catId, lvl, idx) {
+  if (!confirm('دڵنیایت لە سڕینەوەی ئەم پرسیارە؟')) return;
+  const ok = await dbDelete(catId, lvl, idx);
+  if (ok) { notif('پرسیار سڕایەوە ✓', 'suc'); adminRenderList(); }
+  else      notif('هەڵەیەک ڕوویدا', 'err');
 }
 
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────────
 //  NOTIFICATION
-// ══════════════════════════════════════════
-function notif(msg,type) {
-  const el=document.getElementById('notif');
-  el.textContent=msg; el.className='notif '+(type||'inf')+' show';
-  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),3200);
+// ──────────────────────────────────────────────
+function notif(msg, type) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.className   = 'notif ' + (type || 'inf') + ' show';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3400);
 }
+
+// ──────────────────────────────────────────────
+//  BOOT
+// ──────────────────────────────────────────────
+fbLoad();
 </script>
 </body>
 </html>
