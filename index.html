@@ -653,7 +653,7 @@ body::after {
   <div class="logo">
     <h1>QUIZ GAME</h1>
     <p>کوئیز گەیم</p>
-    <div id="fb-status">⏳ Firebase بارکردن...</div>
+    <div id="fb-status" style="color:#f0b429">⏳ بارکردن...</div>
   </div>
   <div class="menu-wrap">
     <button class="btn btn-red"  onclick="go('s-players')">👥 &nbsp; ناوی یاریزانەکان</button>
@@ -1022,14 +1022,13 @@ function fbLoad() {
     });
 }
 
-function fbLoad() {
-  allQ = lsLoadQ();
-  setFbStatus('✅ ئامادەیە — پرسیارەکان پارازدەدرێن', '#06d6a0');
-}
+
 
 function setFbStatus(msg, color) {
   const el = document.getElementById('fb-status');
-  if (el) { el.textContent = msg; el.style.color = color || '#06d6a0'; }
+  if (!el) { setTimeout(() => setFbStatus(msg, color), 100); return; }
+  el.textContent = msg;
+  el.style.color  = color || '#06d6a0';
 }
 }
     else setTimeout(trySet, 50);
@@ -1076,16 +1075,7 @@ const LS_KEY = 'quizgame_v5';
 function lsLoad()  { try { return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); } catch(e) { return {}; } }
 function lsSave()  { localStorage.setItem(LS_KEY, JSON.stringify(allQ)); }
 
-async function dbSave(catId, level, qObj) {
-  if (!allQ[catId])        allQ[catId]        = {};
-  if (!allQ[catId][level]) allQ[catId][level] = [];
-  allQ[catId][level].push(qObj);
-  if (fbOK) {
-    try   { await dbWrite(catId, level, allQ[catId][level]); return true; }
-    catch (e) { console.error('dbSave:', e); }
-  }
-  lsSave(); return true;
-};
+;
   if (!allQ[catId][level]) allQ[catId][level] = [];
   allQ[catId][level].push(qObj);
   if (fbOK) {
@@ -1097,17 +1087,7 @@ async function dbSave(catId, level, qObj) {
   lsSave(); return true;
 }
 
-async function dbDelete(catId, level, idx) {
-  const arr = toArr(allQ[catId]?.[level]);
-  arr.splice(idx, 1);
-  if (!allQ[catId]) allQ[catId] = {};
-  allQ[catId][level] = arr;
-  if (fbOK) {
-    try   { await dbWrite(catId, level, arr.length ? arr : null); return true; }
-    catch (e) { console.error('dbDelete:', e); }
-  }
-  lsSave(); return true;
-};
+;
   allQ[catId][level] = arr;
   if (fbOK) {
     try {
@@ -1858,21 +1838,6 @@ async function adminSave() {
     adminRenderList();
   } else {
     notif('❌ هەڵە — دووبارە هەوڵ بدەوە', 'err');
-  }
-}
-
-async function adminReload() {
-  setFbStatus('⏳ بارکردن...', '#f0b429');
-  try {
-    const data = await dbReadAll();
-    allQ = normalizeQ(data || {});
-    fbOK = true;
-    setFbStatus('🟢 Firebase یەکگیراوە', '#06d6a0');
-    adminRenderList();
-    notif('نوێ کرایەوە ✓', 'suc');
-  } catch(e) {
-    setFbStatus('🔴 ' + e.message, '#e63946');
-    notif('هەڵە: ' + e.message, 'err');
   }
 }
 
