@@ -7,10 +7,10 @@
 <!-- Firebase Compat SDK (Firestore) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Oxanium:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-
+ 
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cairo:wght@400;600;700;800;900&family=Oxanium:wght@400;600;700;800&display=swap" rel="stylesheet">
+ 
+ 
 <style>
 /* ══════════════════════════════════════
    ROOT VARIABLES
@@ -33,19 +33,22 @@
   --text:     #f0f0f0;
   --muted:    rgba(240,240,240,0.45);
 }
-
+ 
 * { margin:0; padding:0; box-sizing:border-box; }
 html { font-size:16px; }
-
+ 
 body {
-  font-family: 'Tajawal', sans-serif;
+  font-family: 'Cairo', 'Noto Naskh Arabic', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
-  line-height: 1.5;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
 }
-
+ 
 /* Animated background */
 body::before {
   content: '';
@@ -62,7 +65,7 @@ body::after {
     repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(255,255,255,0.012) 48px, rgba(255,255,255,0.012) 49px),
     repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(255,255,255,0.012) 48px, rgba(255,255,255,0.012) 49px);
 }
-
+ 
 /* ══════════════════════════════════════
    SCREENS
 ══════════════════════════════════════ */
@@ -81,7 +84,7 @@ body::after {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
+ 
 /* ══════════════════════════════════════
    LOGO
 ══════════════════════════════════════ */
@@ -105,7 +108,7 @@ body::after {
   border: 1px solid rgba(255,255,255,0.1);
   transition: all 0.4s;
 }
-
+ 
 /* ══════════════════════════════════════
    BUTTONS
 ══════════════════════════════════════ */
@@ -113,7 +116,7 @@ body::after {
   position: relative;
   padding: 17px 32px;
   border: none; border-radius: 14px;
-  font-family: 'Tajawal', sans-serif;
+  font-family: 'Cairo', 'Noto Naskh Arabic', sans-serif;
   font-size: 1.08rem; font-weight: 700;
   cursor: pointer; overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -126,16 +129,16 @@ body::after {
 }
 .btn:hover  { transform: translateY(-3px); }
 .btn:active { transform: translateY(1px); }
-
+ 
 .btn-red    { background: linear-gradient(135deg,#b91c2a,var(--red));   box-shadow:0 8px 28px rgba(230,57,70,.45);  color:#fff; }
 .btn-blue   { background: linear-gradient(135deg,#1034a6,var(--blue));  box-shadow:0 8px 28px rgba(29,78,216,.45);  color:#fff; }
 .btn-gold   { background: linear-gradient(135deg,#c28a00,var(--gold));  box-shadow:0 8px 28px rgba(240,180,41,.4);  color:#1a1000; }
 .btn-purple { background: linear-gradient(135deg,#5b21b6,var(--purple));box-shadow:0 8px 28px rgba(124,58,237,.45); color:#fff; }
 .btn-ghost  { background:var(--glass); border:1.5px solid var(--glass-b); color:var(--muted); backdrop-filter:blur(10px); }
 .btn-ghost:hover { color: #fff; background: rgba(255,255,255,0.09); }
-
+ 
 .menu-wrap { display:flex; flex-direction:column; gap:14px; width:100%; max-width:400px; }
-
+ 
 /* ══════════════════════════════════════
    CARD
 ══════════════════════════════════════ */
@@ -153,7 +156,7 @@ body::after {
   margin-bottom: 20px;
   text-align: center; color: var(--gold);
 }
-
+ 
 /* ══════════════════════════════════════
    FORMS
 ══════════════════════════════════════ */
@@ -167,7 +170,7 @@ body::after {
   background: rgba(255,255,255,0.07);
   border: 1.5px solid rgba(255,255,255,0.1);
   border-radius: 10px; color: var(--text);
-  font-family: 'Tajawal', sans-serif; font-size: 0.97rem;
+  font-family: 'Cairo', 'Noto Naskh Arabic', sans-serif; font-size: 0.97rem;
   outline: none; transition: border-color 0.2s, background 0.2s;
 }
 .fg input:focus, .fg select:focus, .fg textarea:focus {
@@ -175,7 +178,7 @@ body::after {
 }
 .fg select option { background: #0f1120; color: #fff; }
 .fg textarea { resize: vertical; min-height: 82px; }
-
+ 
 /* ══════════════════════════════════════
    PLAYER COUNT PICKER
 ══════════════════════════════════════ */
@@ -195,7 +198,7 @@ body::after {
 }
 .cnt-btn:hover { border-color: var(--gold); background: rgba(240,180,41,0.1); color: var(--gold); }
 .cnt-btn.sel   { border-color: var(--gold); background: rgba(240,180,41,0.18); color: var(--gold); box-shadow: 0 0 14px rgba(240,180,41,0.28); }
-
+ 
 /* player name rows */
 .pname-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 16px; }
 .pname-row  { display: flex; align-items: center; gap: 10px; }
@@ -205,11 +208,11 @@ body::after {
   background: rgba(255,255,255,0.07);
   border: 1.5px solid rgba(255,255,255,0.1);
   border-radius: 10px; color: var(--text);
-  font-family: 'Tajawal', sans-serif; font-size: 0.96rem; outline: none;
+  font-family: 'Cairo', 'Noto Naskh Arabic', sans-serif; font-size: 0.96rem; outline: none;
   transition: border-color 0.2s;
 }
 .pname-row input:focus { border-color: var(--gold); }
-
+ 
 /* ══════════════════════════════════════
    SCORE BAR
 ══════════════════════════════════════ */
@@ -236,7 +239,7 @@ body::after {
 .sc .s-name   { font-size: 0.68rem; color: var(--muted); margin: 2px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .sc .s-pts    { font-family: 'Oxanium', sans-serif; font-size: 1.45rem; font-weight: 800; color: var(--gold); }
 .sc .s-curses { font-size: 0.6rem; color: var(--red); min-height: 12px; }
-
+ 
 /* ══════════════════════════════════════
    TURN BANNER
 ══════════════════════════════════════ */
@@ -248,7 +251,7 @@ body::after {
   background: rgba(255,255,255,0.07);
   backdrop-filter: blur(10px);
 }
-
+ 
 /* ══════════════════════════════════════
    CATEGORIES GRID
 ══════════════════════════════════════ */
@@ -257,13 +260,13 @@ body::after {
   gap: 11px; width: 100%; max-width: 780px;
 }
 @media (max-width:560px) { .cgrid { grid-template-columns: repeat(2,1fr); } }
-
+ 
 .cbtn {
   padding: 16px 8px;
   border: 2px solid rgba(255,255,255,0.09);
   border-radius: 15px;
   background: var(--glass); backdrop-filter: blur(14px);
-  color: var(--text); font-family: 'Tajawal', sans-serif;
+  color: var(--text); font-family: 'Cairo', 'Noto Naskh Arabic', sans-serif;
   font-size: 0.9rem; font-weight: 700;
   cursor: pointer; text-align: center; transition: all 0.22s;
 }
@@ -279,7 +282,7 @@ body::after {
 .lb.avail { background:rgba(29,78,216,.35); border-color:rgba(100,150,255,.5); color:#a0c0ff; }
 .cbtn:hover:not(.dis) { border-color:var(--gold); background:rgba(240,180,41,0.07); transform:translateY(-3px); }
 .cbtn.dis { opacity:0.3; cursor:not-allowed; filter:grayscale(0.5); }
-
+ 
 /* ══════════════════════════════════════
    LEVEL PICKER
 ══════════════════════════════════════ */
@@ -297,7 +300,7 @@ body::after {
   box-shadow: 0 0 22px rgba(240,180,41,0.28);
 }
 .lpbtn:disabled { opacity: 0.22; cursor: not-allowed; }
-
+ 
 /* ══════════════════════════════════════
    QUESTION SCREEN
 ══════════════════════════════════════ */
@@ -313,18 +316,18 @@ body::after {
 .q-cat   { border-color: rgba(255,255,255,0.14); background:rgba(255,255,255,0.07); color:var(--muted); }
 .q-player{ border-color: rgba(255,255,255,0.22); background:rgba(255,255,255,0.07); }
 .q-pts   { border-color: rgba(240,180,41,0.4); background:rgba(240,180,41,0.12); color:var(--gold); font-family:'Oxanium',sans-serif; }
-
+ 
 /* Timer */
 .timer-wrap { position:relative; width:92px; height:92px; margin:0 auto 16px; }
 .timer-svg  { width:92px; height:92px; transform:rotate(-90deg); }
 .t-bg   { fill:none; stroke:rgba(255,255,255,0.07); stroke-width:6; }
 .t-fill { fill:none; stroke:var(--gold); stroke-width:6; stroke-linecap:round; stroke-dasharray:251.2; stroke-dashoffset:0; transition:stroke 0.5s; }
 .t-num  { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Oxanium',sans-serif; font-size:1.8rem; font-weight:800; }
-
+ 
 /* CURSE indicator on timer */
 .curse-ring { position:absolute; inset:-4px; border-radius:50%; border:3px solid var(--red); animation:pulse-red 0.8s infinite alternate; }
 @keyframes pulse-red { from{opacity:0.4;box-shadow:0 0 0 0 rgba(230,57,70,.5)} to{opacity:1;box-shadow:0 0 0 8px rgba(230,57,70,0)} }
-
+ 
 .q-text {
   background: rgba(255,255,255,0.04);
   border: 1.5px solid rgba(255,255,255,0.1);
@@ -334,19 +337,19 @@ body::after {
   text-align: center; line-height: 1.75;
   width: 100%; max-width: 700px; margin-bottom: 14px;
 }
-
+ 
 /* Answer grid */
 .a-grid {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 9px; width: 100%; max-width: 700px;
 }
 @media (max-width:440px) { .a-grid { grid-template-columns: 1fr; } }
-
+ 
 .a-btn {
   padding: 14px 15px; border-radius: 12px;
   border: 2px solid rgba(255,255,255,0.11);
   background: rgba(255,255,255,0.05); color: var(--text);
-  font-family: 'Tajawal', sans-serif; font-size: 0.96rem; font-weight: 600;
+  font-family: 'Cairo', 'Noto Naskh Arabic', sans-serif; font-size: 0.96rem; font-weight: 600;
   cursor: pointer; text-align: right;
   transition: all 0.18s;
   display: flex; align-items: center; gap: 10px;
@@ -365,12 +368,12 @@ body::after {
 .a-btn.sw { border-color:var(--ng)!important; background:rgba(230,57,70,0.18)!important; box-shadow:0 0 16px rgba(230,57,70,0.28); }
 .a-btn.sw .a-letter { background:var(--ng); }
 .a-btn.gone { opacity:0.15; pointer-events:none; border-color:transparent!important; background:transparent!important; }
-
+ 
 /* Powerup bar */
 .pu-bar { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; width:100%; max-width:700px; margin-bottom:12px; }
 .pu-btn {
   padding: 7px 15px; border-radius: 50px; border: 2px solid;
-  font-family: 'Tajawal', sans-serif; font-size: 0.8rem; font-weight: 700;
+  font-family: 'Cairo', 'Noto Naskh Arabic', sans-serif; font-size: 0.8rem; font-weight: 700;
   cursor: pointer; transition: all 0.2s;
   display: flex; align-items: center; gap: 5px;
 }
@@ -379,7 +382,7 @@ body::after {
 .pu-lifeline { border-color:rgba(124,58,237,.6); background:rgba(124,58,237,.14); color:#c49dff; }
 .pu-double   { border-color:rgba(249,115,22,.6); background:rgba(249,115,22,.13); color:#fdba74; }
 .pu-time     { border-color:rgba(6,182,212,.6);  background:rgba(6,182,212,.12);  color:#67e8f9; }
-
+ 
 /* ══════════════════════════════════════
    MARKET SCREEN
 ══════════════════════════════════════ */
@@ -391,13 +394,13 @@ body::after {
   text-align: center;
 }
 .mkt-pts-bar strong { font-family:'Oxanium',sans-serif; color:var(--gold); font-size:1.1rem; }
-
+ 
 .mkt-grid {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 13px; width: 100%; max-width: 620px;
 }
 @media (max-width:460px) { .mkt-grid { grid-template-columns: 1fr; } }
-
+ 
 .mkt-card {
   padding: 18px 14px; border-radius: 16px;
   border: 2px solid; text-align: center;
@@ -415,13 +418,13 @@ body::after {
 .mkt-card .mc-name { font-size:0.93rem; font-weight:800; margin-bottom:4px; }
 .mkt-card .mc-desc { font-size:0.72rem; color:var(--muted); margin-bottom:8px; line-height:1.55; }
 .mkt-card .mc-price { font-family:'Oxanium',sans-serif; font-size:1rem; font-weight:800; }
-
+ 
 .mc-lifeline { border-color:rgba(124,58,237,.45); background:rgba(124,58,237,.08); }
 .mc-double   { border-color:rgba(249,115,22,.45); background:rgba(249,115,22,.07); }
 .mc-time     { border-color:rgba(6,182,212,.45);  background:rgba(6,182,212,.07); }
 .mc-steal    { border-color:rgba(230,57,70,.45);  background:rgba(230,57,70,.07); }
 .mc-curse    { border-color:rgba(236,72,153,.45); background:rgba(236,72,153,.07); }
-
+ 
 /* ══════════════════════════════════════
    STEAL / CURSE PICKER
 ══════════════════════════════════════ */
@@ -430,12 +433,12 @@ body::after {
   padding: 13px 18px; border-radius: 12px;
   border: 2px solid rgba(255,255,255,0.12);
   background: var(--glass); color: var(--text);
-  font-family: 'Tajawal', sans-serif; font-size:0.95rem; font-weight:700;
+  font-family: 'Cairo', 'Noto Naskh Arabic', sans-serif; font-size:0.95rem; font-weight:700;
   cursor: pointer; transition:all 0.2s;
   display:flex; align-items:center; justify-content:space-between; gap:10px;
 }
 .target-btn:hover { border-color:var(--red); background:rgba(230,57,70,0.12); }
-
+ 
 /* ══════════════════════════════════════
    RESULT OVERLAY
 ══════════════════════════════════════ */
@@ -457,7 +460,7 @@ body::after {
 .rb .r-title { font-size:1.8rem; font-weight:900; margin-bottom:6px; }
 .rb .r-pts   { font-family:'Oxanium',sans-serif; font-size:1.15rem; color:var(--gold); }
 .rb .r-curse { font-size:0.82rem; color:var(--red); margin-top:8px; padding:6px 12px; border-radius:8px; background:rgba(230,57,70,.15); border:1px solid rgba(230,57,70,.3); }
-
+ 
 /* ══════════════════════════════════════
    FINAL SCORES
 ══════════════════════════════════════ */
@@ -476,7 +479,7 @@ body::after {
 .pod-card .pd-name  { font-size:1rem; font-weight:800; margin-bottom:5px; }
 .pod-card .pd-score { font-family:'Oxanium',sans-serif; font-size:2.4rem; font-weight:800; color:var(--gold); }
 .pod-card .pd-label { font-size:0.75rem; color:var(--muted); }
-
+ 
 /* ══════════════════════════════════════
    ADMIN
 ══════════════════════════════════════ */
@@ -489,7 +492,7 @@ body::after {
   font-family:'Oxanium',sans-serif; font-weight:700; transition:all 0.2s;
 }
 .cr-lbl.on { border-color:var(--ok); background:rgba(6,214,160,.12); color:var(--ok); }
-
+ 
 .q-item {
   padding: 10px 13px; background:rgba(255,255,255,0.04);
   border-radius: 9px; border:1px solid rgba(255,255,255,0.07);
@@ -500,7 +503,7 @@ body::after {
   padding:4px 10px; border-radius:7px; cursor:pointer; font-size:0.76rem; flex-shrink:0;
 }
 .q-del:hover { background:rgba(230,57,70,.3); }
-
+ 
 /* ══════════════════════════════════════
    NOTIFICATION
 ══════════════════════════════════════ */
@@ -519,48 +522,48 @@ body::after {
 .notif.inf  { background:var(--blue);  color:#fff; }
 .notif.mrk  { background:var(--purple);color:#fff; }
 .notif.crs  { background:var(--pink);  color:#fff; }
-
+ 
 /* Back button */
 .bk {
   position:fixed; top:16px; right:16px; z-index:50;
   padding: 8px 18px; border-radius:50px;
   border:1.5px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06);
   backdrop-filter:blur(10px); color:var(--muted);
-  font-family:'Tajawal',sans-serif; font-size:0.85rem;
+  font-family:'Cairo','Noto Naskh Arabic',sans-serif; font-size:0.85rem;
   cursor:pointer; transition:all 0.2s;
 }
 .bk:hover { background:rgba(255,255,255,.12); color:#fff; }
-
+ 
 .section-label {
   font-size: 0.72rem; letter-spacing: 4px; text-transform: uppercase;
   color: var(--muted); margin-bottom: 18px; text-align: center;
 }
-
+ 
 /* Market open btn on cats screen */
 .mkt-open-btn {
   margin-bottom: 14px;
   padding: 9px 22px; font-size: 0.85rem;
   border-radius: 50px;
 }
-
+ 
 /* Confetti */
 .ce { position:fixed; pointer-events:none; font-size:2rem; animation:fall linear forwards; z-index:400; }
 @keyframes fall {
   from { transform:translateY(-55px) rotate(0deg); opacity:1; }
   to   { transform:translateY(110vh) rotate(720deg); opacity:0; }
 }
-
+ 
 /* Scrollbar */
 ::-webkit-scrollbar { width:5px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.18); border-radius:3px; }
-
+ 
 /* Section divider */
 .divider { border:none; border-top:1px solid rgba(255,255,255,.08); margin:22px 0; }
 </style>
 </head>
 <body>
-
+ 
 <!-- ════════════════════════════════════
      MAIN MENU
 ════════════════════════════════════ -->
@@ -576,7 +579,7 @@ body::after {
     <button class="btn btn-gold" onclick="go('s-admin-login')">🔐 &nbsp; ئەدمین</button>
   </div>
 </div>
-
+ 
 <!-- ════════════════════════════════════
      PLAYER SETUP
 ════════════════════════════════════ -->
@@ -592,7 +595,7 @@ body::after {
     <button class="btn btn-gold" onclick="savePlayers()" style="width:100%">✓ &nbsp; پاراستن</button>
   </div>
 </div>
-
+ 
 <!-- ════════════════════════════════════
      FIRST TURN
 ════════════════════════════════════ -->
@@ -605,7 +608,7 @@ body::after {
     <button class="btn btn-blue" onclick="go('s-cats')" style="width:100%">بردن بۆ پۆلەکان ←</button>
   </div>
 </div>
-
+ 
 <!-- ════════════════════════════════════
      CATEGORIES
 ════════════════════════════════════ -->
@@ -617,7 +620,7 @@ body::after {
   <p class="section-label">پۆلێک هەڵبژێرە</p>
   <div class="cgrid" id="cgrid"></div>
 </div>
-
+ 
 <!-- ════════════════════════════════════
      LEVEL PICKER
 ════════════════════════════════════ -->
@@ -629,7 +632,7 @@ body::after {
     <div class="lpwrap" id="lpbtns"></div>
   </div>
 </div>
-
+ 
 <!-- ════════════════════════════════════
      QUESTION
 ════════════════════════════════════ -->
@@ -650,7 +653,7 @@ body::after {
   <div class="pu-bar" id="puBar"></div>
   <div class="a-grid" id="aGrid"></div>
 </div>
-
+ 
 <!-- ════════════════════════════════════
      MARKET
 ════════════════════════════════════ -->
@@ -665,7 +668,7 @@ body::after {
   </div>
   <div class="mkt-grid" id="mktGrid"></div>
 </div>
-
+ 
 <!-- ════════════════════════════════════
      TARGET PICKER (steal / curse)
 ════════════════════════════════════ -->
@@ -678,7 +681,7 @@ body::after {
     <div class="target-list" id="targetList"></div>
   </div>
 </div>
-
+ 
 <!-- ════════════════════════════════════
      FINAL SCORES
 ════════════════════════════════════ -->
@@ -691,7 +694,7 @@ body::after {
   <div class="final-podium" id="finalPodium"></div>
   <button class="btn btn-gold" onclick="go('s-menu')" style="width:280px;margin-top:14px">🔄 &nbsp; یارییەکی نوێ</button>
 </div>
-
+ 
 <!-- ════════════════════════════════════
      ADMIN LOGIN
 ════════════════════════════════════ -->
@@ -708,7 +711,7 @@ body::after {
     <button class="btn btn-red" onclick="checkPw()" style="width:100%">داخلبوون</button>
   </div>
 </div>
-
+ 
 <!-- ════════════════════════════════════
      ADMIN PANEL
 ════════════════════════════════════ -->
@@ -718,7 +721,7 @@ body::after {
     <div style="text-align:center;font-size:1.8rem;margin-bottom:4px">⚙️</div>
     <h2>زیادکردنی پرسیار</h2>
     <div id="adminSrc" style="text-align:center;font-size:0.76rem;color:var(--muted);margin-bottom:14px"></div>
-
+ 
     <div class="fg"><label>پۆل</label>
       <select id="aCat">
         <option value="">-- پۆلێک هەڵبژێرە --</option>
@@ -761,7 +764,7 @@ body::after {
     <button class="btn btn-gold" id="saveBtn" onclick="adminSave()" style="width:100%;margin-top:6px">
       💾 &nbsp; پاراستن بۆ Firebase
     </button>
-
+ 
     <hr class="divider">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <span style="font-size:1rem;color:var(--muted);font-weight:700">پرسیارە پاراستراوەکان</span>
@@ -772,7 +775,7 @@ body::after {
     <div id="adminList" style="display:flex;flex-direction:column;gap:7px"></div>
   </div>
 </div>
-
+ 
 <!-- Result overlay -->
 <div class="ro" id="ro">
   <div class="rb" id="rb">
@@ -782,9 +785,9 @@ body::after {
     <div class="r-curse" id="rCurse" style="display:none"></div>
   </div>
 </div>
-
+ 
 <div class="notif" id="notif"></div>
-
+ 
 <!-- ════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════ -->
@@ -801,11 +804,11 @@ const FB_CFG = {
   messagingSenderId: "345929896639",
   appId:             "1:345929896639:web:25e2a47c96a42d5307ac0a"
 };
-
+ 
 let fbOK = false;
 let db   = null;
 let allQ = {};
-
+ 
 function fbInit() {
   try {
     firebase.initializeApp(FB_CFG);
@@ -815,17 +818,17 @@ function fbInit() {
     console.error("Firebase init error:", e);
   }
 }
-
+ 
 // ── Firestore helpers ──
 // questions stored as: collection "questions" / doc "{catId}" / field "{level}" = array of question objects
-
+ 
 async function fsGetAll() {
   const snap = await db.collection("questions").get();
   const out  = {};
   snap.forEach(doc => { out[doc.id] = doc.data(); });
   return out;
 }
-
+ 
 async function fsSaveQuestion(catId, level, qObj) {
   const ref = db.collection("questions").doc(catId);
   const snap = await ref.get();
@@ -834,7 +837,7 @@ async function fsSaveQuestion(catId, level, qObj) {
   data[level].push(qObj);
   await ref.set(data, { merge: true });
 }
-
+ 
 async function fsDeleteQuestion(catId, level, idx) {
   const ref  = db.collection("questions").doc(catId);
   const snap = await ref.get();
@@ -845,7 +848,7 @@ async function fsDeleteQuestion(catId, level, idx) {
   data[level] = arr;
   await ref.set(data);
 }
-
+ 
 function fbLoad() {
   setFbStatus('⏳ Firebase بارکردن...', '#f0b429');
   fbInit();
@@ -862,12 +865,12 @@ function fbLoad() {
       console.error('Firebase load error:', err);
     });
 }
-
+ 
 function setFbStatus(msg, color) {
   const el = document.getElementById('fb-status');
   el.textContent = msg; el.style.color = color;
 }
-
+ 
 // Normalise Firestore data — each doc is {level: [qArray]}
 function toPlain(val) {
   if (!val || typeof val !== 'object') return val;
@@ -882,19 +885,19 @@ function toPlain(val) {
   }
   return out;
 }
-
+ 
 function toArr(v) {
   if (!v) return [];
   if (Array.isArray(v)) return v.filter(x => x != null);
   if (typeof v === 'object') return Object.values(v).filter(x => x != null);
   return [];
 }
-
+ 
 // ── localStorage fallback ──
 const LS_KEY = 'quizgame_v5';
 function lsLoad()  { try { return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); } catch(e) { return {}; } }
 function lsSave()  { localStorage.setItem(LS_KEY, JSON.stringify(allQ)); }
-
+ 
 async function dbSave(catId, level, qObj) {
   if (!allQ[catId]) allQ[catId] = {};
   if (!allQ[catId][level]) allQ[catId][level] = [];
@@ -907,7 +910,7 @@ async function dbSave(catId, level, qObj) {
   }
   lsSave(); return true;
 }
-
+ 
 async function dbDelete(catId, level, idx) {
   const arr = toArr(allQ[catId]?.[level]);
   arr.splice(idx, 1);
@@ -921,13 +924,13 @@ async function dbDelete(catId, level, idx) {
   }
   lsSave(); return true;
 }
-
+ 
 // ──────────────────────────────────────────────
 //  PLAYER COLORS + EMOJIS (up to 10)
 // ──────────────────────────────────────────────
 const COLORS = ['#ff6b7a','#5b9cf6','#4ade80','#fbbf24','#fb923c','#a78bfa','#22d3ee','#f472b6','#a3e635','#f87171'];
 const EMOJIS = ['🔴','🔵','🟢','🟡','🟠','🟣','🩵','🩷','🟩','❤️'];
-
+ 
 // ──────────────────────────────────────────────
 //  MARKET ITEMS DEFINITION
 // ──────────────────────────────────────────────
@@ -989,7 +992,7 @@ const SHOP = [
     targetDesc:  'پرسیاری داهاتووی تەنها ١٥ چرکەی هەیە. ئەگەر غەلەت بووبێت ٨٠ خاڵ لێی کەم دەبێت',
   },
 ];
-
+ 
 // ──────────────────────────────────────────────
 //  GAME STATE
 // ──────────────────────────────────────────────
@@ -1007,17 +1010,17 @@ const CATS = [
   {id:'universe',  name:'گەردوونی',   icon:'🌌'},
   {id:'gaming',    name:'گەیمینگ',    icon:'🎮'},
 ];
-
+ 
 // players = [{name,color,emoji}]
 // powerups = [{lifeline,double,time,steal,curse}]   (owned for THIS question)
 // effects  = [{stealBy: playerIdx|null, curseBy: playerIdx|null}]  (applied for next question)
-
+ 
 let numP     = 3;
 let players  = [];
 let scores   = [];
 let powerups = [];
 let effects  = [];   // effects[i] = {stealBy, curseBy}
-
+ 
 let turnIdx  = 0;
 let usedLvl  = {};
 let curCat   = null, curLvl = null, curQ = null;
@@ -1026,10 +1029,10 @@ let answered = false;
 let timerI   = null, waitI = null;
 let tLeft    = 40;
 let selCr    = -1;
-
+ 
 // pending target action
 let pendingAction = null; // {type:'steal'|'curse', buyerIdx}
-
+ 
 // ──────────────────────────────────────────────
 //  PLAYER COUNT PICKER
 // ──────────────────────────────────────────────
@@ -1043,7 +1046,7 @@ function initCountGrid() {
     g.appendChild(b);
   }
 }
-
+ 
 function buildNameFields() {
   const list = document.getElementById('pnameList'); list.innerHTML = '';
   for (let i = 0; i < numP; i++) {
@@ -1057,7 +1060,7 @@ function buildNameFields() {
     list.appendChild(row);
   }
 }
-
+ 
 function savePlayers() {
   const arr = [];
   for (let i = 0; i < numP; i++) {
@@ -1069,7 +1072,7 @@ function savePlayers() {
   notif('ناوەکان پارازران ✓', 'suc');
   setTimeout(() => go('s-menu'), 700);
 }
-
+ 
 // ──────────────────────────────────────────────
 //  SCREEN NAV
 // ──────────────────────────────────────────────
@@ -1080,7 +1083,7 @@ function go(id) {
   if (id === 's-cats')    { updateSBar(); renderCats(); }
   if (id === 's-market')  { renderMarket(); }
 }
-
+ 
 // ──────────────────────────────────────────────
 //  START GAME
 // ──────────────────────────────────────────────
@@ -1088,18 +1091,18 @@ function startGame() {
   if (!players.length)  { notif('تکایە سەرەتا ناوی یاریزانەکان بنووسە', 'err'); return; }
   const withQ = CATS.filter(c => getLevels(c.id).length > 0);
   if (!withQ.length)    { notif('تکایە سەرەتا پرسیار زیاد بکە لە ئەدمین', 'err'); return; }
-
+ 
   scores   = players.map(() => 0);
   powerups = players.map(() => ({ lifeline: false, double: false, time: false }));
   effects  = players.map(() => ({ stealBy: null, curseBy: null }));
   usedLvl  = {}; qUsage = {};
   turnIdx  = Math.floor(Math.random() * players.length);
-
+ 
   document.getElementById('fName').textContent = players[turnIdx].name;
   document.getElementById('fName').style.color = players[turnIdx].color;
   updateSBar(); go('s-first');
 }
-
+ 
 // ──────────────────────────────────────────────
 //  SCORE BAR
 // ──────────────────────────────────────────────
@@ -1109,14 +1112,14 @@ function updateSBar() {
     const d = document.createElement('div');
     d.className = 'sc' + (i === turnIdx ? ' cur' : '');
     if (i === turnIdx) d.style.borderColor = p.color;
-
+ 
     // curses indicator
     const hasCurse = effects[i].curseBy !== null;
     const hasSteal = effects[i].stealBy !== null;
     let badges = '';
     if (hasCurse) badges += '⚡';
     if (hasSteal) badges += '💰';
-
+ 
     d.innerHTML = `
       <div class="s-emoji">${p.emoji}</div>
       <div class="s-name">${p.name}</div>
@@ -1124,18 +1127,18 @@ function updateSBar() {
       <div class="s-curses">${badges}</div>`;
     bar.appendChild(d);
   });
-
+ 
   const tb = document.getElementById('turnBanner');
   const p  = players[turnIdx];
   tb.textContent   = 'دەوری ' + p.emoji + ' ' + p.name;
   tb.style.color   = p.color;
   tb.style.borderColor = p.color;
-
+ 
   // market button shows current pts
   const mb = document.getElementById('mktBtn');
   if (mb) mb.innerHTML = '🛒 &nbsp; بازاڕ &nbsp;(' + scores[turnIdx] + ' خاڵ)';
 }
-
+ 
 // ──────────────────────────────────────────────
 //  CATEGORIES
 // ──────────────────────────────────────────────
@@ -1143,14 +1146,14 @@ function getLevels(catId) {
   if (!allQ[catId]) return [];
   return Object.keys(allQ[catId]).filter(l => toArr(allQ[catId][l]).length > 0).sort();
 }
-
+ 
 function renderCats() {
   const grid = document.getElementById('cgrid'); grid.innerHTML = '';
   CATS.forEach(cat => {
     const avail   = getLevels(cat.id);
     const usedSet = usedLvl[cat.id] || new Set();
     const remain  = avail.filter(l => !usedSet.has(l));
-
+ 
     const btn = document.createElement('button');
     btn.className = 'cbtn' + (remain.length === 0 ? ' dis' : '');
     let lh = avail.map(l => `<span class="lb ${usedSet.has(l) ? 'used' : 'avail'}">${l}</span>`).join('');
@@ -1159,7 +1162,7 @@ function renderCats() {
     if (remain.length > 0) btn.onclick = () => openLP(cat.id);
     grid.appendChild(btn);
   });
-
+ 
   // all done?
   const withQ = CATS.filter(c => getLevels(c.id).length > 0);
   if (withQ.length > 0 && withQ.every(cat => {
@@ -1167,7 +1170,7 @@ function renderCats() {
     return getLevels(cat.id).every(l => used.has(l));
   })) setTimeout(showFinal, 500);
 }
-
+ 
 // ──────────────────────────────────────────────
 //  LEVEL PICKER
 // ──────────────────────────────────────────────
@@ -1187,45 +1190,45 @@ function openLP(catId) {
   go('s-level');
 }
 function selectLvl(lvl) { curLvl = lvl; loadQ(); }
-
+ 
 // ──────────────────────────────────────────────
 //  LOAD QUESTION
 // ──────────────────────────────────────────────
 function loadQ() {
   const pool = toArr(allQ[curCat]?.[curLvl]);
   if (!pool.length) { notif('ئەم ئاستە پرسیاری نییە!', 'err'); markUsed(curCat, curLvl); back2cats(); return; }
-
+ 
   const key   = curCat + '_' + curLvl;
   const idx   = (qUsage[key] || 0) % pool.length;
   qUsage[key] = idx + 1;
   curQ        = pool[idx];
   answered    = false;
-
+ 
   clearTs();
   renderQ();
   go('s-q');
   startTimer();
 }
-
+ 
 function renderQ() {
   const cat = CATS.find(c => c.id === curCat);
   const p   = players[turnIdx];
-
+ 
   // check effects on current player
   const eff       = effects[turnIdx];
   const isCursed  = eff.curseBy !== null;
   const isSteal   = eff.stealBy !== null;
-
+ 
   // points this question
   const hasDbl    = powerups[turnIdx].double;
   const pts       = hasDbl ? 100 : 50;
-
+ 
   document.getElementById('qCat').textContent  = (cat ? cat.name : '') + ' — ' + curLvl;
   document.getElementById('qPlayer').textContent = p.emoji + ' ' + p.name;
   document.getElementById('qPlayer').style.color = p.color;
   document.getElementById('qPts').textContent  = pts + ' خاڵ' + (hasDbl ? ' ✖️' : '');
   document.getElementById('qText').textContent = curQ.question;
-
+ 
   // curse ring on timer
   const tw = document.querySelector('.timer-wrap');
   let ring = tw.querySelector('.curse-ring');
@@ -1234,7 +1237,7 @@ function renderQ() {
   } else {
     if (ring) ring.remove();
   }
-
+ 
   // answers
   const grid = document.getElementById('aGrid'); grid.innerHTML = '';
   const L = ['A','B','C','D'];
@@ -1246,15 +1249,15 @@ function renderQ() {
     b.onclick   = () => pickAnswer(i, b);
     grid.appendChild(b);
   });
-
+ 
   // powerup bar
   renderPuBar();
 }
-
+ 
 function renderPuBar() {
   const bar = document.getElementById('puBar'); bar.innerHTML = '';
   const pu  = powerups[turnIdx];
-
+ 
   if (pu.lifeline) {
     const b = document.createElement('button');
     b.className = 'pu-btn pu-lifeline';
@@ -1263,43 +1266,44 @@ function renderPuBar() {
     bar.appendChild(b);
   }
 }
-
+ 
 // ──────────────────────────────────────────────
 //  TIMER
 // ──────────────────────────────────────────────
 function clearTs() { clearInterval(timerI); clearInterval(waitI); }
-
+ 
 function startTimer() {
-  const eff     = effects[turnIdx];
+  const eff      = effects[turnIdx];
   const isCursed = eff.curseBy !== null;
+  const isStolen = eff.stealBy !== null;   // steal also = 15s for victim
   const hasTime  = powerups[turnIdx].time;
-
-  let total = isCursed ? 15 : 40;
+ 
+  let total = (isCursed || isStolen) ? 15 : 40;
   if (hasTime) total += 20;
   powerups[turnIdx].time = false; // consume
-
+ 
   tLeft = total;
   updTimer(total);
-
+ 
   timerI = setInterval(() => {
     tLeft--;
     updTimer(total);
     if (tLeft <= 0) { clearInterval(timerI); if (!answered) timeUp(); }
   }, 1000);
 }
-
+ 
 function updTimer(total) {
   const off = 251.2 * (1 - tLeft / total);
   document.getElementById('tFill').style.strokeDashoffset = off;
   document.getElementById('tNum').textContent = tLeft;
   document.getElementById('tFill').style.stroke = tLeft <= 8 ? '#e63946' : tLeft <= 15 ? '#f0b429' : 'var(--gold)';
 }
-
+ 
 function timeUp() {
   answered = true; clearTs(); disableAnswers(); hlCorrect();
   setTimeout(() => showResult(false), 900);
 }
-
+ 
 // ──────────────────────────────────────────────
 //  ANSWER SELECTION
 // ──────────────────────────────────────────────
@@ -1309,7 +1313,7 @@ function pickAnswer(idx, btn) {
   const ok = idx === curQ.correct;
   btn.classList.add(ok ? 'ok' : 'sw');
   if (!ok) hlCorrect();
-
+ 
   let c = 10;
   document.getElementById('tFill').style.stroke = ok ? 'var(--ok)' : 'var(--ng)';
   document.getElementById('tNum').textContent   = c;
@@ -1318,14 +1322,14 @@ function pickAnswer(idx, btn) {
     if (c <= 0) { clearInterval(waitI); showResult(ok); }
   }, 1000);
 }
-
+ 
 function hlCorrect() {
   document.querySelectorAll('.a-btn').forEach(b => {
     if (parseInt(b.dataset.idx) === curQ.correct) b.classList.add('ok');
   });
 }
 function disableAnswers() { document.querySelectorAll('.a-btn').forEach(b => b.disabled = true); }
-
+ 
 // 50/50 lifeline
 function useLifeline() {
   powerups[turnIdx].lifeline = false;
@@ -1337,7 +1341,7 @@ function useLifeline() {
   wrongs.slice(0, 2).forEach(b => { b.classList.add('gone'); b.disabled = true; });
   notif('٥٠/٥٠ بەکارهات ✓', 'mrk');
 }
-
+ 
 // ──────────────────────────────────────────────
 //  SHOW RESULT
 // ──────────────────────────────────────────────
@@ -1347,41 +1351,41 @@ function showResult(ok) {
   const isSteal  = eff.stealBy !== null;
   const hasDbl   = powerups[turnIdx].double;
   const pts      = hasDbl ? 100 : 50;
-
+ 
   // ── Points logic ──
   let gained   = 0;
   let lostMsg  = '';
   let extraMsg = '';
-
+ 
   if (ok) {
     gained = pts;
     scores[turnIdx] += gained;
     // steal: if correct, attacker gains nothing extra (as per rules)
     // curse: if correct, nothing happens
   } else {
-    // wrong
+    // wrong answer
+    if (isSteal) {
+      // buyer steals 30 from victim (this player)
+      const stealAmt = Math.min(30, scores[turnIdx]);
+      scores[turnIdx]      = Math.max(0, scores[turnIdx] - stealAmt);
+      scores[eff.stealBy] += stealAmt;
+      extraMsg = '💰 ' + players[eff.stealBy].name + ' ' + stealAmt + ' خاڵی لێت برد!';
+    }
     if (isCursed) {
-      // -80 from cursed player
+      // -80 from cursed player (curse = nefret)
       const deduct = Math.min(80, scores[turnIdx]);
       scores[turnIdx] = Math.max(0, scores[turnIdx] - deduct);
       lostMsg = '⚡ نەفرەت! ' + deduct + ' خاڵت لەدەستچوو';
     }
-    if (isSteal) {
-      // attacker steals 30 from this player
-      const stealAmt = Math.min(30, scores[turnIdx]);
-      scores[turnIdx]    = Math.max(0, scores[turnIdx] - stealAmt);
-      scores[eff.stealBy] += stealAmt;
-      extraMsg = '💰 ' + players[eff.stealBy].name + ' ' + stealAmt + ' خاڵی لێت برد!';
-    }
   }
-
+ 
   // consume powerups
   powerups[turnIdx].double   = false;
   powerups[turnIdx].lifeline = false;
-
+ 
   // clear effects on this player
   effects[turnIdx] = { stealBy: null, curseBy: null };
-
+ 
   // UI
   const rb    = document.getElementById('rb');
   const rCurse = document.getElementById('rCurse');
@@ -1389,17 +1393,17 @@ function showResult(ok) {
   document.getElementById('rTitle').textContent = ok ? 'وەڵامی ڕاست!' : 'وەڵامی غەلەت!';
   document.getElementById('rPts').textContent   = ok ? '+' + pts + ' خاڵ' : '+٠ خاڵ';
   rb.className = 'rb ' + (ok ? 'ok-b' : 'ng-b');
-
+ 
   if (!ok && (lostMsg || extraMsg)) {
     rCurse.style.display = 'block';
     rCurse.textContent   = [lostMsg, extraMsg].filter(Boolean).join('  ·  ');
   } else {
     rCurse.style.display = 'none';
   }
-
+ 
   if (ok) confetti();
   document.getElementById('ro').classList.add('show');
-
+ 
   setTimeout(() => {
     document.getElementById('ro').classList.remove('show');
     markUsed(curCat, curLvl);
@@ -1408,10 +1412,10 @@ function showResult(ok) {
     back2cats();
   }, 2400);
 }
-
+ 
 function markUsed(c, l) { if (!usedLvl[c]) usedLvl[c] = new Set(); usedLvl[c].add(l); }
 function back2cats()    { updateSBar(); renderCats(); go('s-cats'); }
-
+ 
 // ──────────────────────────────────────────────
 //  MARKET
 // ──────────────────────────────────────────────
@@ -1419,7 +1423,7 @@ function renderMarket() {
   const p = players[turnIdx];
   document.getElementById('mktName').textContent  = p.emoji + ' ' + p.name;
   document.getElementById('mktScore').textContent = scores[turnIdx];
-
+ 
   const grid = document.getElementById('mktGrid'); grid.innerHTML = '';
   SHOP.forEach(item => {
     let owned;
@@ -1431,7 +1435,7 @@ function renderMarket() {
       owned = !!powerups[turnIdx][item.id];
     }
     const cantBuy = scores[turnIdx] < item.price || owned;
-
+ 
     const d = document.createElement('div');
     d.className = 'mkt-card ' + item.cls + (cantBuy ? ' sold-out' : '') + (owned ? ' owned' : '');
     d.innerHTML = `
@@ -1443,7 +1447,7 @@ function renderMarket() {
     grid.appendChild(d);
   });
 }
-
+ 
 function buyItem(item) {
   if (scores[turnIdx] < item.price) { notif('خاڵی تەمەن نییە', 'err'); return; }
   if (!item.target && powerups[turnIdx][item.id]) { notif('پێشتر کڕاوتە', 'err'); return; }
@@ -1453,27 +1457,27 @@ function buyItem(item) {
        (item.id === 'curse' && effects[vi].curseBy === turnIdx)));
     if (already) { notif('پێشتر کڕاوتە', 'err'); return; }
   }
-
+ 
   scores[turnIdx] -= item.price;
   updateSBar();
-
+ 
   if (item.target) {
     pendingAction = { type: item.id, buyerIdx: turnIdx };
     showTargetPicker(item);
     return;
   }
-
+ 
   // non-target items go into powerups
   powerups[turnIdx][item.id] = true;
   notif('✅ کڕاوە — ' + item.name, 'mrk');
   renderMarket();
 }
-
+ 
 function showTargetPicker(item) {
   document.getElementById('targetIcon').textContent  = item.targetIcon;
   document.getElementById('targetTitle').textContent = item.targetTitle;
   document.getElementById('targetDesc').textContent  = item.targetDesc;
-
+ 
   const list = document.getElementById('targetList'); list.innerHTML = '';
   players.forEach((p, i) => {
     if (i === turnIdx) return;
@@ -1486,12 +1490,12 @@ function showTargetPicker(item) {
   });
   go('s-target');
 }
-
+ 
 function applyTarget(victimIdx) {
   if (!pendingAction) return;
   const { type, buyerIdx } = pendingAction;
   pendingAction = null;
-
+ 
   if (type === 'steal') {
     effects[victimIdx].stealBy = buyerIdx;
     notif(`✅ دزینی خاڵ لە ${players[victimIdx].name} — پرسیاری داهاتووی`, 'mrk');
@@ -1499,11 +1503,11 @@ function applyTarget(victimIdx) {
     effects[victimIdx].curseBy = buyerIdx;
     notif(`⚡ نەفرەت لە ${players[victimIdx].name} — پرسیاری داهاتووی ١٥ چرکە`, 'crs');
   }
-
+ 
   updateSBar();
   go('s-cats');
 }
-
+ 
 // ──────────────────────────────────────────────
 //  FINAL
 // ──────────────────────────────────────────────
@@ -1511,7 +1515,7 @@ function showFinal() {
   const sorted = players
     .map((p, i) => ({ p, i, s: scores[i] }))
     .sort((a, b) => b.s - a.s);
-
+ 
   const medals = ['👑','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
   const pod = document.getElementById('finalPodium'); pod.innerHTML = '';
   sorted.forEach(({ p, s }, rank) => {
@@ -1524,7 +1528,7 @@ function showFinal() {
       <div class="pd-label">خاڵ</div>`;
     pod.appendChild(d);
   });
-
+ 
   if (sorted[0].s === (sorted[1]?.s ?? -1)) {
     const tie = document.createElement('div');
     tie.style.cssText = 'width:100%;text-align:center;color:var(--gold);font-weight:700;margin-top:10px';
@@ -1535,7 +1539,7 @@ function showFinal() {
   }
   go('s-final');
 }
-
+ 
 // ──────────────────────────────────────────────
 //  CONFETTI
 // ──────────────────────────────────────────────
@@ -1550,7 +1554,7 @@ function confetti() {
     e.addEventListener('animationend', () => e.remove());
   }, i * 70);
 }
-
+ 
 // ──────────────────────────────────────────────
 //  ADMIN
 // ──────────────────────────────────────────────
@@ -1562,32 +1566,32 @@ function checkPw() {
     adminRenderList(); go('s-admin');
   } else notif('وشەی نهێنی غەلەتە!', 'err');
 }
-
+ 
 function pickCr(idx) {
   selCr = idx;
   for (let i = 0; i < 4; i++) document.getElementById('cr' + i).classList.toggle('on', i === idx);
 }
-
+ 
 async function adminSave() {
   const catId    = document.getElementById('aCat').value;
   const level    = document.getElementById('aLvl').value.trim().toUpperCase();
   const question = document.getElementById('aQ').value.trim();
   const answers  = ['a0','a1','a2','a3'].map(id => document.getElementById(id).value.trim());
-
+ 
   if (!catId)                      { notif('پۆلێک هەڵبژێرە', 'err'); return; }
   if (!level)                      { notif('ئاستێک بنووسە', 'err'); return; }
   if (!question)                   { notif('پرسیار بنووسە', 'err'); return; }
   if (!answers[0] || !answers[1])  { notif('لانیکەم دوو وەڵام', 'err'); return; }
   if (selCr < 0)                   { notif('وەڵامی ڕاست دیاری بکە', 'err'); return; }
   if (!answers[selCr])             { notif('وەڵامی ڕاستەکەت بەتاڵە', 'err'); return; }
-
+ 
   const btn = document.getElementById('saveBtn');
   btn.textContent = '⏳ پارازتن...'; btn.disabled = true;
-
+ 
   const ok = await dbSave(catId, level, { question, answers, correct: selCr });
-
+ 
   btn.textContent = '💾 پاراستن بۆ Firebase'; btn.disabled = false;
-
+ 
   if (ok) {
     document.getElementById('aLvl').value = '';
     document.getElementById('aQ').value   = '';
@@ -1600,7 +1604,7 @@ async function adminSave() {
     notif('❌ هەڵە — دووبارە هەوڵ بدەوە', 'err');
   }
 }
-
+ 
 async function adminReload() {
   if (fbOK) {
     try {
@@ -1613,7 +1617,7 @@ async function adminReload() {
   }
   adminRenderList();
 }
-
+ 
 function adminRenderList() {
   const list = document.getElementById('adminList'); list.innerHTML = '';
   let total = 0;
@@ -1640,14 +1644,14 @@ function adminRenderList() {
   });
   if (!total) list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:16px 0">هێچ پرسیارێک نەپارازراوە</p>';
 }
-
+ 
 async function adminDel(catId, lvl, idx) {
   if (!confirm('دڵنیایت لە سڕینەوەی ئەم پرسیارە؟')) return;
   const ok = await dbDelete(catId, lvl, idx);
   if (ok) { notif('پرسیار سڕایەوە ✓', 'suc'); adminRenderList(); }
   else      notif('هەڵەیەک ڕوویدا', 'err');
 }
-
+ 
 // ──────────────────────────────────────────────
 //  NOTIFICATION
 // ──────────────────────────────────────────────
@@ -1658,7 +1662,7 @@ function notif(msg, type) {
   clearTimeout(el._t);
   el._t = setTimeout(() => el.classList.remove('show'), 3400);
 }
-
+ 
 // ──────────────────────────────────────────────
 //  BOOT
 // ──────────────────────────────────────────────
