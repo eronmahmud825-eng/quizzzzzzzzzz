@@ -276,52 +276,73 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .credits{margin-top:28px;font-size:.78rem;color:rgba(255,255,255,.25);letter-spacing:3px;text-align:center;font-family:'Oxanium',sans-serif;}
 .credits span{color:var(--gold);font-weight:700;letter-spacing:4px;}
 
-/* AI GENERATE SECTION */
-.ai-box{background:linear-gradient(135deg,rgba(29,78,216,.12),rgba(124,58,237,.12));
-  border:1.5px solid rgba(124,58,237,.35);border-radius:16px;padding:20px;margin-bottom:18px;}
-.ai-box h3{font-size:1rem;font-weight:800;color:#a78bfa;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.ai-lang{display:flex;gap:8px;margin-bottom:12px;}
-.ai-lang label{flex:1;padding:9px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);
-  background:rgba(255,255,255,.04);color:var(--muted);font-size:.85rem;font-weight:700;
-  cursor:pointer;text-align:center;transition:all .2s;}
-.ai-lang input{display:none;}
-.ai-lang input:checked+span{color:#a78bfa;}
-.ai-lang label:has(input:checked){border-color:rgba(124,58,237,.6);background:rgba(124,58,237,.14);color:#a78bfa;}
-.ai-count{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
-.ai-cnt-btn{padding:6px 14px;border-radius:8px;border:1.5px solid rgba(255,255,255,.1);
-  background:rgba(255,255,255,.04);color:var(--muted);font-family:'Oxanium',sans-serif;
-  font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;}
-.ai-cnt-btn.sel,.ai-cnt-btn:hover{border-color:#a78bfa;background:rgba(124,58,237,.18);color:#a78bfa;}
-.ai-gen-btn{width:100%;padding:13px;border:none;border-radius:12px;
-  background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;
-  font-family:'Noto Sans Arabic',sans-serif;font-size:.97rem;font-weight:800;
-  cursor:pointer;transition:all .2s;box-shadow:0 6px 20px rgba(124,58,237,.35);}
-.ai-gen-btn:hover{transform:translateY(-2px);}
-.ai-gen-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-.ai-progress{margin-top:12px;display:none;flex-direction:column;gap:6px;}
-.ai-prog-item{padding:8px 12px;border-radius:8px;background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);font-size:.8rem;color:var(--muted);
-  display:flex;align-items:center;gap:8px;}
-.ai-prog-item.done{border-color:rgba(6,214,160,.4);background:rgba(6,214,160,.08);color:#6effd8;}
-.ai-prog-item.err{border-color:rgba(230,57,70,.4);background:rgba(230,57,70,.08);color:#ffaaaa;}
 
-/* DANGER ZONE */
-.danger-zone{background:rgba(230,57,70,.07);border:1.5px solid rgba(230,57,70,.3);
-  border-radius:14px;padding:16px 18px;margin-bottom:18px;}
-.danger-zone h4{font-size:.85rem;font-weight:800;color:#f87171;margin-bottom:12px;
-  display:flex;align-items:center;gap:6px;letter-spacing:1px;}
-.danger-btns{display:flex;gap:8px;flex-wrap:wrap;}
-.btn-danger{padding:10px 18px;border:none;border-radius:10px;
-  background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff;
-  font-family:'Noto Sans Arabic',sans-serif;font-size:.85rem;font-weight:700;
-  cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(220,38,38,.3);}
-.btn-danger:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(220,38,38,.45);}
-.btn-danger:active{transform:translateY(0);}
-.btn-warn{padding:10px 18px;border:none;border-radius:10px;
-  background:linear-gradient(135deg,#78350f,#d97706);color:#fff;
-  font-family:'Noto Sans Arabic',sans-serif;font-size:.85rem;font-weight:700;
-  cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(217,119,6,.3);}
-.btn-warn:hover{transform:translateY(-2px);}
+/* ══════════════════════════════
+   AUTH SCREENS
+══════════════════════════════ */
+.auth-card{background:var(--glass);border:1.5px solid var(--gb);border-radius:24px;
+  padding:36px 32px;backdrop-filter:blur(20px);width:100%;max-width:420px;
+  box-shadow:0 24px 60px rgba(0,0,0,.55);}
+.auth-logo{font-size:2.8rem;text-align:center;margin-bottom:6px;}
+.auth-title{font-family:'Oxanium',sans-serif;font-size:1.5rem;font-weight:800;
+  text-align:center;color:var(--gold);margin-bottom:4px;}
+.auth-sub{font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:24px;}
+.auth-tabs{display:flex;border-radius:12px;background:rgba(255,255,255,.05);
+  padding:4px;gap:4px;margin-bottom:22px;}
+.auth-tab{flex:1;padding:9px;border:none;border-radius:9px;background:transparent;
+  color:var(--muted);font-family:'Noto Sans Arabic',sans-serif;font-size:.9rem;
+  font-weight:700;cursor:pointer;transition:all .2s;}
+.auth-tab.active{background:rgba(240,180,41,.18);color:var(--gold);}
+.auth-inp{width:100%;padding:13px 16px;background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(255,255,255,.1);border-radius:12px;color:var(--text);
+  font-family:'Noto Sans Arabic',sans-serif;font-size:.97rem;outline:none;
+  transition:border-color .2s;margin-bottom:12px;}
+.auth-inp:focus{border-color:var(--gold);}
+.auth-btn{width:100%;padding:14px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#c28a00,var(--gold));color:#1a1000;
+  font-family:'Noto Sans Arabic',sans-serif;font-size:1rem;font-weight:800;
+  cursor:pointer;transition:all .2s;box-shadow:0 6px 20px rgba(240,180,41,.3);margin-top:4px;}
+.auth-btn:hover{transform:translateY(-2px);}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.auth-err{padding:10px 14px;border-radius:10px;background:rgba(230,57,70,.14);
+  border:1px solid rgba(230,57,70,.4);color:#ffaaaa;font-size:.82rem;
+  margin-bottom:12px;display:none;text-align:center;}
+.auth-err.show{display:block;}
+.auth-ok{padding:10px 14px;border-radius:10px;background:rgba(6,214,160,.14);
+  border:1px solid rgba(6,214,160,.4);color:#6effd8;font-size:.82rem;
+  margin-bottom:12px;display:none;text-align:center;}
+.auth-ok.show{display:block;}
+.verify-icon{font-size:3.5rem;text-align:center;margin-bottom:12px;}
+.verify-code-wrap{display:flex;gap:8px;justify-content:center;margin:16px 0;}
+.verify-digit{width:48px;height:56px;border-radius:12px;border:2px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.07);color:var(--text);font-family:'Oxanium',sans-serif;
+  font-size:1.6rem;font-weight:800;text-align:center;outline:none;
+  transition:border-color .2s;}
+.verify-digit:focus{border-color:var(--gold);}
+
+/* DASHBOARD */
+.dash-header{display:flex;align-items:center;gap:14px;margin-bottom:28px;width:100%;max-width:500px;}
+.dash-avatar{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:1.6rem;font-weight:800;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(240,180,41,.3),rgba(240,180,41,.1));
+  border:2px solid rgba(240,180,41,.5);}
+.dash-name{font-size:1.3rem;font-weight:800;color:var(--text);}
+.dash-email{font-size:.78rem;color:var(--muted);}
+.dash-card{background:var(--glass);border:1.5px solid var(--gb);border-radius:18px;
+  padding:22px;width:100%;max-width:500px;margin-bottom:14px;}
+.dash-card h3{font-size:.85rem;font-weight:700;color:var(--muted);margin-bottom:16px;
+  letter-spacing:3px;text-transform:uppercase;}
+.dash-coming{text-align:center;padding:28px 16px;}
+.dash-coming .dc-icon{font-size:3rem;margin-bottom:12px;}
+.dash-coming h2{font-family:'Oxanium',sans-serif;font-size:1.6rem;font-weight:800;
+  background:linear-gradient(135deg,#a78bfa,#1d4ed8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
+.dash-coming p{font-size:.85rem;color:var(--muted);line-height:1.7;}
+.dash-stat{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.dash-stat:last-child{border-bottom:none;}
+.dash-stat .ds-label{font-size:.85rem;color:var(--muted);}
+.dash-stat .ds-val{font-family:'Oxanium',sans-serif;font-size:1rem;font-weight:700;color:var(--gold);}
 
 /* COMING SOON OVERLAY */
 .cs-overlay{display:none;position:fixed;inset:0;z-index:500;align-items:center;justify-content:center;
@@ -354,7 +375,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   <div class="mwrap">
     <button class="btn btn-red"    onclick="go('s-players')">👥 &nbsp; ناوی یاریزانەکان</button>
     <button class="btn btn-blue"   onclick="startGame()">🎮 &nbsp; دەستپێکردنی یاری</button>
-    <button class="btn btn-purple" onclick="showComingSoon()">⚡ &nbsp; Inline Quiz</button>
+    <button class="btn btn-purple" onclick="go('s-auth')">⚡ &nbsp; Inline Quiz</button>
     <button class="btn btn-gold"   onclick="go('s-admin-login')">🔐 &nbsp; ئەدمین</button>
   </div>
   <div class="credits">Prepared by : <span>Eron</span></div>
@@ -545,59 +566,6 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     </div>
     <button class="btn btn-gold" id="saveBtn" onclick="adminSave()" style="width:100%;margin-top:6px">💾 &nbsp; پاراستن</button>
     <hr class="divider">
-
-    <!-- AI GENERATE BOX -->
-    <div class="ai-box">
-      <h3>🤖 بە Gemini AI درووست بکە</h3>
-      <div id="cinemaNoteAI" style="display:none;padding:8px 12px;border-radius:9px;margin-bottom:10px;
-        background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.3);font-size:.76rem;color:var(--gold);line-height:1.6">
-        ★ سینەما: پرسیارەکان تەنها لە زنجیرەکانی<br>
-        <strong>The 100 · Game of Thrones · Squid Game · Alice in Borderland · Prison Break</strong>
-      </div>
-      <div class="fg" style="margin-bottom:10px"><label>پۆل</label>
-        <select id="aiCat">
-          <option value="">-- پۆلێک هەڵبژێرە --</option>
-          <option value="health">❤️ تەندرووستی</option>
-          <option value="sports">⚽ وەرزشی</option>
-          <option value="cinema">🎬 سینەما ★</option>
-          <option value="physics">⚡ فیزیا</option>
-          <option value="general">🌐 گشتی</option>
-          <option value="geography">🗺️ جوگرافیا</option>
-          <option value="logic">🧠 هزری</option>
-          <option value="tech">💻 تەکنەڵۆژیا</option>
-          <option value="chemistry">🧪 کیمیا</option>
-          <option value="universe">🌌 گەردوونی</option>
-          <option value="gaming">🎮 گەیمینگ</option>
-        </select>
-      </div>
-      <div class="fg" style="margin-bottom:10px"><label>ئاست</label>
-        <select id="aiLvl">
-          <option value="A">A — ئاسان</option>
-          <option value="B">B — ناوەند</option>
-          <option value="C">C — قورس</option>
-          <option value="D">D — زۆر قورس</option>
-        </select>
-      </div>
-      <div class="fg" style="margin-bottom:10px"><label>زمان</label>
-        <div class="ai-lang">
-          <label><input type="radio" name="aiLang" value="ku" checked><span>🇮🇶 کوردی</span></label>
-          <label><input type="radio" name="aiLang" value="en"><span>🇬🇧 English</span></label>
-          <label><input type="radio" name="aiLang" value="both"><span>🔀 هەردووکیان</span></label>
-        </div>
-      </div>
-      <div class="fg" style="margin-bottom:12px"><label>چەند پرسیار؟</label>
-        <div class="ai-count" id="aiCountBtns">
-          <button class="ai-cnt-btn sel" onclick="setAiCount(1,this)">١</button>
-          <button class="ai-cnt-btn" onclick="setAiCount(3,this)">٣</button>
-          <button class="ai-cnt-btn" onclick="setAiCount(5,this)">٥</button>
-          <button class="ai-cnt-btn" onclick="setAiCount(10,this)">١٠</button>
-          <button class="ai-cnt-btn" onclick="setAiCount(15,this)">١٥</button>
-        </div>
-      </div>
-      <button class="ai-gen-btn" id="aiGenBtn" onclick="aiGenerate()">✨ &nbsp; درووستکردن بە AI</button>
-      <div class="ai-progress" id="aiProgress"></div>
-    </div>
-
     <!-- DANGER ZONE -->
     <div class="danger-zone">
       <h4>⚠️ Danger Zone</h4>
@@ -651,6 +619,94 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 <div class="notif" id="notif"></div>
 
 <!-- COMING SOON OVERLAY -->
+
+<!-- ══════════════════════════════════
+     AUTH — SIGN IN / SIGN UP
+══════════════════════════════════ -->
+<div id="s-auth" class="screen">
+  <button class="bk" onclick="go('s-menu')">← گەڕانەوە</button>
+  <div class="auth-card">
+    <div class="auth-logo">⚡</div>
+    <div class="auth-title">Inline Quiz</div>
+    <div class="auth-sub">ئەکاونتت دروست بکە یان داخل ببە</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabSignup" onclick="authTab('signup')">ئەکاونت دروست بکە</button>
+      <button class="auth-tab"        id="tabLogin"  onclick="authTab('login')">داخلبوون</button>
+    </div>
+    <div id="authErr" class="auth-err"></div>
+    <div id="authOk"  class="auth-ok"></div>
+
+    <!-- SIGNUP FIELDS -->
+    <div id="signupFields">
+      <input class="auth-inp" type="text"     id="authUsername" placeholder="👤 یوزەرنەیم" maxlength="20" autocomplete="off"/>
+      <input class="auth-inp" type="email"    id="authEmail"    placeholder="📧 ئیمەیڵ" autocomplete="off"/>
+      <input class="auth-inp" type="password" id="authPass"     placeholder="🔒 پاسۆرد (لانیکەم ٦ پیت)" maxlength="30"/>
+      <input class="auth-inp" type="password" id="authPass2"    placeholder="🔒 پاسۆردەکە دووبارە بنووسە" maxlength="30"/>
+    </div>
+
+    <!-- LOGIN FIELDS -->
+    <div id="loginFields" style="display:none">
+      <input class="auth-inp" type="email"    id="loginEmail" placeholder="📧 ئیمەیڵ" autocomplete="off"/>
+      <input class="auth-inp" type="password" id="loginPass"  placeholder="🔒 پاسۆرد" maxlength="30"/>
+    </div>
+
+    <button class="auth-btn" id="authMainBtn" onclick="authSubmit()">دروستکردنی ئەکاونت ✓</button>
+  </div>
+</div>
+
+<!-- EMAIL VERIFY -->
+<div id="s-verify" class="screen">
+  <div class="auth-card" style="text-align:center">
+    <div class="verify-icon">📧</div>
+    <div class="auth-title">پشتڕاستکردنەوەی ئیمەیڵ</div>
+    <div class="auth-sub" id="verifySubText">کۆدی ٦ ژمارەیی بۆ ئیمەیڵەکەت نێردراوە</div>
+    <div id="authErr2" class="auth-err"></div>
+    <div class="verify-code-wrap">
+      <input class="verify-digit" id="vc0" maxlength="1" oninput="vcMove(0)" onkeydown="vcBack(event,0)"/>
+      <input class="verify-digit" id="vc1" maxlength="1" oninput="vcMove(1)" onkeydown="vcBack(event,1)"/>
+      <input class="verify-digit" id="vc2" maxlength="1" oninput="vcMove(2)" onkeydown="vcBack(event,2)"/>
+      <input class="verify-digit" id="vc3" maxlength="1" oninput="vcMove(3)" onkeydown="vcBack(event,3)"/>
+      <input class="verify-digit" id="vc4" maxlength="1" oninput="vcMove(4)" onkeydown="vcBack(event,4)"/>
+      <input class="verify-digit" id="vc5" maxlength="1" oninput="vcMove(5)" onkeydown="vcBack(event,5)"/>
+    </div>
+    <button class="auth-btn" onclick="verifyCode()">پشتڕاستکردنەوە ✓</button>
+    <p style="margin-top:14px;font-size:.78rem;color:var(--muted);cursor:pointer" onclick="resendCode()">
+      📨 دووبارە بنێرە
+    </p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="s-dashboard" class="screen" style="justify-content:flex-start;padding-top:24px">
+  <button class="bk" onclick="authLogout()">← چوونەدەرەوە</button>
+  <div class="dash-header" style="margin-top:54px">
+    <div class="dash-avatar" id="dashAvatar">?</div>
+    <div>
+      <div class="dash-name" id="dashName">—</div>
+      <div class="dash-email" id="dashEmail">—</div>
+    </div>
+  </div>
+
+  <div class="dash-card">
+    <h3>ئەکاونتەکەم</h3>
+    <div class="dash-stat"><span class="ds-label">👤 یوزەرنەیم</span><span class="ds-val" id="dashUser">—</span></div>
+    <div class="dash-stat"><span class="ds-label">📧 ئیمەیڵ</span><span class="ds-val" id="dashEmailStat">—</span></div>
+    <div class="dash-stat"><span class="ds-label">📅 بەرواری دروستبوون</span><span class="ds-val" id="dashJoined">—</span></div>
+    <div class="dash-stat"><span class="ds-label">✅ دۆخ</span><span class="ds-val" style="color:var(--ok)">چالاک</span></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="dash-coming">
+      <div class="dc-icon">🚀</div>
+      <h2>COMING SOON</h2>
+      <p>Inline Quiz — بەزووی دێت!<br>
+      بەرپرسانە پرسیار بدە، خاڵ کەسب بکە،<br>
+      لە لیستی باشترینان بێ.</p>
+    </div>
+  </div>
+</div>
+
+
 <div class="cs-overlay" id="csOverlay" onclick="hideComingSoon(event)">
   <div class="cs-box">
     <span class="cs-icon">⚡</span>
@@ -724,9 +780,7 @@ function bootLoad(){
 //  CONSTANTS
 // ═══════════════════════════════════════
 const ADMIN_PW="112233";
-const AI_KEY="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"; // ← OpenRouter Key ئێرە بنێرە // ← Key ی خۆت ئێرە بنێرە
 // Claude API — زیاتر پشتیوانی
-const CLAUDE_URL="https://openrouter.ai/api/v1/chat/completions";
 let aiCount=1;
 const WAIT_S=10;
 const COLORS=["#ff6b7a","#5b9cf6","#4ade80","#fbbf24","#fb923c","#a78bfa","#22d3ee","#f472b6","#a3e635","#f87171"];
@@ -1675,249 +1729,245 @@ function notif(msg,type){
   clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),3200);
 }
 
+
 // ═══════════════════════════════════════
-//  GEMINI AI GENERATOR
+//  AUTH SYSTEM (Firebase Auth REST API)
 // ═══════════════════════════════════════
-function setAiCount(n,btn){
-  aiCount=n;
-  document.querySelectorAll(".ai-cnt-btn").forEach(b=>b.classList.remove("sel"));
-  btn.classList.add("sel");
+const FBA="https://identitytoolkit.googleapis.com/v1";
+// Using same Firebase project key
+const FB_WEB_KEY="AIzaSyB2L9BijYizfWjxPC168plZZPcmHA_w";
+
+let currentUser=null;
+let pendingVerifyEmail="";
+let pendingVerifyCode="";
+
+// ── tab switch ──
+function authTab(tab){
+  document.getElementById("tabSignup").classList.toggle("active",tab==="signup");
+  document.getElementById("tabLogin").classList.toggle("active",tab==="login");
+  document.getElementById("signupFields").style.display=tab==="signup"?"block":"none";
+  document.getElementById("loginFields").style.display=tab==="login"?"block":"none";
+  document.getElementById("authMainBtn").textContent=tab==="signup"?"دروستکردنی ئەکاونت ✓":"داخلبوون ✓";
+  authClearMsg();
 }
+function authMsg(msg,ok){
+  const e=document.getElementById("authErr"), o=document.getElementById("authOk");
+  e.className="auth-err"+(ok?"":" show"); e.textContent=ok?"":msg;
+  o.className="auth-ok"+(ok?" show":""); o.textContent=ok?msg:"";
+}
+function authClearMsg(){authMsg("",false);document.getElementById("authOk").className="auth-ok";}
 
-const CAT_NAMES_KU={health:"تەندرووستی",sports:"وەرزش",cinema:"سینەما",physics:"فیزیا",
-  general:"زانستی گشتی",geography:"جوگرافیا",logic:"هزر و لۆژیک",tech:"تەکنەڵۆژیا",
-  chemistry:"کیمیا",universe:"گەردوون و ئەستێرەناسی",gaming:"ئەلیکترۆنی گەیم"};
-const CAT_NAMES_EN={health:"Health & Science",sports:"Sports",cinema:"Cinema & Movies",
-  physics:"Physics",general:"General Knowledge",geography:"Geography",
-  logic:"Logic & Riddles",tech:"Technology",chemistry:"Chemistry",
-  universe:"Universe & Astronomy",gaming:"Gaming"};
-const LEVEL_DESC={A:"very easy",B:"medium",C:"hard",D:"very hard / expert"};
+// ── generate 6-digit code ──
+function genCode(){ return String(Math.floor(100000+Math.random()*900000)); }
 
-// Show cinema note when cinema selected
-document.addEventListener("change", function(e){
-  if(e.target && e.target.id==="aiCat"){
-    const note=document.getElementById("cinemaNoteAI");
-    if(note) note.style.display=e.target.value==="cinema"?"block":"none";
-  }
-});
+// ── send verification email via EmailJS (free) ──
+// We store code in Firebase under /verify_codes/{uid}
+async function sendVerifyEmail(email, code, username){
+  // Store code in Firebase temporarily
+  const uid = btoa(email).replace(/[^a-zA-Z0-9]/g,"").slice(0,28);
+  await fetch(FB+"/verify_codes/"+uid+".json",{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({code, email, username, ts: Date.now()})
+  });
 
-async function aiGenerate(){
-  const catId=document.getElementById("aiCat").value;
-  const lvl=document.getElementById("aiLvl").value;
-  const lang=document.querySelector('input[name="aiLang"]:checked').value;
-  if(!catId){notif("پۆلێک هەڵبژێرە","err");return;}
-
-  const btn=document.getElementById("aiGenBtn");
-  btn.disabled=true; btn.textContent="⏳ Gemini کار دەکات...";
-  const prog=document.getElementById("aiProgress");
-  prog.style.display="flex"; prog.innerHTML="";
-
-  // Build prompt based on language
-  let langInstruction="";
-  if(lang==="ku") langInstruction="Write ALL questions and answers in Kurdish (Sorani script, كوردی سۆرانی). Use natural Kurdish language.";
-  else if(lang==="en") langInstruction="Write ALL questions and answers in English.";
-  else langInstruction="Write questions alternating: half in Kurdish (Sorani, كوردی سۆرانی), half in English.";
-
-  const catKu=CAT_NAMES_KU[catId]||catId;
-  const catEn=CAT_NAMES_EN[catId]||catId;
-  const difficulty=LEVEL_DESC[lvl]||"medium";
-
-  // Special cinema series list
-  const CINEMA_SERIES=[
-    "The 100","Game of Thrones","Squid Game","Alice in Borderland","Prison Break"
-  ];
-
-  // Build topic instruction
-  let topicInstruction="";
-  if(catId==="cinema"){
-    // pick a random series for each batch, or spread across them
-    const seriesForBatch=[];
-    for(let i=0;i<aiCount;i++){
-      seriesForBatch.push(CINEMA_SERIES[i % CINEMA_SERIES.length]);
-    }
-    // group by series
-    const grouped={};
-    seriesForBatch.forEach(s=>{ grouped[s]=(grouped[s]||0)+1; });
-    const seriesBreakdown=Object.entries(grouped).map(([s,n])=>n+" question(s) from '"+s+"'").join(", ");
-    topicInstruction=`IMPORTANT: ALL questions must be about these specific TV series ONLY: ${CINEMA_SERIES.join(", ")}.
-Distribute the ${aiCount} questions like this: ${seriesBreakdown}.
-Each question must clearly relate to the plot, characters, actors, or events of its series.`;
-  } else {
-    topicInstruction=`Topic: "${catKu} / ${catEn}". Generate diverse, interesting questions covering different aspects of this topic.`;
-  }
-
-  const prompt=`You are a quiz question generator. Generate exactly ${aiCount} multiple-choice quiz question(s).
-Difficulty level: ${difficulty} (Level ${lvl}).
-${topicInstruction}
-${langInstruction}
-
-STRICT RULES:
-- Return ONLY a valid JSON array, no markdown, no explanation, no backticks
-- Each question object must have exactly these fields:
-  - "question": string (the question text)
-  - "answers": array of exactly 4 strings [A, B, C, D]
-  - "correct": number 0-3 (index of the correct answer)
-- Make sure all 4 answers are distinct and plausible
-- The correct answer must be 100% factually correct
-- Questions must be unique and not repeated
-- For cinema questions: include the series name in the question text so players know which show it's about
-
-Example format:
-[{"question":"...","answers":["A...","B...","C...","D..."],"correct":2}]
-
-Generate exactly ${aiCount} question(s) now:`;
-
+  // Send email via EmailJS free tier
   try{
-    // Try each model until one works
-    // OpenRouter — free models: google/gemini-2.0-flash-exp:free, mistralai/mistral-7b-instruct:free
-    const FREE_MODELS=[
-      "google/gemini-2.0-flash-exp:free",
-      "google/gemini-flash-1.5:free",
-      "mistralai/mistral-7b-instruct:free",
-      "meta-llama/llama-3.1-8b-instruct:free",
-      "qwen/qwen-2.5-72b-instruct:free",
-    ];
-    let raw="", lastModelErr="";
-    for(const freeModel of FREE_MODELS){
-      try{
-        const resp=await fetch(CLAUDE_URL,{
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json",
-            "Authorization":"Bearer "+AI_KEY,
-            "HTTP-Referer":"https://quizgame.app",
-            "X-Title":"Quiz Game"
-          },
-          body:JSON.stringify({
-            model:freeModel,
-            max_tokens:8192,
-            messages:[{role:"user",content:prompt}]
-          })
-        });
-        const data=await resp.json();
-        if(!resp.ok||data.error){
-          lastModelErr="["+freeModel+"] "+(data.error?.message||"HTTP "+resp.status);
-          continue;
+    await fetch("https://api.emailjs.com/api/v1.0/email/send",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        service_id:"service_quizgame",
+        template_id:"template_verify",
+        user_id:"YOUR_EMAILJS_PUBLIC_KEY",
+        template_params:{
+          to_email: email,
+          to_name: username,
+          verify_code: code,
         }
-        raw=data.choices?.[0]?.message?.content||"";
-        if(raw){ notif("✅ "+freeModel.split("/")[1],"inf"); break; }
-      }catch(e){
-        lastModelErr="["+freeModel+"] "+e.message;
-        continue;
-      }
-    }
-    if(!raw) throw new Error("هەموو مۆدێلەکان هەڵە دان: "+lastModelErr);
-    // strip markdown fences if any
-    raw=raw.replace(/```json/gi,"").replace(/```/g,"").trim();
-    // find JSON array
-    const match=raw.match(/\[[\s\S]*\]/);
-    if(!match) throw new Error("JSON نەدۆزرایەوە لە وەڵامەکەدا");
-    const questions=JSON.parse(match[0]);
-    if(!Array.isArray(questions)||questions.length===0) throw new Error("پرسیار نەدۆزرایەوە");
-
-    // Save each question
-    let saved=0, failed=0;
-    for(const qi of questions){
-      const item={question:qi.question,answers:qi.answers,correct:qi.correct};
-      const div=document.createElement("div");
-      div.className="ai-prog-item";
-      div.innerHTML="⏳ "+qi.question.slice(0,50)+"...";
-      prog.appendChild(div);
-      try{
-        if(!allQ[catId]) allQ[catId]={};
-        if(!allQ[catId][lvl]) allQ[catId][lvl]=[];
-        allQ[catId][lvl].push(item);
-        if(fbOK) await fbSaveQ(catId,lvl,allQ[catId][lvl]);
-        else lsSave();
-        div.className="ai-prog-item done";
-        div.innerHTML="✅ "+qi.question.slice(0,55)+(qi.question.length>55?"...":"");
-        saved++;
-      }catch(e){
-        div.className="ai-prog-item err";
-        div.innerHTML="❌ "+qi.question.slice(0,45)+"... ("+e.message+")";
-        failed++;
-      }
-    }
-    lsSave();
-    notif("✅ "+saved+" پرسیار پارازرا"+(failed?" — "+failed+" هەڵە":""),"suc");
-    adminRenderList();
+      })
+    });
   }catch(e){
-    const div=document.createElement("div");
-    div.className="ai-prog-item err";
-    div.innerHTML="❌ هەڵە: "+e.message;
-    prog.appendChild(div);
-    notif("Gemini هەڵە: "+e.message,"err");
-    console.error("Gemini error:",e);
+    // EmailJS not configured — show code in UI for testing
+    console.log("Verify code (dev mode):", code);
+  }
+  return uid;
+}
+
+// ── SIGN UP ──
+async function authSubmit(){
+  const isLogin=document.getElementById("tabLogin").classList.contains("active");
+  const btn=document.getElementById("authMainBtn");
+  btn.disabled=true; authClearMsg();
+
+  try{
+    if(isLogin){
+      // ── LOGIN ──
+      const email=document.getElementById("loginEmail").value.trim();
+      const pass=document.getElementById("loginPass").value;
+      if(!email||!pass){authMsg("ئیمەیڵ و پاسۆرد پێویستن","");btn.disabled=false;return;}
+
+      const r=await fetch(FBA+"/accounts:signInWithPassword?key="+FB_WEB_KEY,{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({email,password:pass,returnSecureToken:true})
+      });
+      const d=await r.json();
+      if(!r.ok) throw new Error(authErrMsg(d.error?.message));
+
+      // load user profile from Firebase
+      const uid=d.localId;
+      const prof=await fetch(FB+"/users/"+uid+".json");
+      const profData=await prof.json();
+
+      currentUser={uid,email,username:profData?.username||email.split("@")[0],joined:profData?.joined||"?"};
+      localStorage.setItem("quizAuth",JSON.stringify(currentUser));
+      showDashboard();
+
+    } else {
+      // ── SIGNUP ──
+      const username=document.getElementById("authUsername").value.trim();
+      const email=document.getElementById("authEmail").value.trim();
+      const pass=document.getElementById("authPass").value;
+      const pass2=document.getElementById("authPass2").value;
+
+      if(!username||!email||!pass||!pass2){authMsg("هەموو خانەکان پڕ بکەرەوە","");btn.disabled=false;return;}
+      if(username.length<3){authMsg("یوزەرنەیم لانیکەم ٣ پیت","");btn.disabled=false;return;}
+      if(pass.length<6){authMsg("پاسۆرد لانیکەم ٦ پیت","");btn.disabled=false;return;}
+      if(pass!==pass2){authMsg("پاسۆردەکان یەکسان نین","");btn.disabled=false;return;}
+      if(!email.includes("@")){authMsg("ئیمەیڵی دروست بنووسە","");btn.disabled=false;return;}
+
+      // Create account in Firebase Auth
+      const r=await fetch(FBA+"/accounts:signUp?key="+FB_WEB_KEY,{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({email,password:pass,returnSecureToken:true})
+      });
+      const d=await r.json();
+      if(!r.ok) throw new Error(authErrMsg(d.error?.message));
+
+      const uid=d.localId;
+      const joined=new Date().toLocaleDateString("en-GB");
+
+      // Save user profile to Firebase DB
+      await fetch(FB+"/users/"+uid+".json",{
+        method:"PUT",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username,email,joined,uid})
+      });
+
+      // Generate & send verify code
+      const code=genCode();
+      pendingVerifyEmail=email;
+      pendingVerifyCode=code;
+      const vuid=await sendVerifyEmail(email,code,username);
+
+      currentUser={uid,email,username,joined};
+      localStorage.setItem("quizAuth",JSON.stringify(currentUser));
+      localStorage.setItem("quizAuthVerifyUid",vuid);
+
+      // Go to verify screen
+      document.getElementById("verifySubText").textContent=
+        "کۆدی ٦ ژمارەیی بۆ "+email+" نێردراوە";
+
+      // Show code in notif for testing (remove in production)
+      notif("🔑 کۆدی تێستکردن: "+code,"inf");
+
+      go("s-verify");
+    }
+  }catch(e){
+    authMsg(e.message,"");
   }finally{
-    btn.disabled=false; btn.textContent="✨   درووستکردن بە AI";
+    btn.disabled=false;
   }
 }
 
-// ═══════════════════════════════════════
-//  DELETE ALL / DELETE CATEGORY
-// ═══════════════════════════════════════
+function authErrMsg(code){
+  const msgs={
+    "EMAIL_EXISTS":"ئەم ئیمەیڵە پێشتر تۆمارکراوە",
+    "INVALID_EMAIL":"ئیمەیڵی دروست نییە",
+    "WEAK_PASSWORD":"پاسۆرد زۆر سووک — لانیکەم ٦ پیت",
+    "EMAIL_NOT_FOUND":"ئەم ئیمەیڵە تۆمارنەکراوە",
+    "INVALID_PASSWORD":"پاسۆرد هەڵەیە",
+    "INVALID_LOGIN_CREDENTIALS":"ئیمەیڵ یان پاسۆرد هەڵەیە",
+    "TOO_MANY_ATTEMPTS_TRY_LATER":"زۆر جار هەوڵت داوە، کەمێ چاوەڕوان بکە",
+    "USER_DISABLED":"ئەم ئەکاونتە بلۆک کراوە",
+  };
+  return msgs[code]||code||"هەڵەیەک ڕوویدا";
+}
 
-async function deleteAllQuestions(){
-  if(!confirm("⚠️ دڵنیایت؟\nئەمە هەموو پرسیارەکان لە Firebase و localStorage دەسڕێتەوە!\n\nئەم کارە گەرێنەوەی نییە!")) return;
-  const second=confirm("دووبارە دڵنیابەرەوە — هەموو پرسیارەکان دەسڕێتەوە؟");
-  if(!second) return;
+// ── VERIFY CODE ──
+function vcMove(i){
+  const v=document.getElementById("vc"+i).value;
+  if(v&&i<5) document.getElementById("vc"+(i+1)).focus();
+}
+function vcBack(e,i){
+  if(e.key==="Backspace"&&!document.getElementById("vc"+i).value&&i>0)
+    document.getElementById("vc"+(i-1)).focus();
+}
 
-  notif("⏳ سڕینەوە...","inf");
-  try{
-    if(fbOK){
-      // DELETE entire /questions node from Firebase
-      const r=await fetch(FB+"/questions.json",{method:"DELETE"});
-      if(!r.ok) throw new Error("HTTP "+r.status);
+async function verifyCode(){
+  const entered=[0,1,2,3,4,5].map(i=>document.getElementById("vc"+i).value).join("");
+  if(entered.length!==6){
+    document.getElementById("authErr2").className="auth-err show";
+    document.getElementById("authErr2").textContent="کۆدی ٦ ژمارەیی بنووسە";
+    return;
+  }
+  if(entered===pendingVerifyCode){
+    // Mark verified in Firebase
+    if(currentUser){
+      await fetch(FB+"/users/"+currentUser.uid+".json",{
+        method:"PATCH",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({verified:true})
+      });
     }
-    allQ={};
-    lsSave();
-    notif("✅ هەموو پرسیارەکان سڕایەوە","suc");
-    adminRenderList();
-  }catch(e){
-    notif("❌ هەڵە: "+e.message,"err");
-    console.error(e);
+    notif("✅ ئەکاونتەکەت پشتڕاستکرایەوە!","suc");
+    showDashboard();
+  } else {
+    document.getElementById("authErr2").className="auth-err show";
+    document.getElementById("authErr2").textContent="❌ کۆد هەڵەیە — دووبارە تاقی بکەرەوە";
   }
 }
 
-function deleteCatQuestions(){
-  const wrap=document.getElementById("delCatWrap");
-  wrap.style.display=wrap.style.display==="none"?"block":"none";
-}
-
-async function confirmDelCat(){
-  const catId=document.getElementById("delCatSel").value;
-  if(!catId){notif("کاتاگۆریەک هەڵبژێرە","err");return;}
-  const catName=document.getElementById("delCatSel").selectedOptions[0].text;
-  if(!confirm("⚠️ دڵنیایت؟\nهەموو پرسیارەکانی «"+catName+"» دەسڕێتەوە!")) return;
-
-  notif("⏳ سڕینەوە...","inf");
-  try{
-    if(fbOK){
-      const r=await fetch(FB+"/questions/"+catId+".json",{method:"DELETE"});
-      if(!r.ok) throw new Error("HTTP "+r.status);
-    }
-    if(allQ[catId]) delete allQ[catId];
-    lsSave();
-    document.getElementById("delCatWrap").style.display="none";
-    notif("✅ «"+catName+"» سڕایەوە","suc");
-    adminRenderList();
-  }catch(e){
-    notif("❌ هەڵە: "+e.message,"err");
-    console.error(e);
+function resendCode(){
+  if(pendingVerifyEmail&&pendingVerifyCode){
+    sendVerifyEmail(pendingVerifyEmail,pendingVerifyCode,currentUser?.username||"");
+    notif("📨 کۆد دووبارە نێردرا — کۆد: "+pendingVerifyCode,"inf");
   }
 }
 
-function showComingSoon(){
-  document.getElementById("csOverlay").classList.add("show");
-  snd("click");
-}
-function hideComingSoon(e){
-  if(e===null||e.target===document.getElementById("csOverlay")){
-    document.getElementById("csOverlay").classList.remove("show");
-  }
+// ── DASHBOARD ──
+function showDashboard(){
+  if(!currentUser) return;
+  document.getElementById("dashAvatar").textContent=currentUser.username.charAt(0).toUpperCase();
+  document.getElementById("dashName").textContent=currentUser.username;
+  document.getElementById("dashEmail").textContent=currentUser.email;
+  document.getElementById("dashUser").textContent=currentUser.username;
+  document.getElementById("dashEmailStat").textContent=currentUser.email;
+  document.getElementById("dashJoined").textContent=currentUser.joined||"—";
+  go("s-dashboard");
 }
 
-window.addEventListener("load",bootLoad);
+// ── LOGOUT ──
+function authLogout(){
+  currentUser=null;
+  localStorage.removeItem("quizAuth");
+  go("s-menu");
+  notif("چوویتە دەرەوە ✓","suc");
+}
+
+// ── AUTO LOGIN on load ──
+function authCheck(){
+  const saved=localStorage.getItem("quizAuth");
+  if(saved){ try{ currentUser=JSON.parse(saved); }catch(e){} }
+}
+
+// Update Inline Quiz button to go to dashboard if logged in
+const origGo=go;
+function go(id){
+  origGo(id);
+  if(id==="s-auth"&&currentUser){ showDashboard(); }
+}
+
+
+window.addEventListener("load",function(){ bootLoad(); authCheck(); });
 </script>
 </body>
 </html>
