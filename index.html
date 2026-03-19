@@ -896,14 +896,16 @@ function savePlayers(){
 //  NAVIGATION
 // ═══════════════════════════════════════
 function go(id){
+  // if going to auth and already logged in — go to dashboard instead
+  if(id==="s-auth" && currentUser){ id="s-dashboard"; showDashboard(); return; }
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  const screen=document.getElementById(id);
+  if(screen) screen.classList.add("active");
   if(id==="s-players"){ initCountGrid(); buildNames(); }
   if(id==="s-cats")   {
     updateSBar(); renderCats();
     const b=document.getElementById("dblqCatsBanner");
     if(b) b.style.display=isSecondQ?"block":"none";
-    // hide market button during 2nd question
     const mb=document.getElementById("mktBtn");
     if(mb) mb.style.display=isSecondQ?"none":"";
   }
@@ -1957,13 +1959,6 @@ function authLogout(){
 function authCheck(){
   const saved=localStorage.getItem("quizAuth");
   if(saved){ try{ currentUser=JSON.parse(saved); }catch(e){} }
-}
-
-// Update Inline Quiz button to go to dashboard if logged in
-const origGo=go;
-function go(id){
-  origGo(id);
-  if(id==="s-auth"&&currentUser){ showDashboard(); }
 }
 
 
