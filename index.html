@@ -724,15 +724,18 @@ function bootLoad(){
 //  CONSTANTS
 // ═══════════════════════════════════════
 const ADMIN_PW="112233";
-const GEMINI_KEY="AIzaSyB2L9BijYi7jWzfWjxPC168plZZPcmHA_w"; // ← Key ی خۆت ئێرە بنێرە
+const GEMINI_KEY="AIzaSyB2L9BijYizfWjxPC168plZZPcmHA_w"; // ← Key ی خۆت ئێرە بنێرە
 // مۆدێلەکان بە ڕیز تاقی دەکرێنەوە
 const GEMINI_MODELS=[
-  "gemini-2.0-flash-lite",
-  "gemini-2.0-flash",
+  "gemini-2.0-flash-exp",
+  "gemini-exp-1206",
+  "gemini-1.5-flash-8b",
   "gemini-1.5-flash",
-  "gemini-1.5-flash-latest",
+  "gemini-1.5-pro",
+  "gemini-pro",
 ];
 function geminiUrl(model){
+  // v1beta supports all gemini models
   return "https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+GEMINI_KEY;
 }
 let aiCount=1;
@@ -1790,16 +1793,17 @@ Generate exactly ${aiCount} question(s) now:`;
         });
         const json=await resp.json();
         if(!resp.ok){
-          lastErr=json.error?.message||"HTTP "+resp.status;
-          // if quota or not found, try next model
-          if(json.error?.code===429||json.error?.code===404||json.error?.status==="NOT_FOUND"||json.error?.status==="RESOURCE_EXHAUSTED") continue;
-          throw new Error(lastErr);
+          lastErr="["+model+"] "+json.error?.message||"HTTP "+resp.status;
+          console.warn("Model failed:",model,json.error);
+          // always try next model
+          continue;
         }
         data=json;
         notif("✅ مۆدێل: "+model,"inf");
         break;
       }catch(innerE){
-        lastErr=innerE.message;
+        lastErr="["+model+"] "+innerE.message;
+        console.warn("Model exception:",model,innerE);
         continue;
       }
     }
