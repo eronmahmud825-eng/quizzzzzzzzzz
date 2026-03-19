@@ -725,7 +725,16 @@ function bootLoad(){
 // ═══════════════════════════════════════
 const ADMIN_PW="112233";
 const GEMINI_KEY="AIzaSyB2L9BijYi7jWzfWjxPC168plZZPcmHA_w"; // ← Key ی خۆت ئێرە بنێرە
-const GEMINI_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="+GEMINI_KEY;
+// مۆدێلەکان بە ڕیز تاقی دەکرێنەوە
+const GEMINI_MODELS=[
+  "gemini-2.0-flash-lite",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+  "gemini-1.5-flash-latest",
+];
+function geminiUrl(model){
+  return "https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+GEMINI_KEY;
+}
 let aiCount=1;
 const WAIT_S=10;
 const COLORS=["#ff6b7a","#5b9cf6","#4ade80","#fbbf24","#fb923c","#a78bfa","#22d3ee","#f472b6","#a3e635","#f87171"];
@@ -1767,19 +1776,34 @@ Example format:
 Generate exactly ${aiCount} question(s) now:`;
 
   try{
-    const resp=await fetch(GEMINI_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        contents:[{parts:[{text:prompt}]}],
-        generationConfig:{temperature:0.8,maxOutputTokens:8192}
-      })
-    });
-    if(!resp.ok){
-      const err=await resp.json();
-      throw new Error(err.error?.message||"HTTP "+resp.status);
+    // Try each model until one works
+    let data=null, lastErr="";
+    for(const model of GEMINI_MODELS){
+      try{
+        const resp=await fetch(geminiUrl(model),{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({
+            contents:[{parts:[{text:prompt}]}],
+            generationConfig:{temperature:0.8,maxOutputTokens:8192}
+          })
+        });
+        const json=await resp.json();
+        if(!resp.ok){
+          lastErr=json.error?.message||"HTTP "+resp.status;
+          // if quota or not found, try next model
+          if(json.error?.code===429||json.error?.code===404||json.error?.status==="NOT_FOUND"||json.error?.status==="RESOURCE_EXHAUSTED") continue;
+          throw new Error(lastErr);
+        }
+        data=json;
+        notif("✅ مۆدێل: "+model,"inf");
+        break;
+      }catch(innerE){
+        lastErr=innerE.message;
+        continue;
+      }
     }
-    const data=await resp.json();
+    if(!data) throw new Error("هەموو مۆدێلەکان هەڵە دان: "+lastErr);
     let raw=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
     // strip markdown fences if any
     raw=raw.replace(/```json/gi,"").replace(/```/g,"").trim();
