@@ -576,7 +576,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
       <p style="font-size:.76rem;color:var(--muted);margin-bottom:12px;line-height:1.6">
         هەموو پرسیارەکانت ئامادەن — یەک کلیک و هەمووی بۆ Firebase دەچن
       </p>
-      <button onclick="bulkImportAll()" id="bulkBtn" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#065f46,#059669);color:#fff;font-family:'Noto Sans Arabic',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(5,150,105,.35)">✅ &nbsp; هەموو 0 پرسیار زیاد بکە — یەک کلیک!</button>
+      <button onclick="bulkImportAll()" id="bulkBtn" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#065f46,#059669);color:#fff;font-family:'Noto Sans Arabic',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(5,150,105,.35)">✅ &nbsp; هەموو 165 پرسیار زیاد بکە — یەک کلیک!</button>
       <div id="bulkProgress" style="margin-top:10px;font-size:.78rem;color:var(--muted)"></div>
       
     </div>
@@ -2005,49 +2005,6 @@ function authCheck(){
 
 
 
-async function bulkImport(){
-  const btn=document.getElementById("bulkBtn");
-  const prog=document.getElementById("bulkProgress");
-  btn.disabled=true; btn.textContent="⏳ بارکردن...";
-  prog.textContent="";
-
-  // Group by cat+lvl
-  const groups={};
-  for(const q of BULK_QUESTIONS){
-    const k=q.cat+"_"+q.lvl;
-    if(!groups[k]) groups[k]={cat:q.cat,lvl:q.lvl,qs:[]};
-    groups[k].qs.push({question:q.q, answers:q.a, correct:q.c});
-  }
-
-  let saved=0, failed=0;
-  for(const {cat,lvl,qs} of Object.values(groups)){
-    try{
-      if(!allQ[cat]) allQ[cat]={};
-      const existing=toArr(allQ[cat][lvl]);
-      const combined=[...existing,...qs];
-      allQ[cat][lvl]=combined;
-      if(fbOK) await fbSaveQ(cat,lvl,combined);
-      else lsSave();
-      saved+=qs.length;
-      prog.textContent="✅ "+saved+" پرسیار سەیڤکرا...";
-      prog.style.color="#6effd8";
-    }catch(e){
-      failed+=qs.length;
-      console.error(cat,lvl,e);
-    }
-  }
-  lsSave();
-  btn.disabled=false;
-  btn.textContent="✅ تەواو بوو!";
-  prog.textContent="🎉 "+saved+" پرسیار سەیڤکرا!"+(failed?" ❌ "+failed+" هەڵە":"");
-  notif("🎉 "+saved+" پرسیار زیادکرا!","suc");
-  adminRenderList();
-}
-
-
-
-
-
 const ALL_QUESTIONS = [
   {cat:"general",lvl:"C",q:"کێ دامەزرێنەری گەورەترین ئیمپراتۆرییەتی وشکانی بوو لە ئاسیا؟",a:["تەمورلەنگ","جەنگیز خان","کوبلای خان","هۆلاکۆ"],c:1},
   {cat:"general",lvl:"B",q:"دیواری مەزنی چین بۆ بەرگری لە کام هۆز دروستکرا؟",a:["عەرەبەکان","مەغۆلەکان","فارسەکان","یۆنانییەکان"],c:1},
@@ -2266,6 +2223,64 @@ async function bulkImportAll(){
   prog.innerHTML="🎉 "+saved+" پرسیار بۆ Firebase نێردران!";
   notif("🎉 "+saved+" پرسیار سەیڤکرا!","suc");
   adminRenderList();
+}
+
+
+// ═══════════════════════════════════════
+//  DELETE ALL / DELETE CATEGORY
+// ═══════════════════════════════════════
+async function deleteAllQuestions(){
+  const pw=prompt("⚠️ بۆ سڕینەوەی هەموو پرسیارەکان — وشەی نهێنی بنووسە:");
+  if(pw===null) return;
+  if(pw!==ADMIN_PW){ notif("وشەی نهێنی هەڵەیە!","err"); return; }
+  if(!confirm("دڵنیایت؟ هەموو "+Object.keys(allQ).length+" کاتاگۆری دەسڕێتەوە!")) return;
+  notif("⏳ سڕینەوە...","inf");
+  try{
+    if(fbOK){
+      const r=await fetch(FB+"/questions.json",{method:"DELETE"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+    }
+    allQ={}; lsSave();
+    notif("✅ هەموو پرسیارەکان سڕایەوە","suc");
+    adminRenderList();
+  }catch(e){ notif("❌ "+e.message,"err"); }
+}
+
+function deleteCatQuestions(){
+  const w=document.getElementById("delCatWrap");
+  if(w) w.style.display=w.style.display==="none"?"block":"none";
+}
+
+async function confirmDelCat(){
+  const sel=document.getElementById("delCatSel");
+  const catId=sel?sel.value:"";
+  if(!catId){notif("کاتاگۆریەک هەڵبژێرە","err");return;}
+  const catName=sel.selectedOptions[0].text;
+  if(!confirm("دڵنیایت؟ هەموو پرسیارەکانی "+catName+" دەسڕێتەوە!")) return;
+  try{
+    if(fbOK){
+      const r=await fetch(FB+"/questions/"+catId+".json",{method:"DELETE"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+    }
+    if(allQ[catId]) delete allQ[catId];
+    lsSave();
+    const w=document.getElementById("delCatWrap");
+    if(w) w.style.display="none";
+    notif("✅ "+catName+" سڕایەوە","suc");
+    adminRenderList();
+  }catch(e){ notif("❌ "+e.message,"err"); }
+}
+
+// ═══════════════════════════════════════
+//  COMING SOON
+// ═══════════════════════════════════════
+function showComingSoon(){
+  const o=document.getElementById("csOverlay");
+  if(o) o.classList.add("show"); snd("click");
+}
+function hideComingSoon(e){
+  const o=document.getElementById("csOverlay");
+  if(o&&(e===null||e.target===o)) o.classList.remove("show");
 }
 
 window.addEventListener("load",function(){ bootLoad(); authCheck(); });
