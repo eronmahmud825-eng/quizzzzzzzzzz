@@ -276,6 +276,53 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .credits{margin-top:28px;font-size:.78rem;color:rgba(255,255,255,.25);letter-spacing:3px;text-align:center;font-family:'Oxanium',sans-serif;}
 .credits span{color:var(--gold);font-weight:700;letter-spacing:4px;}
 
+/* AI GENERATE SECTION */
+.ai-box{background:linear-gradient(135deg,rgba(29,78,216,.12),rgba(124,58,237,.12));
+  border:1.5px solid rgba(124,58,237,.35);border-radius:16px;padding:20px;margin-bottom:18px;}
+.ai-box h3{font-size:1rem;font-weight:800;color:#a78bfa;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.ai-lang{display:flex;gap:8px;margin-bottom:12px;}
+.ai-lang label{flex:1;padding:9px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);color:var(--muted);font-size:.85rem;font-weight:700;
+  cursor:pointer;text-align:center;transition:all .2s;}
+.ai-lang input{display:none;}
+.ai-lang input:checked+span{color:#a78bfa;}
+.ai-lang label:has(input:checked){border-color:rgba(124,58,237,.6);background:rgba(124,58,237,.14);color:#a78bfa;}
+.ai-count{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.ai-cnt-btn{padding:6px 14px;border-radius:8px;border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);color:var(--muted);font-family:'Oxanium',sans-serif;
+  font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.ai-cnt-btn.sel,.ai-cnt-btn:hover{border-color:#a78bfa;background:rgba(124,58,237,.18);color:#a78bfa;}
+.ai-gen-btn{width:100%;padding:13px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;
+  font-family:'Noto Sans Arabic',sans-serif;font-size:.97rem;font-weight:800;
+  cursor:pointer;transition:all .2s;box-shadow:0 6px 20px rgba(124,58,237,.35);}
+.ai-gen-btn:hover{transform:translateY(-2px);}
+.ai-gen-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.ai-progress{margin-top:12px;display:none;flex-direction:column;gap:6px;}
+.ai-prog-item{padding:8px 12px;border-radius:8px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);font-size:.8rem;color:var(--muted);
+  display:flex;align-items:center;gap:8px;}
+.ai-prog-item.done{border-color:rgba(6,214,160,.4);background:rgba(6,214,160,.08);color:#6effd8;}
+.ai-prog-item.err{border-color:rgba(230,57,70,.4);background:rgba(230,57,70,.08);color:#ffaaaa;}
+
+/* DANGER ZONE */
+.danger-zone{background:rgba(230,57,70,.07);border:1.5px solid rgba(230,57,70,.3);
+  border-radius:14px;padding:16px 18px;margin-bottom:18px;}
+.danger-zone h4{font-size:.85rem;font-weight:800;color:#f87171;margin-bottom:12px;
+  display:flex;align-items:center;gap:6px;letter-spacing:1px;}
+.danger-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.btn-danger{padding:10px 18px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff;
+  font-family:'Noto Sans Arabic',sans-serif;font-size:.85rem;font-weight:700;
+  cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(220,38,38,.3);}
+.btn-danger:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(220,38,38,.45);}
+.btn-danger:active{transform:translateY(0);}
+.btn-warn{padding:10px 18px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,#78350f,#d97706);color:#fff;
+  font-family:'Noto Sans Arabic',sans-serif;font-size:.85rem;font-weight:700;
+  cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(217,119,6,.3);}
+.btn-warn:hover{transform:translateY(-2px);}
+
 /* COMING SOON OVERLAY */
 .cs-overlay{display:none;position:fixed;inset:0;z-index:500;align-items:center;justify-content:center;
   background:rgba(0,0,0,.85);backdrop-filter:blur(16px);}
@@ -498,6 +545,90 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     </div>
     <button class="btn btn-gold" id="saveBtn" onclick="adminSave()" style="width:100%;margin-top:6px">💾 &nbsp; پاراستن</button>
     <hr class="divider">
+
+    <!-- AI GENERATE BOX -->
+    <div class="ai-box">
+      <h3>🤖 بە Gemini AI درووست بکە</h3>
+      <div id="cinemaNoteAI" style="display:none;padding:8px 12px;border-radius:9px;margin-bottom:10px;
+        background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.3);font-size:.76rem;color:var(--gold);line-height:1.6">
+        ★ سینەما: پرسیارەکان تەنها لە زنجیرەکانی<br>
+        <strong>The 100 · Game of Thrones · Squid Game · Alice in Borderland · Prison Break</strong>
+      </div>
+      <div class="fg" style="margin-bottom:10px"><label>پۆل</label>
+        <select id="aiCat">
+          <option value="">-- پۆلێک هەڵبژێرە --</option>
+          <option value="health">❤️ تەندرووستی</option>
+          <option value="sports">⚽ وەرزشی</option>
+          <option value="cinema">🎬 سینەما ★</option>
+          <option value="physics">⚡ فیزیا</option>
+          <option value="general">🌐 گشتی</option>
+          <option value="geography">🗺️ جوگرافیا</option>
+          <option value="logic">🧠 هزری</option>
+          <option value="tech">💻 تەکنەڵۆژیا</option>
+          <option value="chemistry">🧪 کیمیا</option>
+          <option value="universe">🌌 گەردوونی</option>
+          <option value="gaming">🎮 گەیمینگ</option>
+        </select>
+      </div>
+      <div class="fg" style="margin-bottom:10px"><label>ئاست</label>
+        <select id="aiLvl">
+          <option value="A">A — ئاسان</option>
+          <option value="B">B — ناوەند</option>
+          <option value="C">C — قورس</option>
+          <option value="D">D — زۆر قورس</option>
+        </select>
+      </div>
+      <div class="fg" style="margin-bottom:10px"><label>زمان</label>
+        <div class="ai-lang">
+          <label><input type="radio" name="aiLang" value="ku" checked><span>🇮🇶 کوردی</span></label>
+          <label><input type="radio" name="aiLang" value="en"><span>🇬🇧 English</span></label>
+          <label><input type="radio" name="aiLang" value="both"><span>🔀 هەردووکیان</span></label>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:12px"><label>چەند پرسیار؟</label>
+        <div class="ai-count" id="aiCountBtns">
+          <button class="ai-cnt-btn sel" onclick="setAiCount(1,this)">١</button>
+          <button class="ai-cnt-btn" onclick="setAiCount(3,this)">٣</button>
+          <button class="ai-cnt-btn" onclick="setAiCount(5,this)">٥</button>
+          <button class="ai-cnt-btn" onclick="setAiCount(10,this)">١٠</button>
+          <button class="ai-cnt-btn" onclick="setAiCount(15,this)">١٥</button>
+        </div>
+      </div>
+      <button class="ai-gen-btn" id="aiGenBtn" onclick="aiGenerate()">✨ &nbsp; درووستکردن بە AI</button>
+      <div class="ai-progress" id="aiProgress"></div>
+    </div>
+
+    <!-- DANGER ZONE -->
+    <div class="danger-zone">
+      <h4>⚠️ Danger Zone</h4>
+      <div class="danger-btns">
+        <button class="btn-danger" onclick="deleteAllQuestions()">🗑️ &nbsp; سڕینەوەی هەموو پرسیارەکان</button>
+        <button class="btn-warn"   onclick="deleteCatQuestions()">📁 &nbsp; سڕینەوەی کاتاگۆریەک</button>
+      </div>
+      <!-- Cat selector for single-cat delete -->
+      <div id="delCatWrap" style="display:none;margin-top:12px">
+        <select id="delCatSel" style="width:100%;padding:10px 14px;background:rgba(255,255,255,.07);
+          border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);
+          font-family:'Noto Sans Arabic',sans-serif;font-size:.9rem;outline:none;margin-bottom:8px">
+          <option value="">-- کاتاگۆری هەڵبژێرە --</option>
+          <option value="health">❤️ تەندرووستی</option>
+          <option value="sports">⚽ وەرزشی</option>
+          <option value="cinema">🎬 سینەما</option>
+          <option value="physics">⚡ فیزیا</option>
+          <option value="general">🌐 گشتی</option>
+          <option value="geography">🗺️ جوگرافیا</option>
+          <option value="logic">🧠 هزری</option>
+          <option value="tech">💻 تەکنەڵۆژیا</option>
+          <option value="chemistry">🧪 کیمیا</option>
+          <option value="universe">🌌 گەردوونی</option>
+          <option value="gaming">🎮 گەیمینگ</option>
+        </select>
+        <button class="btn-danger" style="width:100%" onclick="confirmDelCat()">
+          🗑️ &nbsp; سڕینەوەی ئەم کاتاگۆریە
+        </button>
+      </div>
+    </div>
+
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <span style="font-size:1rem;color:var(--muted);font-weight:700">پرسیارە پاراستراوەکان</span>
       <button onclick="adminReload()"
@@ -593,6 +724,9 @@ function bootLoad(){
 //  CONSTANTS
 // ═══════════════════════════════════════
 const ADMIN_PW="112233";
+const GEMINI_KEY="AIzaSyB1g4HepxjY8pvkz6ZyI6A9-fSBLKW2nBQ";
+const GEMINI_URL="https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+GEMINI_KEY;
+let aiCount=1;
 const WAIT_S=10;
 const COLORS=["#ff6b7a","#5b9cf6","#4ade80","#fbbf24","#fb923c","#a78bfa","#22d3ee","#f472b6","#a3e635","#f87171"];
 const EMOJIS=["🔴","🔵","🟢","🟡","🟠","🟣","🩵","🩷","🟩","❤️"];
@@ -1538,6 +1672,213 @@ function notif(msg,type){
   const el=document.getElementById("notif");
   el.textContent=msg; el.className="notif "+(type||"inf")+" show";
   clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),3200);
+}
+
+// ═══════════════════════════════════════
+//  GEMINI AI GENERATOR
+// ═══════════════════════════════════════
+function setAiCount(n,btn){
+  aiCount=n;
+  document.querySelectorAll(".ai-cnt-btn").forEach(b=>b.classList.remove("sel"));
+  btn.classList.add("sel");
+}
+
+const CAT_NAMES_KU={health:"تەندرووستی",sports:"وەرزش",cinema:"سینەما",physics:"فیزیا",
+  general:"زانستی گشتی",geography:"جوگرافیا",logic:"هزر و لۆژیک",tech:"تەکنەڵۆژیا",
+  chemistry:"کیمیا",universe:"گەردوون و ئەستێرەناسی",gaming:"ئەلیکترۆنی گەیم"};
+const CAT_NAMES_EN={health:"Health & Science",sports:"Sports",cinema:"Cinema & Movies",
+  physics:"Physics",general:"General Knowledge",geography:"Geography",
+  logic:"Logic & Riddles",tech:"Technology",chemistry:"Chemistry",
+  universe:"Universe & Astronomy",gaming:"Gaming"};
+const LEVEL_DESC={A:"very easy",B:"medium",C:"hard",D:"very hard / expert"};
+
+// Show cinema note when cinema selected
+document.addEventListener("change", function(e){
+  if(e.target && e.target.id==="aiCat"){
+    const note=document.getElementById("cinemaNoteAI");
+    if(note) note.style.display=e.target.value==="cinema"?"block":"none";
+  }
+});
+
+async function aiGenerate(){
+  const catId=document.getElementById("aiCat").value;
+  const lvl=document.getElementById("aiLvl").value;
+  const lang=document.querySelector('input[name="aiLang"]:checked').value;
+  if(!catId){notif("پۆلێک هەڵبژێرە","err");return;}
+
+  const btn=document.getElementById("aiGenBtn");
+  btn.disabled=true; btn.textContent="⏳ Gemini کار دەکات...";
+  const prog=document.getElementById("aiProgress");
+  prog.style.display="flex"; prog.innerHTML="";
+
+  // Build prompt based on language
+  let langInstruction="";
+  if(lang==="ku") langInstruction="Write ALL questions and answers in Kurdish (Sorani script, كوردی سۆرانی). Use natural Kurdish language.";
+  else if(lang==="en") langInstruction="Write ALL questions and answers in English.";
+  else langInstruction="Write questions alternating: half in Kurdish (Sorani, كوردی سۆرانی), half in English.";
+
+  const catKu=CAT_NAMES_KU[catId]||catId;
+  const catEn=CAT_NAMES_EN[catId]||catId;
+  const difficulty=LEVEL_DESC[lvl]||"medium";
+
+  // Special cinema series list
+  const CINEMA_SERIES=[
+    "The 100","Game of Thrones","Squid Game","Alice in Borderland","Prison Break"
+  ];
+
+  // Build topic instruction
+  let topicInstruction="";
+  if(catId==="cinema"){
+    // pick a random series for each batch, or spread across them
+    const seriesForBatch=[];
+    for(let i=0;i<aiCount;i++){
+      seriesForBatch.push(CINEMA_SERIES[i % CINEMA_SERIES.length]);
+    }
+    // group by series
+    const grouped={};
+    seriesForBatch.forEach(s=>{ grouped[s]=(grouped[s]||0)+1; });
+    const seriesBreakdown=Object.entries(grouped).map(([s,n])=>n+" question(s) from '"+s+"'").join(", ");
+    topicInstruction=`IMPORTANT: ALL questions must be about these specific TV series ONLY: ${CINEMA_SERIES.join(", ")}.
+Distribute the ${aiCount} questions like this: ${seriesBreakdown}.
+Each question must clearly relate to the plot, characters, actors, or events of its series.`;
+  } else {
+    topicInstruction=`Topic: "${catKu} / ${catEn}". Generate diverse, interesting questions covering different aspects of this topic.`;
+  }
+
+  const prompt=`You are a quiz question generator. Generate exactly ${aiCount} multiple-choice quiz question(s).
+Difficulty level: ${difficulty} (Level ${lvl}).
+${topicInstruction}
+${langInstruction}
+
+STRICT RULES:
+- Return ONLY a valid JSON array, no markdown, no explanation, no backticks
+- Each question object must have exactly these fields:
+  - "question": string (the question text)
+  - "answers": array of exactly 4 strings [A, B, C, D]
+  - "correct": number 0-3 (index of the correct answer)
+- Make sure all 4 answers are distinct and plausible
+- The correct answer must be 100% factually correct
+- Questions must be unique and not repeated
+- For cinema questions: include the series name in the question text so players know which show it's about
+
+Example format:
+[{"question":"...","answers":["A...","B...","C...","D..."],"correct":2}]
+
+Generate exactly ${aiCount} question(s) now:`;
+
+  try{
+    const resp=await fetch(GEMINI_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        contents:[{parts:[{text:prompt}]}],
+        generationConfig:{temperature:0.8,maxOutputTokens:8192}
+      })
+    });
+    if(!resp.ok){
+      const err=await resp.json();
+      throw new Error(err.error?.message||"HTTP "+resp.status);
+    }
+    const data=await resp.json();
+    let raw=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
+    // strip markdown fences if any
+    raw=raw.replace(/```json/gi,"").replace(/```/g,"").trim();
+    // find JSON array
+    const match=raw.match(/\[[\s\S]*\]/);
+    if(!match) throw new Error("JSON نەدۆزرایەوە لە وەڵامەکەدا");
+    const questions=JSON.parse(match[0]);
+    if(!Array.isArray(questions)||questions.length===0) throw new Error("پرسیار نەدۆزرایەوە");
+
+    // Save each question
+    let saved=0, failed=0;
+    for(const qi of questions){
+      const item={question:qi.question,answers:qi.answers,correct:qi.correct};
+      const div=document.createElement("div");
+      div.className="ai-prog-item";
+      div.innerHTML="⏳ "+qi.question.slice(0,50)+"...";
+      prog.appendChild(div);
+      try{
+        if(!allQ[catId]) allQ[catId]={};
+        if(!allQ[catId][lvl]) allQ[catId][lvl]=[];
+        allQ[catId][lvl].push(item);
+        if(fbOK) await fbSaveQ(catId,lvl,allQ[catId][lvl]);
+        else lsSave();
+        div.className="ai-prog-item done";
+        div.innerHTML="✅ "+qi.question.slice(0,55)+(qi.question.length>55?"...":"");
+        saved++;
+      }catch(e){
+        div.className="ai-prog-item err";
+        div.innerHTML="❌ "+qi.question.slice(0,45)+"... ("+e.message+")";
+        failed++;
+      }
+    }
+    lsSave();
+    notif("✅ "+saved+" پرسیار پارازرا"+(failed?" — "+failed+" هەڵە":""),"suc");
+    adminRenderList();
+  }catch(e){
+    const div=document.createElement("div");
+    div.className="ai-prog-item err";
+    div.innerHTML="❌ هەڵە: "+e.message;
+    prog.appendChild(div);
+    notif("Gemini هەڵە: "+e.message,"err");
+    console.error("Gemini error:",e);
+  }finally{
+    btn.disabled=false; btn.textContent="✨   درووستکردن بە AI";
+  }
+}
+
+// ═══════════════════════════════════════
+//  DELETE ALL / DELETE CATEGORY
+// ═══════════════════════════════════════
+
+async function deleteAllQuestions(){
+  if(!confirm("⚠️ دڵنیایت؟\nئەمە هەموو پرسیارەکان لە Firebase و localStorage دەسڕێتەوە!\n\nئەم کارە گەرێنەوەی نییە!")) return;
+  const second=confirm("دووبارە دڵنیابەرەوە — هەموو پرسیارەکان دەسڕێتەوە؟");
+  if(!second) return;
+
+  notif("⏳ سڕینەوە...","inf");
+  try{
+    if(fbOK){
+      // DELETE entire /questions node from Firebase
+      const r=await fetch(FB+"/questions.json",{method:"DELETE"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+    }
+    allQ={};
+    lsSave();
+    notif("✅ هەموو پرسیارەکان سڕایەوە","suc");
+    adminRenderList();
+  }catch(e){
+    notif("❌ هەڵە: "+e.message,"err");
+    console.error(e);
+  }
+}
+
+function deleteCatQuestions(){
+  const wrap=document.getElementById("delCatWrap");
+  wrap.style.display=wrap.style.display==="none"?"block":"none";
+}
+
+async function confirmDelCat(){
+  const catId=document.getElementById("delCatSel").value;
+  if(!catId){notif("کاتاگۆریەک هەڵبژێرە","err");return;}
+  const catName=document.getElementById("delCatSel").selectedOptions[0].text;
+  if(!confirm("⚠️ دڵنیایت؟\nهەموو پرسیارەکانی «"+catName+"» دەسڕێتەوە!")) return;
+
+  notif("⏳ سڕینەوە...","inf");
+  try{
+    if(fbOK){
+      const r=await fetch(FB+"/questions/"+catId+".json",{method:"DELETE"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+    }
+    if(allQ[catId]) delete allQ[catId];
+    lsSave();
+    document.getElementById("delCatWrap").style.display="none";
+    notif("✅ «"+catName+"» سڕایەوە","suc");
+    adminRenderList();
+  }catch(e){
+    notif("❌ هەڵە: "+e.message,"err");
+    console.error(e);
+  }
 }
 
 function showComingSoon(){
