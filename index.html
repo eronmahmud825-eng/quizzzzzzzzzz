@@ -724,18 +724,9 @@ function bootLoad(){
 //  CONSTANTS
 // ═══════════════════════════════════════
 const ADMIN_PW="112233";
-const GEMINI_KEY="AIzaSyBC8J7EwcmpAacLRTvBVPCpAO6AAA6suM8"; // ← Key ی خۆت ئێرە بنێرە
-// مۆدێلەکان بە ڕیز تاقی دەکرێنەوە
-const GEMINI_MODELS=[
-  {m:"gemini-2.0-flash",       v:"v1beta"},
-  {m:"gemini-2.0-flash-lite",  v:"v1beta"},
-  {m:"gemini-1.5-flash",       v:"v1beta"},
-  {m:"gemini-1.5-flash-8b",    v:"v1beta"},
-  {m:"gemini-1.5-pro",         v:"v1beta"},
-];
-function geminiUrl(model,ver){
-  return "https://generativelanguage.googleapis.com/"+ver+"/models/"+model+":generateContent?key="+GEMINI_KEY;
-}
+const AI_KEY="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"; // ← OpenRouter Key ئێرە بنێرە // ← Key ی خۆت ئێرە بنێرە
+// Claude API — زیاتر پشتیوانی
+const CLAUDE_URL="https://openrouter.ai/api/v1/chat/completions";
 let aiCount=1;
 const WAIT_S=10;
 const COLORS=["#ff6b7a","#5b9cf6","#4ade80","#fbbf24","#fb923c","#a78bfa","#22d3ee","#f472b6","#a3e635","#f87171"];
@@ -1778,34 +1769,44 @@ Generate exactly ${aiCount} question(s) now:`;
 
   try{
     // Try each model until one works
-    let data=null, lastErr="";
-    for(const {m,v} of GEMINI_MODELS){
+    // OpenRouter — free models: google/gemini-2.0-flash-exp:free, mistralai/mistral-7b-instruct:free
+    const FREE_MODELS=[
+      "google/gemini-2.0-flash-exp:free",
+      "google/gemini-flash-1.5:free",
+      "mistralai/mistral-7b-instruct:free",
+      "meta-llama/llama-3.1-8b-instruct:free",
+      "qwen/qwen-2.5-72b-instruct:free",
+    ];
+    let raw="", lastModelErr="";
+    for(const freeModel of FREE_MODELS){
       try{
-        const resp=await fetch(geminiUrl(m,v),{
+        const resp=await fetch(CLAUDE_URL,{
           method:"POST",
-          headers:{"Content-Type":"application/json"},
+          headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+AI_KEY,
+            "HTTP-Referer":"https://quizgame.app",
+            "X-Title":"Quiz Game"
+          },
           body:JSON.stringify({
-            contents:[{parts:[{text:prompt}]}],
-            generationConfig:{temperature:0.8,maxOutputTokens:8192}
+            model:freeModel,
+            max_tokens:8192,
+            messages:[{role:"user",content:prompt}]
           })
         });
-        const json=await resp.json();
-        if(!resp.ok){
-          lastErr="["+m+"] "+(json.error?.message||"HTTP "+resp.status);
-          console.warn("Model failed:",m,json.error);
+        const data=await resp.json();
+        if(!resp.ok||data.error){
+          lastModelErr="["+freeModel+"] "+(data.error?.message||"HTTP "+resp.status);
           continue;
         }
-        data=json;
-        notif("✅ "+m,"inf");
-        break;
-      }catch(innerE){
-        lastErr="["+m+"] "+innerE.message;
-        console.warn("Model err:",m,innerE);
+        raw=data.choices?.[0]?.message?.content||"";
+        if(raw){ notif("✅ "+freeModel.split("/")[1],"inf"); break; }
+      }catch(e){
+        lastModelErr="["+freeModel+"] "+e.message;
         continue;
       }
     }
-    if(!data) throw new Error("هەموو مۆدێلەکان هەڵە دان: "+lastErr);
-    let raw=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
+    if(!raw) throw new Error("هەموو مۆدێلەکان هەڵە دان: "+lastModelErr);
     // strip markdown fences if any
     raw=raw.replace(/```json/gi,"").replace(/```/g,"").trim();
     // find JSON array
