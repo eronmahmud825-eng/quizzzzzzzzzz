@@ -724,19 +724,17 @@ function bootLoad(){
 //  CONSTANTS
 // ═══════════════════════════════════════
 const ADMIN_PW="112233";
-const GEMINI_KEY="AIzaSyB2L9BijYi7jWzfWjxPC168plZZPcmHA_w"; // ← Key ی خۆت ئێرە بنێرە
+const GEMINI_KEY="AIzaSyBC8J7EwcmpAacLRTvBVPCpAO6AAA6suM8"; // ← Key ی خۆت ئێرە بنێرە
 // مۆدێلەکان بە ڕیز تاقی دەکرێنەوە
 const GEMINI_MODELS=[
-  "gemini-2.0-flash-exp",
-  "gemini-exp-1206",
-  "gemini-1.5-flash-8b",
-  "gemini-1.5-flash",
-  "gemini-1.5-pro",
-  "gemini-pro",
+  {m:"gemini-2.0-flash",       v:"v1beta"},
+  {m:"gemini-2.0-flash-lite",  v:"v1beta"},
+  {m:"gemini-1.5-flash",       v:"v1beta"},
+  {m:"gemini-1.5-flash-8b",    v:"v1beta"},
+  {m:"gemini-1.5-pro",         v:"v1beta"},
 ];
-function geminiUrl(model){
-  // v1beta supports all gemini models
-  return "https://generativelanguage.googleapis.com/v1beta/models/"+model+":generateContent?key="+GEMINI_KEY;
+function geminiUrl(model,ver){
+  return "https://generativelanguage.googleapis.com/"+ver+"/models/"+model+":generateContent?key="+GEMINI_KEY;
 }
 let aiCount=1;
 const WAIT_S=10;
@@ -1781,9 +1779,9 @@ Generate exactly ${aiCount} question(s) now:`;
   try{
     // Try each model until one works
     let data=null, lastErr="";
-    for(const model of GEMINI_MODELS){
+    for(const {m,v} of GEMINI_MODELS){
       try{
-        const resp=await fetch(geminiUrl(model),{
+        const resp=await fetch(geminiUrl(m,v),{
           method:"POST",
           headers:{"Content-Type":"application/json"},
           body:JSON.stringify({
@@ -1793,17 +1791,16 @@ Generate exactly ${aiCount} question(s) now:`;
         });
         const json=await resp.json();
         if(!resp.ok){
-          lastErr="["+model+"] "+json.error?.message||"HTTP "+resp.status;
-          console.warn("Model failed:",model,json.error);
-          // always try next model
+          lastErr="["+m+"] "+(json.error?.message||"HTTP "+resp.status);
+          console.warn("Model failed:",m,json.error);
           continue;
         }
         data=json;
-        notif("✅ مۆدێل: "+model,"inf");
+        notif("✅ "+m,"inf");
         break;
       }catch(innerE){
-        lastErr="["+model+"] "+innerE.message;
-        console.warn("Model exception:",model,innerE);
+        lastErr="["+m+"] "+innerE.message;
+        console.warn("Model err:",m,innerE);
         continue;
       }
     }
