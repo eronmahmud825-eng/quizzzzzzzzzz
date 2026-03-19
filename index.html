@@ -576,7 +576,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
       <p style="font-size:.76rem;color:var(--muted);margin-bottom:12px;line-height:1.6">
         هەموو پرسیارەکانت ئامادەن — یەک کلیک و هەمووی بۆ Firebase دەچن
       </p>
-      <button onclick="bulkImportAll()" id="bulkBtn" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#065f46,#059669);color:#fff;font-family:'Noto Sans Arabic',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(5,150,105,.35)">✅ &nbsp; هەموو 165 پرسیار زیاد بکە — یەک کلیک!</button>
+      <button onclick="bulkImportAll()" id="bulkBtn" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#065f46,#059669);color:#fff;font-family:'Noto Sans Arabic',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;box-shadow:0 6px 20px rgba(5,150,105,.35)">✅ &nbsp; هەموو ١٦٥ پرسیار زیاد بکە — یەک کلیک!</button>
       <div id="bulkProgress" style="margin-top:10px;font-size:.78rem;color:var(--muted)"></div>
       
     </div>
@@ -2186,42 +2186,63 @@ const ALL_QUESTIONS = [
 async function bulkImportAll(){
   const btn=document.getElementById("bulkBtn");
   const prog=document.getElementById("bulkProgress");
-  btn.disabled=true; btn.textContent="⏳ بارکردن...";
-  prog.innerHTML=""; prog.style.color="var(--muted)";
+  btn.disabled=true; btn.textContent="⏳ ١ — سڕینەوەی کۆنەکان...";
+  prog.innerHTML="⏳ سەرەتا هەموو کۆنەکان دەسڕێتەوە...";
+  prog.style.color="var(--muted)";
 
-  // 1. Delete ALL existing questions from Firebase
+  // STEP 1: Delete everything from Firebase first
   try{
     if(fbOK){
-      await fetch(FB+"/questions.json",{method:"DELETE"});
+      const dr=await fetch(FB+"/questions.json",{method:"DELETE"});
+      console.log("Delete status:",dr.status);
     }
     allQ={};
-  }catch(e){ console.warn("Delete failed:",e); }
+    lsSave();
+    prog.innerHTML="✅ کۆنەکان سڕایەوە — ئێستا نوێیەکان دەنێرم...";
+    await new Promise(r=>setTimeout(r,800)); // wait for Firebase
+  }catch(e){
+    console.warn("Delete err:",e);
+    prog.innerHTML="⚠️ سڕینەوە هەڵات — بەداخەوە بەردەوام دەبم...";
+  }
 
-  // 2. Group by cat+lvl
+  // STEP 2: Build clean groups from ALL_QUESTIONS (no _fbKey!)
   const groups={};
   for(const q of ALL_QUESTIONS){
     const k=q.cat+"_"+q.lvl;
     if(!groups[k]) groups[k]={cat:q.cat,lvl:q.lvl,qs:[]};
+    // Clean object — no _fbKey!
     groups[k].qs.push({question:q.q, answers:q.a, correct:q.c});
   }
 
-  // 3. Save fresh to Firebase
-  let saved=0, total=ALL_QUESTIONS.length;
+  // STEP 3: Save each group
+  btn.textContent="⏳ ٢ — نێردنی پرسیارەکان...";
+  let saved=0, total=ALL_QUESTIONS.length, failed=0;
   for(const {cat,lvl,qs} of Object.values(groups)){
     try{
       if(!allQ[cat]) allQ[cat]={};
-      allQ[cat][lvl]=qs;
+      allQ[cat][lvl]=qs; // store clean
       if(fbOK) await fbSaveQ(cat,lvl,qs);
       saved+=qs.length;
-      prog.innerHTML="✅ "+saved+" / "+total+" پرسیار سەیڤکرا...";
+      prog.innerHTML="✅ "+saved+" / "+total+" — ("+cat+" / "+lvl+": "+qs.length+" پرسیار)";
       prog.style.color="#6effd8";
-    }catch(e){ console.error(cat,lvl,e); }
+      await new Promise(r=>setTimeout(r,100));
+    }catch(e){
+      failed+=qs.length;
+      prog.innerHTML="❌ هەڵە لە "+cat+"/"+lvl+": "+e.message;
+      console.error(cat,lvl,e);
+    }
   }
+
   lsSave();
   btn.disabled=false;
-  btn.textContent="✅ تەواو بوو!";
-  prog.innerHTML="🎉 "+saved+" پرسیار بۆ Firebase نێردران!";
-  notif("🎉 "+saved+" پرسیار سەیڤکرا!","suc");
+  btn.textContent="✅ "+total+" پرسیار زیاد بکە";
+  if(failed===0){
+    prog.innerHTML="🎉 هەموو "+saved+" پرسیار بەسەرکەوتوویی بۆ Firebase نێردران!";
+    notif("🎉 "+saved+" پرسیار زیادکرا!","suc");
+  } else {
+    prog.innerHTML="⚠️ "+saved+" پارازرا، "+failed+" هەڵە";
+    notif("⚠️ "+saved+" پارازرا، "+failed+" هەڵە","inf");
+  }
   adminRenderList();
 }
 
