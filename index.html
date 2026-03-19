@@ -2222,6 +2222,11 @@ async function bulkImport2(){
   const prog=document.getElementById("bulkProgress2");
   btn.disabled=true; btn.textContent="⏳ بارکردن...";
   prog.textContent="";
+  prog.style.color="var(--muted)";
+
+  // Reload fresh from Firebase first
+  try{ allQ=await fbLoadAll(); lsSave(); }catch(e){ allQ=lsLoad(); }
+
   const groups={};
   for(const q of BULK_QUESTIONS2){
     const k=q.cat+"_"+q.lvl;
@@ -2232,21 +2237,88 @@ async function bulkImport2(){
   for(const {cat,lvl,qs} of Object.values(groups)){
     try{
       if(!allQ[cat]) allQ[cat]={};
-      const existing=toArr(allQ[cat][lvl]);
-      const combined=[...existing,...qs];
+      const raw=allQ[cat][lvl];
+      const existing=!raw?[]:Array.isArray(raw)?raw.filter(Boolean):Object.values(raw).filter(Boolean);
+      const cleanExisting=existing.map(q=>({question:q.question,answers:q.answers,correct:q.correct}));
+      const combined=[...cleanExisting,...qs];
       allQ[cat][lvl]=combined;
       if(fbOK) await fbSaveQ(cat,lvl,combined);
       else lsSave();
       saved+=qs.length;
-      prog.textContent="✅ "+saved+" پرسیار سەیڤکرا...";
+      prog.textContent="✅ "+saved+" پرسیار سەیڤکرا... ("+cat+"/"+lvl+": "+combined.length+" کۆتایی)";
       prog.style.color="#6effd8";
-    }catch(e){ console.error(e); }
+    }catch(e){ console.error(cat,lvl,e); }
   }
   lsSave();
   btn.disabled=false; btn.textContent="✅ تەواو بوو!";
-  prog.textContent="🎉 "+saved+" پرسیار زیادکرا!";
+  prog.textContent="🎉 "+saved+" پرسیاری نوێ زیادکرا!";
   notif("🎉 "+saved+" پرسیار زیادکرا!","suc");
   adminRenderList();
+}
+
+
+// ═══════════════════════════════════════
+//  DELETE ALL / DELETE CATEGORY
+// ═══════════════════════════════════════
+async function deleteAllQuestions(){
+  if(!confirm("⚠️ دڵنیایت؟\nئەمە هەموو پرسیارەکان دەسڕێتەوە!\nئەم کارە گەرێنەوەی نییە!")) return;
+  if(!confirm("دووبارە دڵنیابەرەوە — هەموو پرسیارەکان دەسڕێتەوە؟")) return;
+  notif("⏳ سڕینەوە...","inf");
+  try{
+    if(fbOK){
+      const r=await fetch(FB+"/questions.json",{method:"DELETE"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+    }
+    allQ={};
+    lsSave();
+    notif("✅ هەموو پرسیارەکان سڕایەوە","suc");
+    adminRenderList();
+  }catch(e){
+    notif("❌ هەڵە: "+e.message,"err");
+    console.error(e);
+  }
+}
+
+function deleteCatQuestions(){
+  const wrap=document.getElementById("delCatWrap");
+  if(wrap) wrap.style.display=wrap.style.display==="none"?"block":"none";
+}
+
+async function confirmDelCat(){
+  const sel=document.getElementById("delCatSel");
+  const catId=sel?sel.value:"";
+  if(!catId){notif("کاتاگۆریەک هەڵبژێرە","err");return;}
+  const catName=sel.selectedOptions[0].text;
+  if(!confirm("⚠️ دڵنیایت؟\nهەموو پرسیارەکانی «"+catName+"» دەسڕێتەوە!")) return;
+  notif("⏳ سڕینەوە...","inf");
+  try{
+    if(fbOK){
+      const r=await fetch(FB+"/questions/"+catId+".json",{method:"DELETE"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+    }
+    if(allQ[catId]) delete allQ[catId];
+    lsSave();
+    const wrap=document.getElementById("delCatWrap");
+    if(wrap) wrap.style.display="none";
+    notif("✅ «"+catName+"» سڕایەوە","suc");
+    adminRenderList();
+  }catch(e){
+    notif("❌ هەڵە: "+e.message,"err");
+    console.error(e);
+  }
+}
+
+// ═══════════════════════════════════════
+//  COMING SOON
+// ═══════════════════════════════════════
+function showComingSoon(){
+  const o=document.getElementById("csOverlay");
+  if(o) o.classList.add("show");
+  snd("click");
+}
+function hideComingSoon(e){
+  const o=document.getElementById("csOverlay");
+  if(o&&(e===null||e.target===o)) o.classList.remove("show");
 }
 
 window.addEventListener("load",function(){ bootLoad(); authCheck(); });
