@@ -314,10 +314,11 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .auth-ok.show{display:block;}
 .verify-icon{font-size:3.5rem;text-align:center;margin-bottom:12px;}
 .verify-code-wrap{display:flex;gap:8px;justify-content:center;margin:16px 0;}
+.verify-code-wrap{direction:ltr !important;}
 .verify-digit{width:48px;height:56px;border-radius:12px;border:2px solid rgba(255,255,255,.2);
   background:rgba(255,255,255,.07);color:var(--text);font-family:'Oxanium',sans-serif;
   font-size:1.6rem;font-weight:800;text-align:center;outline:none;
-  transition:border-color .2s;}
+  transition:border-color .2s;direction:ltr;}
 .verify-digit:focus{border-color:var(--gold);}
 
 /* DASHBOARD */
@@ -697,11 +698,23 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 
   <div class="dash-card">
     <div class="dash-coming">
-      <div class="dc-icon">🚀</div>
+      <div class="dc-icon" style="animation:float 2s ease-in-out infinite">🏆</div>
       <h2>COMING SOON</h2>
-      <p>Inline Quiz — بەزووی دێت!<br>
-      بەرپرسانە پرسیار بدە، خاڵ کەسب بکە،<br>
-      لە لیستی باشترینان بێ.</p>
+      <p style="color:var(--muted);font-size:.88rem;line-height:1.9">
+        ئێستا قۆناغی دامەزراندنی ئەکاونتت تەواو بوو ✅<br>
+        <span style="color:var(--gold);font-weight:700">Inline Quiz</span> بەزووی دێت —<br>
+        پێشبڕکێ، خاڵ کەسب بکە و ببێ بە پاڵەوان! 🥇
+      </p>
+      <div style="margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <span style="padding:6px 16px;border-radius:20px;font-size:.75rem;font-weight:700;
+          background:rgba(6,214,160,.12);border:1px solid rgba(6,214,160,.3);color:#6effd8">
+          ✅ ئەکاونت دروستکراوە
+        </span>
+        <span style="padding:6px 16px;border-radius:20px;font-size:.75rem;font-weight:700;
+          background:rgba(240,180,41,.12);border:1px solid rgba(240,180,41,.3);color:var(--gold)">
+          ⏳ Inline Quiz — بەزووی
+        </span>
+      </div>
     </div>
   </div>
 </div>
@@ -1763,35 +1776,42 @@ function authClearMsg(){authMsg("",false);document.getElementById("authOk").clas
 function genCode(){ return String(Math.floor(100000+Math.random()*900000)); }
 
 // ── send verification email via EmailJS (free) ──
-// We store code in Firebase under /verify_codes/{uid}
+const EMAILJS_SERVICE  = "service_quizgame";
+const EMAILJS_TEMPLATE = "template_quizverify";
+const EMAILJS_PUBLIC   = "YOUR_EMAILJS_PUBLIC_KEY"; // ← ئێرە Key ی EmailJS بنێرە
+
 async function sendVerifyEmail(email, code, username){
   // Store code in Firebase temporarily
   const uid = btoa(email).replace(/[^a-zA-Z0-9]/g,"").slice(0,28);
-  await fetch(FB+"/verify_codes/"+uid+".json",{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({code, email, username, ts: Date.now()})
-  });
-
-  // Send email via EmailJS free tier
   try{
-    await fetch("https://api.emailjs.com/api/v1.0/email/send",{
-      method:"POST",
+    await fetch(FB+"/verify_codes/"+uid+".json",{
+      method:"PUT",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        service_id:"service_quizgame",
-        template_id:"template_verify",
-        user_id:"YOUR_EMAILJS_PUBLIC_KEY",
-        template_params:{
-          to_email: email,
-          to_name: username,
-          verify_code: code,
-        }
-      })
+      body:JSON.stringify({code, email, username, ts: Date.now()})
     });
-  }catch(e){
-    // EmailJS not configured — show code in UI for testing
-    console.log("Verify code (dev mode):", code);
+  }catch(e){ console.warn("Firebase store err:",e); }
+
+  // Send real email via EmailJS
+  if(EMAILJS_PUBLIC !== "YOUR_EMAILJS_PUBLIC_KEY"){
+    try{
+      const r=await fetch("https://api.emailjs.com/api/v1.0/email/send",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          service_id: EMAILJS_SERVICE,
+          template_id: EMAILJS_TEMPLATE,
+          user_id: EMAILJS_PUBLIC,
+          template_params:{
+            to_email: email,
+            to_name: username,
+            verify_code: code,
+            reply_to: "noreply@quizgame.app"
+          }
+        })
+      });
+      if(r.ok) console.log("Email sent ✅");
+      else console.warn("EmailJS err:", await r.text());
+    }catch(e){ console.warn("EmailJS exception:",e); }
   }
   return uid;
 }
@@ -1869,7 +1889,13 @@ async function authSubmit(){
       document.getElementById("verifySubText").textContent=
         "کۆدی ٦ ژمارەیی بۆ "+email+" نێردراوە";
 
-      // Show code in notif for testing (remove in production)
+      // Show code visibly in dev box
+      const devBox=document.getElementById("devCodeBox");
+      const devNum=document.getElementById("devCodeNum");
+      if(devBox&&devNum){
+        devBox.style.display="block";
+        devNum.textContent=code;
+      }
       notif("🔑 کۆدی تێستکردن: "+code,"inf");
 
       go("s-verify");
