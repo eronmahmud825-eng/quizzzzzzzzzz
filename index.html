@@ -712,27 +712,37 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     <div class="dash-stat"><span class="ds-label">✅ دۆخ</span><span class="ds-val" style="color:var(--ok)">چالاک</span></div>
   </div>
 
-  <div class="dash-card">
-    <div class="dash-coming">
-      <div class="dc-icon" style="animation:float 2s ease-in-out infinite">🏆</div>
-      <h2>COMING SOON</h2>
-      <p style="color:var(--muted);font-size:.88rem;line-height:1.9">
-        ئێستا قۆناغی دامەزراندنی ئەکاونتت تەواو بوو ✅<br>
-        <span style="color:var(--gold);font-weight:700">Inline Quiz</span> بەزووی دێت —<br>
-        پێشبڕکێ، خاڵ کەسب بکە و ببێ بە پاڵەوان! 🥇
+  <div class="dash-card" style="background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(29,78,216,.08));border-color:rgba(124,58,237,.3)">
+    <div style="text-align:center;padding:12px 8px">
+      <div style="font-size:2.8rem;margin-bottom:10px;animation:float 2s ease-in-out infinite">⚡</div>
+      <div style="font-family:'Oxanium',sans-serif;font-size:1.4rem;font-weight:900;
+        background:linear-gradient(135deg,#a78bfa,#1d4ed8);-webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;margin-bottom:8px">Inline Quiz</div>
+      <p style="color:var(--muted);font-size:.82rem;margin-bottom:20px;line-height:1.7">
+        پێشبڕکێ لەگەڵ هەموو یاریزانانی ئۆنلاین — ٥ بەش، پرسیارە جۆراوجۆرەکان، خاڵ کەسب بکە و ببێ بە پاڵەوان!
       </p>
-      <div style="margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <span style="padding:6px 16px;border-radius:20px;font-size:.75rem;font-weight:700;
-          background:rgba(6,214,160,.12);border:1px solid rgba(6,214,160,.3);color:#6effd8">
-          ✅ ئەکاونت دروستکراوە
-        </span>
-        <span style="padding:6px 16px;border-radius:20px;font-size:.75rem;font-weight:700;
-          background:rgba(240,180,41,.12);border:1px solid rgba(240,180,41,.3);color:var(--gold)">
-          ⏳ Inline Quiz — بەزووی
-        </span>
+      <button onclick="iqEnterLobby()" style="width:100%;padding:15px;border:none;border-radius:14px;
+        background:linear-gradient(135deg,#5b21b6,var(--purple));color:#fff;
+        font-family:'Noto Sans Arabic',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;
+        box-shadow:0 6px 20px rgba(124,58,237,.4);transition:all .2s">
+        🚀 &nbsp; بەشداربوون لە Inline Quiz
+      </button>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <span style="padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;
+          background:rgba(6,214,160,.1);border:1px solid rgba(6,214,160,.25);color:#6effd8">📋 MCQ</span>
+        <span style="padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;
+          background:rgba(29,78,216,.1);border:1px solid rgba(29,78,216,.25);color:#93c5fd">✅ ڕاست/هەڵە</span>
+        <span style="padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;
+          background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.25);color:#fca5a5">🔴 Buzzer</span>
+        <span style="padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;
+          background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);color:#c4b5fd">📊 ڕیزکردن</span>
+        <span style="padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;
+          background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);color:#67e8f9">🎯 Multi Radio</span>
       </div>
     </div>
   </div>
+
+  <div style="height:20px"></div>
 </div>
 
 
@@ -2260,7 +2270,794 @@ async function forceResetAndImport(){
   adminRenderList();
 }
 
+
+// ═══════════════════════════════════════════════════════
+//  INLINE QUIZ ENGINE
+// ═══════════════════════════════════════════════════════
+const IQ_ADMIN_PW = "2121";
+let iqUser = null;          // {uid, name, email}
+let iqScore = 0;
+let iqOnline = 0;
+let iqState = null;
+let iqSectionQs = [];
+let iqCurQIdx = 0;
+let iqAnswered = false;
+let iqBuzzerIsMe = false;
+let iqQ3Spec = false;
+let iqTimerI = null;
+let iqPollI = null;
+let iqWordTimer = null;
+let iqDragSrc = null;
+let iqQuestions = {q1:[],q2:[],q3:[],q4:[],q5:[]};
+let iqScreenStack = [];
+
+// ── IQ helpers ──
+function iqGoScreen(id){
+  document.querySelectorAll('.iq-screen').forEach(s=>s.classList.remove('iq-active'));
+  const el = document.getElementById(id);
+  if(el) el.classList.add('iq-active');
+  // Hide main screens when in IQ
+  const inIQ = id && id.startsWith('iq-');
+  document.querySelectorAll('.screen').forEach(s=>{
+    if(inIQ) s.style.display='none';
+  });
+}
+function iqExit(){
+  document.querySelectorAll('.iq-screen').forEach(s=>s.classList.remove('iq-active'));
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='');
+  document.getElementById('iq-header').classList.remove('iq-vis');
+  document.getElementById('iq-timer-bar').classList.remove('iq-vis');
+  document.getElementById('iq-spec-banner').style.display='none';
+  clearInterval(iqPollI); clearInterval(iqTimerI); clearInterval(iqWordTimer);
+  // go back to dashboard
+  showDashboard();
+}
+function iqNotif(msg,type){ notif(msg,type||'inf'); }
+async function iqFbGet(path){ return fbGet(path); }
+async function iqFbSet(path,data){
+  await fetch(FB+path+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+}
+async function iqFbUpdate(path,data){
+  await fetch(FB+path+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+}
+function iqShowWait(txt){
+  document.getElementById('iq-wait').classList.add('show');
+  document.getElementById('iq-wait-txt').textContent = txt||'چاوەڕوانی...';
+}
+function iqStopWait(){ document.getElementById('iq-wait').classList.remove('show'); }
+
+// ── ENTER LOBBY (from dashboard button) ──
+function iqEnterLobby(){
+  if(!currentUser){ notif('تکایە سەرەتا داخل ببە','err'); return; }
+  iqUser = {uid:currentUser.uid, name:currentUser.username||currentUser.email, email:currentUser.email};
+  iqScore = 0;
+  // Register online
+  iqFbSet('/inline_game/online/'+iqUser.uid, {name:iqUser.name, score:0, ts:Date.now()});
+  // Load questions
+  iqFbGet('/inline_game/questions').then(qs=>{ if(qs) iqQuestions=qs; }).catch(()=>{});
+  // Start polling
+  iqStartPolling();
+  // Check current state
+  iqFbGet('/inline_game/state').then(state=>{
+    if(!state || state.phase==='idle'){
+      iqGoScreen('iq-s-countdown');
+    } else {
+      iqHandleState(state);
+    }
+  }).catch(()=>{ iqGoScreen('iq-s-countdown'); });
+}
+
+// ── ADMIN ENTRY ──
+function iqGoAdmin(){
+  document.querySelectorAll('.iq-screen').forEach(s=>s.classList.remove('iq-active'));
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  document.getElementById('iq-s-admin-login').classList.add('iq-active');
+}
+function iqCheckAdminPw(){
+  const v = document.getElementById('iq-admin-pw').value;
+  if(v===IQ_ADMIN_PW){
+    document.getElementById('iq-admin-pw').value='';
+    iqLoadAdminData();
+    iqGoScreen('iq-s-admin');
+  } else {
+    document.getElementById('iq-admin-err').textContent='وشەی نهێنی هەڵەیە';
+  }
+}
+async function iqLoadAdminData(){
+  try{
+    const qs = await iqFbGet('/inline_game/questions');
+    if(qs){ iqQuestions=qs; iqRenderAdminLists(); }
+    const state = await iqFbGet('/inline_game/state');
+    if(state && state.phase!=='idle'){
+      document.getElementById('iq-live-dot').style.background='var(--ok)';
+      document.getElementById('iq-live-status').textContent='چالاک: '+state.phase;
+    }
+  }catch(e){}
+}
+function iqRenderAdminLists(){
+  for(let i=1;i<=5;i++){
+    const el=document.getElementById('iq-adm-q'+i+'-list');
+    if(!el) continue;
+    const qs=(iqQuestions['q'+i]||[]);
+    el.innerHTML=qs.map((q,j)=>`
+      <div class="iq-saved-q">
+        <span style="flex:1;text-align:right;font-size:.78rem">${j+1}. ${(q.question||'').substring(0,45)}...</span>
+        <button class="iq-del-q" onclick="iqDelQ(${i},${j})">🗑</button>
+      </div>`).join('');
+  }
+}
+function iqDelQ(sec,idx){
+  if(!iqQuestions['q'+sec]) return;
+  iqQuestions['q'+sec].splice(idx,1);
+  iqRenderAdminLists();
+  iqNotif('پرسیار سڕایەوە','inf');
+}
+async function iqSaveQ(sec){
+  const qEl=document.getElementById('iq-adm-q'+sec+'-q');
+  const q=(qEl?.value||'').trim();
+  if(!q){ iqNotif('پرسیار بنووسە','err'); return; }
+  let item={question:q};
+  if(sec===1){
+    const opts=(document.getElementById('iq-adm-q1-opts').value||'').split('|').map(o=>o.trim()).filter(Boolean);
+    const c=parseInt(document.getElementById('iq-adm-q1-c').value)-1;
+    if(opts.length<2){ iqNotif('لانیکەم ٢ وەڵام','err'); return; }
+    item={...item,options:opts,correct:c};
+  } else if(sec===2){
+    item={...item,correct:document.getElementById('iq-adm-q2-c').value==='true'};
+  } else if(sec===3){
+    const opts=(document.getElementById('iq-adm-q3-opts').value||'').split('|').map(o=>o.trim()).filter(Boolean);
+    const c=parseInt(document.getElementById('iq-adm-q3-c').value)-1;
+    item={...item,options:opts,correct:c};
+  } else if(sec===4){
+    const items=(document.getElementById('iq-adm-q4-items').value||'').split('|').map(o=>o.trim()).filter(Boolean);
+    item={...item,items};
+  } else if(sec===5){
+    const opts=(document.getElementById('iq-adm-q5-opts').value||'').split('|').map(o=>o.trim()).filter(Boolean);
+    const c=(document.getElementById('iq-adm-q5-c').value||'').split('|').map(n=>parseInt(n.trim())-1).filter(n=>!isNaN(n));
+    item={...item,options:opts,correct:c};
+  }
+  if(!iqQuestions['q'+sec]) iqQuestions['q'+sec]=[];
+  iqQuestions['q'+sec].push(item);
+  await iqFbSet('/inline_game/questions/q'+sec, iqQuestions['q'+sec]);
+  iqRenderAdminLists();
+  if(qEl) qEl.value='';
+  iqNotif('✅ پرسیار پاراستراو','suc');
+}
+async function iqSetCountdown(){
+  const val=parseInt(document.getElementById('iq-adm-cd').value)||30;
+  await iqFbSet('/inline_game/state',{phase:'countdown',startAt:Date.now()+(val*1000),cdTotal:val});
+  iqNotif('▶ کاوچبەر دەستپێکرد: '+val+' چرکە','suc');
+}
+async function iqLaunchGame(){
+  await iqFbSet('/inline_game/questions', iqQuestions);
+  await iqFbSet('/inline_game/answers', {});
+  await iqFbSet('/inline_game/state', {phase:'q1',qIdx:0,timerStart:Date.now()});
+  document.getElementById('iq-live-dot').style.background='var(--ok)';
+  document.getElementById('iq-live-status').textContent='چالاک: q1';
+  iqNotif('🚀 یاری دەستپێکرد!','suc');
+}
+
+// ── POLLING ──
+function iqStartPolling(){
+  if(iqPollI) clearInterval(iqPollI);
+  iqPollI = setInterval(async()=>{
+    try{
+      // Check ban
+      if(iqUser){
+        const ban=await iqFbGet('/inline_game/banned/'+iqUser.uid);
+        if(ban){ clearInterval(iqPollI); iqGoScreen('iq-s-banned'); return; }
+      }
+      // Online count
+      const online=await iqFbGet('/inline_game/online');
+      iqOnline=online?Object.keys(online).length:0;
+      document.querySelectorAll('#iq-cd-online,#iq-h-online').forEach(el=>{ if(el) el.textContent=iqOnline; });
+      // State
+      const state=await iqFbGet('/inline_game/state');
+      if(state && JSON.stringify(state)!==JSON.stringify(iqState)){
+        iqState=state;
+        iqHandleState(state);
+      }
+    }catch(e){}
+  }, 2500);
+}
+function iqHandleState(state){
+  if(!state) return;
+  if(state.phase==='countdown'){ iqGoScreen('iq-s-countdown'); iqUpdateCD(state); }
+  else if(state.phase==='q1') iqStartSection('q1',state);
+  else if(state.phase==='q2') iqStartSection('q2',state);
+  else if(state.phase==='q3') iqStartSection('q3',state);
+  else if(state.phase==='q4') iqStartSection('q4',state);
+  else if(state.phase==='q5') iqStartSection('q5',state);
+  else if(state.phase==='done') iqShowScoreboard();
+}
+function iqUpdateCD(state){
+  const rem=Math.max(0,Math.ceil((state.startAt-Date.now())/1000));
+  const el=document.getElementById('iq-cd-num');
+  if(el) el.textContent=rem;
+  const arc=document.getElementById('iq-cd-arc');
+  if(arc){ const pct=rem/(state.cdTotal||30); arc.style.strokeDashoffset=553*(1-pct); }
+}
+
+// ── SECTION LOADER ──
+async function iqStartSection(sec,state){
+  const qs = await iqFbGet('/inline_game/questions/'+sec);
+  if(!qs||!qs.length) return;
+  iqSectionQs = qs;
+  iqCurQIdx = state.qIdx||0;
+  // Show header
+  const names={q1:'📋 بەش ١ — MCQ',q2:'✅ بەش ٢ — ڕاست/هەڵە',q3:'🔴 بەش ٣ — Buzzer',q4:'📊 بەش ٤ — ڕیزکردن',q5:'🎯 بەش ٥ — Multi Radio'};
+  document.getElementById('iq-header').classList.add('iq-vis');
+  document.getElementById('iq-timer-bar').classList.add('iq-vis');
+  document.getElementById('iq-h-section').textContent=names[sec]||sec;
+  document.getElementById('iq-h-qnum').textContent='پرسیار '+(iqCurQIdx+1)+'/'+qs.length;
+  document.getElementById('iq-h-pts').textContent=iqScore;
+  document.getElementById('iq-h-online').textContent=iqOnline;
+  const q=qs[iqCurQIdx];
+  if(sec==='q1') iqShowQ1(q,iqCurQIdx,state);
+  else if(sec==='q2') iqShowQ2(q,iqCurQIdx,state);
+  else if(sec==='q3') iqShowQ3(q,iqCurQIdx,state);
+  else if(sec==='q4') iqShowQ4(q,iqCurQIdx,state);
+  else if(sec==='q5') iqShowQ5(q,iqCurQIdx,state);
+}
+
+// ── Q1 MCQ ──
+function iqShowQ1(q,idx,state){
+  iqGoScreen('iq-s-q1');
+  iqAnswered=false;
+  document.getElementById('iq-q1-num').textContent=idx+1;
+  document.getElementById('iq-q1-text').textContent=q.question;
+  document.getElementById('iq-q1-res').style.display='none';
+  const wrap=document.getElementById('iq-q1-opts');
+  const L=['A','B','C','D'];
+  wrap.innerHTML=(q.options||[]).map((o,i)=>`
+    <button class="iq-mcq-btn" id="iq-q1-opt-${i}" onclick="iqSelectMCQ(${i})">
+      <span class="iq-let">${L[i]}</span>${o}
+      <span class="iq-vote-cnt" id="iq-q1-cnt-${i}"></span>
+    </button>`).join('');
+  iqStartTimer(15, state.timerStart, ()=>iqRevealQ1(q));
+}
+async function iqSelectMCQ(idx){
+  if(iqAnswered) return;
+  iqAnswered=true;
+  document.querySelectorAll('.iq-mcq-btn').forEach(b=>b.disabled=true);
+  document.getElementById('iq-q1-opt-'+idx)?.classList.add('iq-sel');
+  if(iqUser) await iqFbSet('/inline_game/answers/q1/'+iqUser.uid,{choice:idx,ts:Date.now()});
+  iqShowWait('چاوەڕوانی بەشداربووانی تر...');
+}
+async function iqRevealQ1(q){
+  iqStopWait(); iqClearTimer();
+  const ans=await iqFbGet('/inline_game/answers/q1')||{};
+  const counts=Array(q.options.length).fill(0);
+  Object.values(ans).forEach(a=>{ if(typeof a.choice==='number' && a.choice<counts.length) counts[a.choice]++; });
+  (q.options||[]).forEach((_,i)=>{
+    const btn=document.getElementById('iq-q1-opt-'+i);
+    const cnt=document.getElementById('iq-q1-cnt-'+i);
+    if(btn){ if(i===q.correct) btn.classList.add('iq-ok'); else if(btn.classList.contains('iq-sel')) btn.classList.add('iq-ng'); }
+    if(cnt) cnt.textContent=counts[i]+'👤';
+  });
+  const myAns=iqUser&&ans[iqUser.uid];
+  const res=document.getElementById('iq-q1-res');
+  if(myAns&&myAns.choice===q.correct){
+    iqScore+=50;
+    document.getElementById('iq-h-pts').textContent=iqScore;
+    if(iqUser) await iqFbUpdate('/inline_game/online/'+iqUser.uid,{score:iqScore});
+    res.style.display='block'; res.style.color='var(--ok)'; res.textContent='+٥٠ خاڵ! ✅';
+  } else {
+    res.style.display='block'; res.style.color='var(--ng)'; res.textContent='هەڵەیە ❌';
+  }
+}
+
+// ── Q2 TRUE/FALSE ──
+function iqShowQ2(q,idx,state){
+  iqGoScreen('iq-s-q2');
+  iqAnswered=false;
+  document.getElementById('iq-q2-num').textContent=idx+1;
+  document.getElementById('iq-q2-text').textContent=q.question;
+  document.getElementById('iq-q2-res').style.display='none';
+  const tBtn=document.getElementById('iq-tf-t'); const fBtn=document.getElementById('iq-tf-f');
+  tBtn.className='iq-tf-btn t'; fBtn.className='iq-tf-btn f';
+  tBtn.disabled=false; fBtn.disabled=false;
+  iqStartTimer(15, state.timerStart, ()=>iqRevealQ2(q));
+}
+async function iqSelectTF(val){
+  if(iqAnswered) return;
+  iqAnswered=true;
+  document.getElementById('iq-tf-t').disabled=true;
+  document.getElementById('iq-tf-f').disabled=true;
+  document.getElementById(val?'iq-tf-t':'iq-tf-f').classList.add('iq-sel');
+  if(iqUser) await iqFbSet('/inline_game/answers/q2/'+iqUser.uid,{choice:val,ts:Date.now()});
+  iqShowWait('چاوەڕوانی بەشداربووانی تر...');
+}
+async function iqRevealQ2(q){
+  iqStopWait(); iqClearTimer();
+  const ans=await iqFbGet('/inline_game/answers/q2')||{};
+  const t=document.getElementById('iq-tf-t'); const f=document.getElementById('iq-tf-f');
+  if(q.correct===true){t.classList.add('iq-ok');f.classList.add('iq-ng');}
+  else{f.classList.add('iq-ok');t.classList.add('iq-ng');}
+  const myAns=iqUser&&ans[iqUser.uid];
+  const res=document.getElementById('iq-q2-res');
+  if(myAns&&myAns.choice===q.correct){
+    iqScore+=50; document.getElementById('iq-h-pts').textContent=iqScore;
+    if(iqUser) await iqFbUpdate('/inline_game/online/'+iqUser.uid,{score:iqScore});
+    res.style.display='block'; res.style.color='var(--ok)'; res.textContent='+٥٠ خاڵ! ✅';
+  } else { res.style.display='block'; res.style.color='var(--ng)'; res.textContent='هەڵەیە ❌'; }
+}
+
+// ── Q3 BUZZER ──
+function iqShowQ3(q,idx,state){
+  iqGoScreen('iq-s-q3');
+  iqAnswered=false; iqBuzzerIsMe=false; iqQ3Spec=false;
+  document.getElementById('iq-q3-num').textContent=idx+1;
+  document.getElementById('iq-q3-reveal').innerHTML='';
+  document.getElementById('iq-q3-opts').style.display='none';
+  document.getElementById('iq-q3-spec').style.display='none';
+  const buzz=document.getElementById('iq-q3-buzz');
+  buzz.disabled=false; buzz.classList.remove('pressed');
+  if(state.buzzer){ iqHandleBuzzer(q,state); return; }
+  // Reveal words RTL — right to left visually = words appear left to right in DOM (RTL layout reverses)
+  const words=q.question.split(' ');
+  let wi=0;
+  const revDiv=document.getElementById('iq-q3-reveal');
+  iqWordTimer=setInterval(()=>{
+    if(wi>=words.length){ clearInterval(iqWordTimer); return; }
+    const span=document.createElement('span');
+    span.className='iq-word';
+    span.style.animationDelay=(wi*0.04)+'s';
+    span.textContent=words[wi]+' ';
+    revDiv.appendChild(span);
+    wi++;
+  }, 300);
+}
+async function iqPressBuzzer(){
+  if(iqQ3Spec||iqAnswered) return;
+  clearInterval(iqWordTimer);
+  document.getElementById('iq-q3-buzz').classList.add('pressed');
+  document.getElementById('iq-q3-buzz').disabled=true;
+  await iqFbUpdate('/inline_game/state',{buzzer:{uid:iqUser.uid,name:iqUser.name,ts:Date.now()}});
+  iqHandleBuzzer(iqSectionQs[iqCurQIdx], iqState);
+}
+function iqHandleBuzzer(q,state){
+  clearInterval(iqWordTimer);
+  document.getElementById('iq-q3-reveal').textContent=q.question;
+  const buz=state?.buzzer;
+  if(buz&&buz.uid===iqUser?.uid){
+    iqBuzzerIsMe=true;
+    const wrap=document.getElementById('iq-q3-opts');
+    wrap.style.display='grid';
+    wrap.innerHTML=(q.options||[]).map((o,i)=>`<button class="iq-6btn" onclick="iqSelectBuzzer(${i})">${o}</button>`).join('');
+    iqStartTimer(10, buz.ts, ()=>iqBuzzerFail(q));
+  } else {
+    iqQ3Spec=true;
+    document.getElementById('iq-q3-buzz').disabled=true;
+    const spec=document.getElementById('iq-q3-spec');
+    spec.style.display='block';
+    spec.textContent='👁 '+((buz&&buz.name)||'کەسێک')+' دوگمەی دا — چاوەڕوانی...';
+  }
+}
+async function iqSelectBuzzer(idx){
+  if(!iqBuzzerIsMe) return;
+  iqClearTimer();
+  const q=iqSectionQs[iqCurQIdx];
+  document.querySelectorAll('.iq-6btn').forEach(b=>b.disabled=true);
+  const btns=document.querySelectorAll('.iq-6btn');
+  if(idx===q.correct){
+    if(btns[idx]) btns[idx].classList.add('iq-ok');
+    iqScore+=20; document.getElementById('iq-h-pts').textContent=iqScore;
+    if(iqUser) await iqFbUpdate('/inline_game/online/'+iqUser.uid,{score:iqScore});
+    document.getElementById('iq-q3-reveal').innerHTML='<span style="color:var(--ok);font-family:Oxanium;font-weight:800">+٢٠ خاڵ! ✅</span>';
+  } else {
+    if(btns[idx]) btns[idx].classList.add('iq-ng');
+    if(btns[q.correct]) btns[q.correct].classList.add('iq-ok');
+    iqBuzzerFail(q);
+  }
+}
+function iqBuzzerFail(q){
+  iqBuzzerIsMe=false; iqQ3Spec=true;
+  const spec=document.getElementById('iq-q3-spec');
+  spec.style.display='block'; spec.textContent='❌ هەڵەیە — تەنها تەماشا دەکەیت 👁';
+  document.getElementById('iq-q3-reveal').textContent=q.question;
+}
+
+// ── Q4 ORDER ──
+function iqShowQ4(q,idx,state){
+  iqGoScreen('iq-s-q4');
+  iqAnswered=false;
+  document.getElementById('iq-q4-num').textContent=idx+1;
+  document.getElementById('iq-q4-res').style.display='none';
+  document.getElementById('iq-q4-sub').disabled=false;
+  const shuffled=[...(q.items||[])].sort(()=>Math.random()-.5);
+  const wrap=document.getElementById('iq-q4-items');
+  wrap.innerHTML=shuffled.map((item,i)=>`
+    <div class="iq-order-item" draggable="true" data-val="${item}"
+      ondragstart="iqDragStart(event)" ondragover="iqDragOver(event)" ondrop="iqDropItem(event)">
+      <span class="iq-order-num">${i+1}</span><span>${item}</span>
+    </div>`).join('');
+  iqStartTimer(20, state.timerStart, ()=>iqSubmitOrder());
+}
+function iqDragStart(e){ iqDragSrc=e.currentTarget; e.dataTransfer.effectAllowed='move'; }
+function iqDragOver(e){ e.preventDefault(); }
+function iqDropItem(e){
+  e.preventDefault();
+  if(iqDragSrc===e.currentTarget) return;
+  const wrap=document.getElementById('iq-q4-items');
+  const all=[...wrap.children];
+  const si=all.indexOf(iqDragSrc); const di=all.indexOf(e.currentTarget);
+  if(si<di) wrap.insertBefore(iqDragSrc,e.currentTarget.nextSibling);
+  else wrap.insertBefore(iqDragSrc,e.currentTarget);
+  [...wrap.children].forEach((el,i)=>el.querySelector('.iq-order-num').textContent=i+1);
+}
+async function iqSubmitOrder(){
+  if(iqAnswered) return;
+  iqAnswered=true; iqClearTimer();
+  const q=iqSectionQs[iqCurQIdx];
+  const items=[...document.getElementById('iq-q4-items').children].map(el=>el.dataset.val);
+  const isRight=JSON.stringify(items)===JSON.stringify(q.items);
+  [...document.getElementById('iq-q4-items').children].forEach((el,i)=>{
+    el.classList.add(el.dataset.val===q.items[i]?'iq-ok':'iq-ng');
+  });
+  document.getElementById('iq-q4-sub').disabled=true;
+  const res=document.getElementById('iq-q4-res');
+  if(isRight){
+    iqScore+=15; document.getElementById('iq-h-pts').textContent=iqScore;
+    if(iqUser) await iqFbUpdate('/inline_game/online/'+iqUser.uid,{score:iqScore});
+    res.style.display='block'; res.style.color='var(--ok)'; res.textContent='+١٥ خاڵ! ✅';
+  } else { res.style.display='block'; res.style.color='var(--ng)'; res.textContent='هەڵەیە ❌'; }
+}
+
+// ── Q5 MULTI RADIO ──
+function iqShowQ5(q,idx,state){
+  iqGoScreen('iq-s-q5');
+  iqAnswered=false;
+  document.getElementById('iq-q5-num').textContent=idx+1;
+  document.getElementById('iq-q5-text').textContent=q.question;
+  document.getElementById('iq-q5-res').style.display='none';
+  document.getElementById('iq-q5-sub').disabled=false;
+  const wrap=document.getElementById('iq-q5-opts');
+  wrap.innerHTML=(q.options||[]).map((o,i)=>`
+    <div class="iq-radio-item" id="iq-r${i}" onclick="iqSelRadio(${i},this)">
+      <span class="iq-radio-dot"></span><span>${o}</span>
+    </div>`).join('');
+  iqStartTimer(10, state.timerStart, ()=>iqSubmitRadio());
+}
+function iqSelRadio(idx,el){
+  if(iqAnswered) return;
+  document.querySelectorAll('.iq-radio-item').forEach(r=>r.classList.remove('iq-sel'));
+  el.classList.add('iq-sel');
+}
+async function iqSubmitRadio(){
+  if(iqAnswered) return;
+  iqAnswered=true; iqClearTimer();
+  const q=iqSectionQs[iqCurQIdx];
+  const sel=document.querySelector('.iq-radio-item.iq-sel');
+  const selIdx=sel?parseInt(sel.id.replace('iq-r','')):-1;
+  (q.options||[]).forEach((_,i)=>{
+    const el=document.getElementById('iq-r'+i);
+    if(!el) return;
+    el.classList.add('iq-locked');
+    if((q.correct||[]).includes(i)) el.classList.add('iq-ok');
+    else if(i===selIdx) el.classList.add('iq-ng');
+  });
+  document.getElementById('iq-q5-sub').disabled=true;
+  const res=document.getElementById('iq-q5-res');
+  if(selIdx>=0&&(q.correct||[]).includes(selIdx)){
+    iqScore+=15; document.getElementById('iq-h-pts').textContent=iqScore;
+    if(iqUser) await iqFbUpdate('/inline_game/online/'+iqUser.uid,{score:iqScore});
+    res.style.display='block'; res.style.color='var(--ok)'; res.textContent='+١٥ خاڵ! ✅';
+  } else { res.style.display='block'; res.style.color='var(--ng)'; res.textContent='هەڵەیە ❌'; }
+}
+
+// ── TIMER ──
+function iqStartTimer(secs, startTs, onEnd){
+  iqClearTimer();
+  const fill=document.getElementById('iq-timer-fill');
+  const total=secs*1000;
+  const start=startTs||Date.now();
+  iqTimerI=setInterval(()=>{
+    const elapsed=Date.now()-start;
+    const pct=Math.max(0,1-elapsed/total);
+    if(fill){ fill.style.width=(pct*100)+'%';
+      fill.style.background=pct>.5?'linear-gradient(90deg,var(--ok),var(--gold))':
+        pct>.2?'linear-gradient(90deg,var(--gold),#f97316)':'linear-gradient(90deg,#f97316,var(--ng))'; }
+    if(elapsed>=total){ iqClearTimer(); if(onEnd) onEnd(); }
+  },100);
+}
+function iqClearTimer(){ if(iqTimerI){ clearInterval(iqTimerI); iqTimerI=null; } }
+
+// ── SCOREBOARD ──
+async function iqShowScoreboard(){
+  iqClearTimer();
+  document.getElementById('iq-header').classList.remove('iq-vis');
+  document.getElementById('iq-timer-bar').classList.remove('iq-vis');
+  iqGoScreen('iq-s-sb');
+  const online=await iqFbGet('/inline_game/online')||{};
+  const players=Object.values(online).sort((a,b)=>b.score-a.score);
+  const ranks=['🥇','🥈','🥉'];
+  document.getElementById('iq-sb-list').innerHTML=players.map((p,i)=>`
+    <div class="iq-sb-row ${i===0?'r1':i===1?'r2':i===2?'r3':''}">
+      <span class="iq-sb-rank">${ranks[i]||i+1}</span>
+      <span class="iq-sb-name">${p.name||'یاریزان'}</span>
+      <span class="iq-sb-pts">${p.score||0} خاڵ</span>
+    </div>`).join('');
+}
+
+// ── BAN ON LEAVE ──
+document.addEventListener('visibilitychange', async()=>{
+  const iqScreens=['iq-s-q1','iq-s-q2','iq-s-q3','iq-s-q4','iq-s-q5'];
+  const cur=document.querySelector('.iq-screen.iq-active')?.id;
+  if(document.hidden && iqScreens.includes(cur) && iqUser){
+    await iqFbSet('/inline_game/banned/'+iqUser.uid,{name:iqUser.name,ts:Date.now()});
+    iqGoScreen('iq-s-banned');
+    clearInterval(iqPollI);
+  }
+});
+
+// ── ADD ADMIN IQ BUTTON TO MENU ──
+document.addEventListener('DOMContentLoaded', ()=>{
+  // Add Inline Quiz Admin button to main menu quietly
+  const mwrap=document.querySelector('.mwrap');
+  if(mwrap && !document.getElementById('iq-admin-menu-btn')){
+    const btn=document.createElement('button');
+    btn.id='iq-admin-menu-btn';
+    btn.className='btn btn-purple';
+    btn.style.cssText='font-size:.82rem;padding:12px 20px;opacity:.7;';
+    btn.innerHTML='⚡ &nbsp; ئەدمین Inline Quiz';
+    btn.onclick=iqGoAdmin;
+    mwrap.appendChild(btn);
+  }
+});
+
 window.addEventListener("load",function(){ bootLoad(); authCheck(); });
 </script>
+
+<!-- ══════════════════════════════════════════════════════
+     INLINE QUIZ FLOATING HEADER + TIMER BAR
+════════════════════════════════════════════════════════ -->
+<div class="iq-header" id="iq-header">
+  <div>
+    <div class="iq-h-section" id="iq-h-section">Inline Quiz</div>
+    <div style="font-size:.72rem;color:var(--muted)" id="iq-h-qnum"></div>
+  </div>
+  <div class="iq-h-score"><span id="iq-h-pts">0</span> <span style="color:var(--muted);font-size:.75rem">خاڵ</span></div>
+  <div class="iq-h-online"><span class="iq-online-dot"></span><span id="iq-h-online">0</span></div>
+</div>
+<div class="iq-timer-bar" id="iq-timer-bar"><div class="iq-timer-fill" id="iq-timer-fill" style="width:100%"></div></div>
+
+<!-- WAIT OVERLAY -->
+<div class="iq-wait" id="iq-wait">
+  <div class="iq-spin"></div>
+  <div style="color:var(--muted);font-size:.88rem" id="iq-wait-txt">چاوەڕوانی یاریزانەکانی تر...</div>
+</div>
+
+<!-- SPECTATE BANNER -->
+<div class="iq-spectate-banner" id="iq-spec-banner" style="display:none">
+  👁 مۆدی تەماشاکردن — تەنها تەماشا دەکەیت
+</div>
+
+<!-- BANNED -->
+<div id="iq-s-banned" class="iq-screen" style="background:var(--bg)">
+  <div class="iq-banned">
+    <div class="iq-banned-icon">🚫</div>
+    <div class="iq-banned-title">بانکرایت!</div>
+    <div style="color:var(--muted);font-size:.9rem;line-height:1.8">
+      ببورە — لە کاتی یارییەکەدا مووچەی کردی<br>
+      <span style="color:var(--ng);font-weight:700">"Sorry, you cheated in the game"</span>
+    </div>
+  </div>
+</div>
+
+<!-- COUNTDOWN LOBBY -->
+<div id="iq-s-countdown" class="iq-screen">
+  <div class="iq-title">یاری دەستپێدەکات لە...</div>
+  <div class="iq-cd-wrap">
+    <svg width="200" height="200" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="12"/>
+      <circle id="iq-cd-arc" cx="100" cy="100" r="88" fill="none" stroke="url(#iqG)" stroke-width="12"
+        stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="0"/>
+      <defs>
+        <linearGradient id="iqG" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f0b429"/>
+          <stop offset="100%" stop-color="#ff6b35"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="iq-cd-num" id="iq-cd-num">--</div>
+  </div>
+  <div style="color:var(--muted);font-size:.88rem;margin-bottom:16px" id="iq-cd-msg">ئامادە بە...</div>
+  <div class="iq-online-badge">
+    <span class="iq-online-dot"></span>
+    <span id="iq-cd-online">0</span> یاریزان ئامادەن
+  </div>
+</div>
+
+<!-- Q1 MCQ -->
+<div id="iq-s-q1" class="iq-screen" style="padding-top:80px;justify-content:flex-start">
+  <div style="width:100%;max-width:680px">
+    <div style="text-align:center;margin-bottom:8px;font-family:'Oxanium',sans-serif;font-size:.9rem;color:var(--muted)">📋 بەش ١ — هەڵبژاردنی دروست</div>
+    <div class="iq-sec-badge" style="border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.08);color:#93c5fd;display:block;text-align:center">
+      پرسیار <span id="iq-q1-num">1</span>/15 — ٥٠ خاڵ — ١٥ چرکە
+    </div>
+    <div class="iq-q-text" id="iq-q1-text">...</div>
+    <div class="iq-mcq-grid" id="iq-q1-opts"></div>
+    <div id="iq-q1-res" style="display:none;text-align:center;margin-top:16px;font-family:'Oxanium',sans-serif;font-size:1.6rem;font-weight:900"></div>
+  </div>
+</div>
+
+<!-- Q2 TRUE/FALSE -->
+<div id="iq-s-q2" class="iq-screen" style="padding-top:80px;justify-content:flex-start">
+  <div style="width:100%;max-width:680px;display:flex;flex-direction:column;align-items:center">
+    <div style="text-align:center;margin-bottom:8px;font-family:'Oxanium',sans-serif;font-size:.9rem;color:var(--muted)">✅ بەش ٢ — ڕاست یان هەڵە</div>
+    <div class="iq-sec-badge" style="border-color:rgba(6,214,160,.3);background:rgba(6,214,160,.08);color:#6effd8;display:block;text-align:center">
+      پرسیار <span id="iq-q2-num">1</span>/10 — ٥٠ خاڵ — ١٥ چرکە
+    </div>
+    <div class="iq-q-text" id="iq-q2-text">...</div>
+    <div class="iq-tf-grid">
+      <button class="iq-tf-btn t" id="iq-tf-t" onclick="iqSelectTF(true)">✅<br><small style="font-size:.65rem">ڕاستە</small></button>
+      <button class="iq-tf-btn f" id="iq-tf-f" onclick="iqSelectTF(false)">❌<br><small style="font-size:.65rem">هەڵەیە</small></button>
+    </div>
+    <div id="iq-q2-res" style="display:none;text-align:center;margin-top:16px;font-family:'Oxanium',sans-serif;font-size:1.6rem;font-weight:900"></div>
+  </div>
+</div>
+
+<!-- Q3 BUZZER -->
+<div id="iq-s-q3" class="iq-screen" style="padding-top:80px;justify-content:flex-start">
+  <div style="width:100%;max-width:680px;display:flex;flex-direction:column;align-items:center;gap:18px">
+    <div style="text-align:center;font-family:'Oxanium',sans-serif;font-size:.9rem;color:var(--muted)">🔴 بەش ٣ — دوگمەی سوور</div>
+    <div class="iq-sec-badge" style="border-color:rgba(230,57,70,.3);background:rgba(230,57,70,.08);color:#fca5a5;display:block;text-align:center">
+      پرسیار <span id="iq-q3-num">1</span>/3 — ٢٠ خاڵ — ١٠ چرکە
+    </div>
+    <div class="iq-reveal-q" id="iq-q3-reveal" style="min-height:50px"></div>
+    <button class="iq-red-btn" id="iq-q3-buzz" onclick="iqPressBuzzer()">🔴<br>دوگمە</button>
+    <div class="iq-6opts" id="iq-q3-opts" style="display:none"></div>
+    <div class="iq-spec-msg" id="iq-q3-spec" style="display:none">👁 تەنها تەماشا دەکەیت</div>
+  </div>
+</div>
+
+<!-- Q4 ORDER -->
+<div id="iq-s-q4" class="iq-screen" style="padding-top:80px;justify-content:flex-start">
+  <div style="width:100%;max-width:680px;display:flex;flex-direction:column;align-items:center">
+    <div style="text-align:center;margin-bottom:8px;font-family:'Oxanium',sans-serif;font-size:.9rem;color:var(--muted)">📊 بەش ٤ — ڕیزکردن لە بچووک بۆ گەورە</div>
+    <div class="iq-sec-badge" style="border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.08);color:#c4b5fd;display:block;text-align:center">
+      پرسیار <span id="iq-q4-num">1</span>/5 — ١٥ خاڵ — ٢٠ چرکە
+    </div>
+    <div class="iq-q-text" id="iq-q4-text">ئەم بڕگانە ڕیز بکەرەوە لە بچووک بۆ گەورە:</div>
+    <div class="iq-order-items" id="iq-q4-items"></div>
+    <button class="iq-sub-btn" id="iq-q4-sub" onclick="iqSubmitOrder()">✅ پشتڕاست بکەرەوە</button>
+    <div id="iq-q4-res" style="display:none;text-align:center;margin-top:12px;font-family:'Oxanium',sans-serif;font-size:1.4rem;font-weight:900"></div>
+  </div>
+</div>
+
+<!-- Q5 MULTI RADIO -->
+<div id="iq-s-q5" class="iq-screen" style="padding-top:80px;justify-content:flex-start">
+  <div style="width:100%;max-width:680px;display:flex;flex-direction:column;align-items:center">
+    <div style="text-align:center;margin-bottom:8px;font-family:'Oxanium',sans-serif;font-size:.9rem;color:var(--muted)">🎯 بەش ٥ — هەڵبژاردنی زۆر</div>
+    <div class="iq-sec-badge" style="border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.08);color:#67e8f9;display:block;text-align:center">
+      پرسیار <span id="iq-q5-num">1</span>/5 — ١٥ خاڵ — ١٠ چرکە
+    </div>
+    <div class="iq-q-text" id="iq-q5-text">...</div>
+    <div class="iq-radio-list" id="iq-q5-opts" style="width:100%"></div>
+    <button class="iq-sub-btn" id="iq-q5-sub" onclick="iqSubmitRadio()">✅ ناردن</button>
+    <div id="iq-q5-res" style="display:none;text-align:center;margin-top:12px;font-family:'Oxanium',sans-serif;font-size:1.4rem;font-weight:900"></div>
+  </div>
+</div>
+
+<!-- SCOREBOARD -->
+<div id="iq-s-sb" class="iq-screen">
+  <div style="font-size:3.5rem;margin-bottom:10px;animation:float 2s infinite">🏆</div>
+  <div class="iq-big">کۆتایی یاریەکە</div>
+  <div style="color:var(--muted);font-size:.82rem;margin-bottom:24px">هەموو بەشەکان تەواو بوون</div>
+  <div class="iq-sb-list" id="iq-sb-list"></div>
+  <button onclick="iqExit()" style="margin-top:20px;padding:12px 32px;border:none;border-radius:14px;
+    background:linear-gradient(135deg,#c28a00,var(--gold));color:#1a1000;
+    font-family:'Noto Sans Arabic',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer">
+    ← گەڕانەوە بۆ داشبۆرد
+  </button>
+</div>
+
+<!-- ADMIN IQ LOGIN -->
+<div id="iq-s-admin-login" class="iq-screen">
+  <div class="card" style="max-width:380px">
+    <div style="text-align:center;font-size:2.4rem;margin-bottom:10px">🔐</div>
+    <h2 style="color:var(--purple)">ئەدمین Inline Quiz</h2>
+    <div class="fg">
+      <label>وشەی نهێنی ئەدمین</label>
+      <input type="password" id="iq-admin-pw" placeholder="وشەی نهێنی بنووسە..."
+        onkeydown="if(event.key==='Enter')iqCheckAdminPw()">
+    </div>
+    <button class="btn btn-purple" onclick="iqCheckAdminPw()" style="width:100%">چوونە ناوەوە</button>
+    <div id="iq-admin-err" style="color:var(--ng);font-size:.82rem;text-align:center;margin-top:8px"></div>
+    <div style="text-align:center;margin-top:12px">
+      <button onclick="iqExit()" style="background:none;border:none;color:var(--muted);font-size:.8rem;cursor:pointer">← گەڕانەوە</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN IQ PANEL -->
+<div id="iq-s-admin" class="iq-screen" style="justify-content:flex-start;padding-top:16px;overflow-y:auto;align-items:center">
+  <div style="width:100%;max-width:660px;padding:60px 16px 40px">
+    <div style="font-family:'Oxanium',sans-serif;font-size:1.6rem;font-weight:900;margin-bottom:20px;
+      display:flex;align-items:center;gap:10px">
+      ⚡ Admin Inline Quiz
+      <span id="iq-live-dot" style="width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block"></span>
+      <span style="font-size:.7rem;color:var(--muted)" id="iq-live-status">ناچالاک</span>
+    </div>
+
+    <!-- Countdown -->
+    <div class="iq-admin-section">
+      <h3>⏱ کاوچبەر</h3>
+      <div class="fg"><label>بەرواری کاوچبەر (چرکە)</label>
+        <div class="iq-cd-control">
+          <input type="number" id="iq-adm-cd" value="30" min="5" max="300"
+            style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);outline:none;width:100%;text-align:center;">
+          <button class="iq-start-cd" onclick="iqSetCountdown()">▶ دەستپێبکە</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q1 Admin -->
+    <div class="iq-admin-section">
+      <h3>📋 بەش ١ — MCQ (١٥ پرسیار)</h3>
+      <div id="iq-adm-q1-list" class="iq-saved-qs"></div>
+      <div class="fg"><label>پرسیار</label><textarea id="iq-adm-q1-q" placeholder="پرسیار..." style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Noto Sans Arabic';font-size:.9rem;outline:none;width:100%;padding:10px;resize:vertical;min-height:60px"></textarea></div>
+      <div class="fg"><label>وەڵامەکان (جیا بکەرەوە بە |)</label><input id="iq-adm-q1-opts" placeholder="و١|و٢|و٣|و٤" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Noto Sans Arabic';font-size:.9rem;outline:none;width:100%;padding:10px"></div>
+      <div class="fg"><label>وەڵامی ڕاست (١-٤)</label><input type="number" id="iq-adm-q1-c" min="1" max="4" value="1" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Oxanium';font-size:1rem;outline:none;width:100%;padding:10px;text-align:center"></div>
+      <button class="btn btn-green" onclick="iqSaveQ(1)" style="width:100%;font-size:.88rem;padding:11px">➕ زیادکردن بۆ بەش ١</button>
+    </div>
+
+    <!-- Q2 Admin -->
+    <div class="iq-admin-section">
+      <h3>✅ بەش ٢ — ڕاست/هەڵە (١٠ پرسیار)</h3>
+      <div id="iq-adm-q2-list" class="iq-saved-qs"></div>
+      <div class="fg"><label>پرسیار</label><textarea id="iq-adm-q2-q" placeholder="پرسیار..." style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Noto Sans Arabic';font-size:.9rem;outline:none;width:100%;padding:10px;resize:vertical;min-height:60px"></textarea></div>
+      <div class="fg"><label>وەڵامی ڕاست</label>
+        <select id="iq-adm-q2-c" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Noto Sans Arabic';font-size:.9rem;outline:none;width:100%;padding:10px">
+          <option value="true">✅ ڕاستە</option><option value="false">❌ هەڵەیە</option>
+        </select>
+      </div>
+      <button class="btn btn-green" onclick="iqSaveQ(2)" style="width:100%;font-size:.88rem;padding:11px">➕ زیادکردن بۆ بەش ٢</button>
+    </div>
+
+    <!-- Q3 Admin -->
+    <div class="iq-admin-section">
+      <h3>🔴 بەش ٣ — Buzzer (٣ پرسیار)</h3>
+      <div id="iq-adm-q3-list" class="iq-saved-qs"></div>
+      <div class="fg"><label>پرسیار (وشە بە وشە نیشان دەدرێت)</label><textarea id="iq-adm-q3-q" placeholder="پرسیار..." style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Noto Sans Arabic';font-size:.9rem;outline:none;width:100%;padding:10px;resize:vertical;min-height:60px"></textarea></div>
+      <div class="fg"><label>٦ وەڵام (جیا بکەرەوە بە |)</label><input id="iq-adm-q3-opts" placeholder="و١|و٢|و٣|و٤|و٥|و٦" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Noto Sans Arabic';font-size:.9rem;outline:none;width:100%;padding:10px"></div>
+      <div class="fg"><label>وەڵامی ڕاست (١-٦)</label><input type="number" id="iq-adm-q3-c" min="1" max="6" value="1" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Oxanium';font-size:1rem;outline:none;width:100%;padding:10px;text-align:center"></div>
+      <button class="btn btn-green" onclick="iqSaveQ(3)" style="width:100%;font-size:.88rem;padding:11px">➕ زیادکردن بۆ بەش ٣</button>
+    </div>
+
+    <!-- Q4 Admin -->
+    <div class="iq-admin-section">
+      <h3>📊 بەش ٤ — ڕیزکردن (٥ پرسیار)</h3>
+      <div id="iq-adm-q4-list" class="iq-saved-qs"></div>
+      <div class="fg"><label>پرسیار</label><textarea id="iq-adm-q4-q" placeholder="پرسیار..." style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Noto Sans Arabic';font-size:.9rem;outline:none;width:100%;padding:10px;resize:vertical;min-height:60px"></textarea></div>
+      <div class="fg"><label>بڕگەکان بە ڕیزی ڕاست (جیا بکەرەوە بە |)</label><input id="iq-adm-q4-items" placeholder="بچووک|ناوەند|گەورە|زۆر گەورە" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Noto Sans Arabic';font-size:.9rem;outline:none;width:100%;padding:10px"></div>
+      <button class="btn btn-green" onclick="iqSaveQ(4)" style="width:100%;font-size:.88rem;padding:11px">➕ زیادکردن بۆ بەش ٤</button>
+    </div>
+
+    <!-- Q5 Admin -->
+    <div class="iq-admin-section">
+      <h3>🎯 بەش ٥ — Multi Radio (٥ پرسیار)</h3>
+      <div id="iq-adm-q5-list" class="iq-saved-qs"></div>
+      <div class="fg"><label>پرسیار</label><textarea id="iq-adm-q5-q" placeholder="پرسیار..." style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Noto Sans Arabic';font-size:.9rem;outline:none;width:100%;padding:10px;resize:vertical;min-height:60px"></textarea></div>
+      <div class="fg"><label>وەڵامەکان (جیا بکەرەوە بە |)</label><input id="iq-adm-q5-opts" placeholder="و١|و٢|و٣|و٤" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Noto Sans Arabic';font-size:.9rem;outline:none;width:100%;padding:10px"></div>
+      <div class="fg"><label>وەڵامی ڕاست (ژمارەکان جیا بکەرەوە بە | مەسەلەن 1|3)</label><input id="iq-adm-q5-c" placeholder="1|3" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;color:var(--text);font-family:'Oxanium';font-size:1rem;outline:none;width:100%;padding:10px"></div>
+      <button class="btn btn-green" onclick="iqSaveQ(5)" style="width:100%;font-size:.88rem;padding:11px">➕ زیادکردن بۆ بەش ٥</button>
+    </div>
+
+    <!-- Launch -->
+    <div class="iq-admin-section">
+      <h3>🚀 دەستپێکردنی یاری</h3>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:14px;line-height:1.7">
+        پاش ئامادەکردنی پرسیارەکان کلیک بکە — هەموو یاریزانانی ئۆنلاین ئۆتۆماتیک دەگوازرێنەوە بۆ یارییەکە.
+      </p>
+      <button class="iq-launch-btn" onclick="iqLaunchGame()">🚀 دەستپێکردنی یاری</button>
+    </div>
+
+    <div style="text-align:center;margin-top:10px">
+      <button onclick="iqExit()" style="background:none;border:none;color:var(--muted);font-size:.82rem;cursor:pointer">← گەڕانەوە</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
