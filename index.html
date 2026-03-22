@@ -306,59 +306,99 @@ body::after {
 ════════════════════ */
 .sbar {
   display: flex;
-  gap: 9px;
+  gap: 10px;
   width: 100%;
-  max-width: 920px;
-  margin-bottom: 20px;
+  max-width: 1000px;
+  margin-bottom: 22px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .sc {
   flex: 1;
-  min-width: 78px;
-  max-width: 124px;
-  padding: 11px 10px;
-  border-radius: 18px;
+  min-width: 90px;
+  max-width: 140px;
+  padding: 0;
+  border-radius: 20px;
   text-align: center;
-  background: var(--glass);
-  border: 1.5px solid var(--rim);
-  transition: all .3s cubic-bezier(.4,0,.2,1);
+  background: linear-gradient(160deg,rgba(255,255,255,.065),rgba(255,255,255,.02));
+  border: 1.5px solid rgba(255,255,255,.08);
+  transition: all .32s cubic-bezier(.4,0,.2,1);
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,.3);
 }
 
-.sc::after {
+/* top shimmer line */
+.sc::before {
   content:'';
   position:absolute; top:0; left:0; right:0; height:1px;
-  background: linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);
+  background: linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+  z-index:1;
+}
+
+/* inner layout */
+.sc-inner {
+  padding: 14px 10px 12px;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
 }
 
 .sc.cur {
-  border-color: rgba(255,255,255,.45);
-  background: rgba(255,255,255,.09);
-  box-shadow: 0 0 32px rgba(255,255,255,.1), 0 8px 24px rgba(0,0,0,.4);
-  transform: scale(1.07) translateY(-3px);
+  border-color: rgba(255,255,255,.5);
+  background: linear-gradient(160deg,rgba(255,255,255,.11),rgba(255,255,255,.04));
+  box-shadow: 0 0 0 2px rgba(255,255,255,.18), 0 12px 32px rgba(0,0,0,.5);
+  transform: scale(1.08) translateY(-4px);
 }
 
-.sc .se { font-size: 1.15rem; }
-.sc .sn { font-size:.62rem; color:var(--muted); margin:3px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:600; }
-.sc .sp { font-family:'Oxanium',sans-serif; font-size:1.55rem; font-weight:900; color:var(--gold2); }
-.sc .sb { font-size:.55rem; color:#ffaaaa; min-height:12px; }
+/* rank strip at top */
+.sc-rank {
+  position:absolute; top:0; left:0; right:0; height:3px;
+  border-radius:20px 20px 0 0;
+  background: var(--player-color, #f0b429);
+  opacity:.85;
+}
+
+.sc .se { font-size: 1.3rem; line-height:1; }
+.sc .sn {
+  font-size:.62rem; color:var(--muted); margin:1px 0;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  font-weight:700; letter-spacing:.3px; max-width:100%;
+}
+.sc .sp {
+  font-family:'Oxanium',sans-serif;
+  font-size:1.7rem; font-weight:900;
+  color:var(--gold);
+  line-height:1;
+  text-shadow: 0 0 20px rgba(240,180,41,.4);
+}
+.sc .sb { font-size:.55rem; color:#ff8888; min-height:10px; letter-spacing:.3px; }
+
+/* score change animation */
+@keyframes scoreUp {
+  0%   { transform:scale(1); }
+  40%  { transform:scale(1.25); color:#6effd8; }
+  100% { transform:scale(1); }
+}
+.sc .sp.bump { animation: scoreUp .45s cubic-bezier(.34,1.56,.64,1); }
 
 .tbanner {
-  padding: 12px 32px;
+  padding: 11px 32px;
   border-radius: 50px;
   font-family: 'Oxanium', sans-serif;
   font-size: 1rem;
   font-weight: 800;
   text-align: center;
-  margin-bottom: 18px;
-  border: 1.5px solid var(--rim2);
-  background: var(--glass);
-  backdrop-filter: blur(12px);
-  letter-spacing: .5px;
-  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+  border: 1.5px solid rgba(255,255,255,.15);
+  background: linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+  backdrop-filter: blur(16px);
+  letter-spacing: 1px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.3), 0 1px 0 rgba(255,255,255,.08) inset;
+  position:relative; overflow:hidden;
+}
+.tbanner::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
 }
 
 /* ════════════════════
@@ -366,21 +406,22 @@ body::after {
 ════════════════════ */
 .cgrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 13px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 11px;
   width: 100%;
-  max-width: 860px;
+  max-width: 1100px;
 }
-@media(max-width:600px) { .cgrid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:900px) { .cgrid { grid-template-columns:repeat(3,1fr); } }
+@media(max-width:580px) { .cgrid { grid-template-columns:repeat(2,1fr); } }
 
 .cbtn {
-  padding: 20px 10px;
-  border-radius: 22px;
+  padding: 16px 8px;
+  border-radius: 18px;
   border: 1.5px solid var(--rim);
   background: linear-gradient(155deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
   color: var(--text);
   font-family: 'Noto Sans Arabic', sans-serif;
-  font-size: .88rem;
+  font-size: .82rem;
   font-weight: 700;
   cursor: pointer;
   text-align: center;
@@ -396,7 +437,7 @@ body::after {
   background: linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
 }
 
-.cbtn .ci { font-size: 1.9rem; display:block; margin-bottom:8px; }
+.cbtn .ci { font-size: 1.6rem; display:block; margin-bottom:5px; }
 
 .cbtn .cl {
   display: flex;
@@ -1730,13 +1771,17 @@ function updateSBar(){
   players.forEach((p,i)=>{
     const d=document.createElement("div");
     d.className="sc"+(i===turnIdx?" cur":"");
-    if(i===turnIdx) d.style.borderColor=p.color;
+    if(i===turnIdx){ d.style.borderColor=p.color; d.style.boxShadow=`0 0 0 2px ${p.color}55, 0 12px 32px rgba(0,0,0,.5)`; }
     const hasSteal=effects[i].stealBy!==null;
     const hasCurse=effects[i].curseBy!==null;
-    d.innerHTML=`<div class="se">${p.emoji}</div>
-      <div class="sn">${p.name}</div>
-      <div class="sp">${scores[i]}</div>
-      <div class="sb">${hasCurse?"⚡":""}${hasSteal?"💰":""}</div>`;
+    d.innerHTML=`
+      <div class="sc-rank" style="background:${p.color}"></div>
+      <div class="sc-inner">
+        <div class="se">${p.emoji}</div>
+        <div class="sn">${p.name}</div>
+        <div class="sp">${scores[i]}</div>
+        <div class="sb">${hasCurse?"⚡ نەفرەت":""}${hasSteal?"💰 دزین":""}</div>
+      </div>`;
     bar.appendChild(d);
   });
   const tb=document.getElementById("tbanner");
