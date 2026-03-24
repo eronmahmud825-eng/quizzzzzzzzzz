@@ -3135,14 +3135,12 @@ const ALL_QUESTIONS = [
   { cat: "sports", lvl: "J", q: "ئەو پێشبڕکێیەی کە لە ساڵی ١٩٥٠ دەستی پێکردووە و بە 'پێشبڕکێیەکە' ناسراوە پێی دەڵێن؟", a: ["دایتۆنا ٥٠٠", "ئیندیاناپۆلیس ٥٠٠", "مۆناکۆ گراند پری", "لێمانز ٢٤ کاتژمێری"], c: 0 }
 ];
 
-export default ALL_QUESTIONS;
 async function bulkImportAll(){
   const btn=document.getElementById("bulkBtn");
   const prog=document.getElementById("bulkProgress");
   btn.disabled=true; btn.textContent="⏳ ١ — سڕینەوەی کۆنەکان...";
   prog.innerHTML="⏳ سەرەتا هەموو کۆنەکان دەسڕێتەوە...";
-  prog.style.color="var(--muted)";
-
+  prog.style.color="var(--muted)"
   // STEP 1: Delete everything from Firebase first
   try{
     if(fbOK){
