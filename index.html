@@ -58,7 +58,16 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .ncrs{background:rgba(230,57,70,.22);border:1px solid rgba(255,113,133,.4);color:#fda4af;}
 .bk{position:fixed;top:16px;right:16px;z-index:200;padding:9px 20px;border-radius:50px;border:1px solid var(--rim);background:rgba(255,255,255,.05);backdrop-filter:blur(18px);color:var(--muted);font-size:.78rem;cursor:pointer;transition:all .2s;font-family:'Noto Sans Arabic',sans-serif;}
 .bk:hover{background:rgba(255,255,255,.09);color:var(--text);}
-hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
+/* Quick login player buttons */
+.qlogin{display:flex;flex-direction:column;gap:8px;margin-top:18px;}
+.qlogin-t{font-size:.62rem;color:var(--muted);letter-spacing:2px;text-align:center;margin-bottom:4px;font-family:'Oxanium',sans-serif;}
+.ql-btn{padding:11px 18px;border-radius:12px;border:1.5px solid var(--rim2);background:rgba(255,255,255,.04);color:var(--text);font-family:'Oxanium',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:10px;}
+.ql-btn:hover{background:rgba(255,255,255,.09);border-color:var(--gold);color:var(--gold2);}
+/* Secret admin code */
+.admin-code-wrap{margin-top:14px;text-align:center;}
+.admin-code-input{width:90px;padding:8px 12px;background:rgba(255,255,255,.03);border:1.5px solid rgba(255,255,255,.05);border-radius:10px;color:rgba(255,255,255,.15);font-family:'Oxanium',sans-serif;font-size:.9rem;text-align:center;outline:none;direction:ltr;transition:all .3s;}
+.admin-code-input:focus{border-color:rgba(245,166,35,.3);color:rgba(245,166,35,.5);background:rgba(245,166,35,.04);}
+/* SCOREBAR */
 .sbar{display:flex;gap:9px;width:100%;max-width:820px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;position:sticky;top:0;z-index:50;padding:8px 0 6px;background:linear-gradient(180deg,rgba(4,5,13,.92) 80%,transparent);backdrop-filter:blur(4px);}
 .sc{flex:1;min-width:78px;max-width:128px;border-radius:18px;background:linear-gradient(155deg,rgba(255,255,255,.065),rgba(255,255,255,.018));border:1.5px solid var(--rim);position:relative;overflow:hidden;transition:all .3s;}
 .sc-top{height:3px;border-radius:18px 18px 0 0;background:var(--pc,#f5a623);}
@@ -69,6 +78,7 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 .sc-pts.blur{filter:blur(10px);user-select:none;color:rgba(245,166,35,.4);}
 @keyframes ptsPop{0%{transform:scale(1);}50%{transform:scale(1.35);color:#6effd8;}100%{transform:scale(1);}}
 .sc-pts.pop{animation:ptsPop .4s cubic-bezier(.34,1.56,.64,1);}
+/* HUB */
 #s-hub{justify-content:flex-start;padding-top:20px;}
 .hub-top{width:100%;max-width:860px;margin-top:60px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 .hub-title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:3px;background:linear-gradient(135deg,var(--gold2),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
@@ -85,6 +95,7 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 .hpc.on .ps{color:var(--ok);}
 .hpc.off .ps{color:var(--muted);}
 .hpc .pch{font-size:.65rem;color:#fda4af;margin-top:6px;background:rgba(230,57,70,.1);border-radius:20px;padding:3px 10px;display:inline-block;}
+/* ADMIN */
 .adm-panel{width:100%;max-width:860px;margin-bottom:18px;background:linear-gradient(155deg,rgba(245,166,35,.06),rgba(245,166,35,.015));border:1.5px solid rgba(245,166,35,.2);border-radius:22px;padding:24px;}
 .adm-title{font-family:'Oxanium',sans-serif;font-size:.7rem;font-weight:900;color:var(--gold2);letter-spacing:5px;text-transform:uppercase;margin-bottom:16px;}
 .adm-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
@@ -106,11 +117,13 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 .cheat-box{width:100%;max-width:860px;margin-bottom:16px;background:rgba(230,57,70,.06);border:1.5px solid rgba(230,57,70,.25);border-radius:18px;padding:18px;}
 .cheat-t{font-family:'Oxanium',sans-serif;font-size:.68rem;font-weight:900;color:#fda4af;letter-spacing:4px;text-transform:uppercase;margin-bottom:10px;}
 .cheat-i{display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:11px;background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.2);margin-bottom:7px;font-size:.8rem;color:#fda4af;}
+/* WAIT */
 .wm{text-align:center;max-width:380px;padding:40px 20px;}
 .wm-i{font-size:3.5rem;display:block;margin-bottom:16px;animation:bob 2.2s ease-in-out infinite;}
 @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-16px);}}
 .wm-h{font-family:'Oxanium',sans-serif;font-size:1.3rem;font-weight:900;color:var(--gold2);margin-bottom:8px;}
 .wm-b{font-size:.83rem;color:var(--muted);line-height:1.8;}
+/* ROUND OVERLAY */
 #ro{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;flex-direction:column;background:#000;}
 #ro.show{display:flex;}
 .ro-bg{position:absolute;inset:0;overflow:hidden;}
@@ -120,11 +133,13 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 .ro-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(6rem,25vw,16rem);letter-spacing:4px;text-align:center;line-height:.85;background:linear-gradient(160deg,#fff,var(--gold2),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 100px rgba(245,166,35,.7));animation:numB .7s cubic-bezier(.34,1.56,.64,1) .25s both;}
 @keyframes numB{from{opacity:0;transform:scale(.3);}to{opacity:1;transform:scale(1);}}
 .ro-sub{font-family:'Oxanium',sans-serif;font-size:clamp(.85rem,2.5vw,1.15rem);color:var(--muted);margin-top:18px;letter-spacing:4px;text-align:center;animation:scrIn .6s ease .9s both;}
+/* R1 */
 #s-r1{justify-content:flex-start;padding-top:16px;}
 .r1-hd{width:100%;max-width:820px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:50px;margin-bottom:16px;}
 .r1t{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;color:var(--r1c);text-shadow:0 0 30px rgba(255,59,59,.5);}
 .r1s{font-size:.72rem;color:var(--muted);letter-spacing:3px;margin-top:2px;}
 .qpill{font-family:'Oxanium',sans-serif;font-size:.82rem;font-weight:900;padding:8px 20px;border-radius:50px;background:var(--glass);border:1.5px solid var(--rim2);color:var(--muted);}
+/* BUZZER */
 .bz-stage{display:flex;align-items:center;justify-content:center;width:100%;max-width:820px;margin:16px 0;}
 .bz-out{position:relative;width:240px;height:240px;display:flex;align-items:center;justify-content:center;}
 .bz-halo{position:absolute;border-radius:50%;animation:halo 2s ease-in-out infinite;}
@@ -134,12 +149,15 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 @keyframes halo{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.07);opacity:.5;}}
 .bz-btn{width:200px;height:200px;border-radius:50%;border:none;cursor:pointer;position:relative;z-index:2;background:radial-gradient(circle at 38% 32%,#ff5555 0%,#cc1111 45%,#880000 75%,#550000 100%);box-shadow:0 0 0 6px rgba(230,57,70,.25),0 0 0 14px rgba(230,57,70,.1),0 20px 50px rgba(0,0,0,.8),inset 0 6px 18px rgba(255,255,255,.18),inset 0 -8px 20px rgba(0,0,0,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .1s;animation:bzg 1.8s ease-in-out infinite;}
 @keyframes bzg{0%,100%{box-shadow:0 0 0 6px rgba(230,57,70,.25),0 0 0 14px rgba(230,57,70,.1),0 20px 50px rgba(0,0,0,.8),inset 0 6px 18px rgba(255,255,255,.18),inset 0 -8px 20px rgba(0,0,0,.6);}50%{box-shadow:0 0 0 10px rgba(230,57,70,.35),0 0 0 22px rgba(230,57,70,.12),0 0 60px rgba(230,57,70,.4),0 20px 50px rgba(0,0,0,.8),inset 0 6px 18px rgba(255,255,255,.18),inset 0 -8px 20px rgba(0,0,0,.6);}}
-.bz-btn:active:not(:disabled){transform:scale(.92) translateY(5px);box-shadow:0 0 0 6px rgba(230,57,70,.3),0 8px 30px rgba(0,0,0,.7),inset 0 -3px 8px rgba(0,0,0,.6);animation:none;}
+.bz-btn:active:not(:disabled){transform:scale(.92) translateY(5px);animation:none;}
 .bz-btn:disabled{cursor:not-allowed;}
 .bz-pressed{background:radial-gradient(circle at 38% 32%,#66ffaa 0%,#00cc55 45%,#006622 75%,#003311 100%)!important;box-shadow:0 0 0 10px rgba(6,214,160,.3),0 0 60px rgba(6,214,160,.5),0 20px 50px rgba(0,0,0,.8),inset 0 6px 18px rgba(255,255,255,.2),inset 0 -8px 20px rgba(0,0,0,.6)!important;animation:none!important;}
 .bz-locked{background:radial-gradient(circle at 38% 32%,#666 0%,#333 45%,#222 100%)!important;box-shadow:0 8px 30px rgba(0,0,0,.7),inset 0 6px 12px rgba(255,255,255,.06)!important;animation:none!important;opacity:.55;}
+/* locked-out = penalty for this question */
+.bz-penalized{background:radial-gradient(circle at 38% 32%,#ff9900 0%,#b35900 45%,#6b3300 100%)!important;box-shadow:0 0 0 10px rgba(255,153,0,.3),0 0 40px rgba(255,153,0,.4),0 20px 50px rgba(0,0,0,.8),inset 0 6px 18px rgba(255,255,255,.1),inset 0 -8px 20px rgba(0,0,0,.6)!important;animation:none!important;}
 .bz-ico{font-size:3.2rem;line-height:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5));}
 .bz-tx{font-family:'Oxanium',sans-serif;font-size:.9rem;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6);letter-spacing:2px;}
+/* PRESS PANEL */
 .pp{width:100%;max-width:560px;margin:0 auto;}
 .pp-w{padding:18px 24px;border-radius:18px;text-align:center;border:1.5px solid rgba(245,166,35,.25);background:rgba(245,166,35,.06);}
 .pp-wt{font-family:'Oxanium',sans-serif;font-size:1.05rem;font-weight:900;color:var(--gold2);}
@@ -147,16 +165,22 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 .pp-list{display:flex;flex-direction:column;gap:8px;}
 .pp-item{display:flex;align-items:center;gap:12px;padding:11px 18px;border-radius:14px;background:rgba(255,255,255,.04);border:1.5px solid var(--rim);transition:all .25s;}
 .pp-item.first{border-color:rgba(245,166,35,.55);background:rgba(245,166,35,.1);box-shadow:0 0 24px rgba(245,166,35,.15);}
+.pp-item.penalized{border-color:rgba(255,153,0,.4);background:rgba(255,153,0,.06);}
 .pp-rank{font-family:'Oxanium',sans-serif;font-size:1.1rem;font-weight:900;min-width:28px;}
 .pp-name{flex:1;font-family:'Oxanium',sans-serif;font-size:.95rem;font-weight:800;}
-.pp-badge{font-size:.68rem;padding:3px 10px;border-radius:20px;font-family:'Oxanium',sans-serif;font-weight:900;background:rgba(245,166,35,.2);color:var(--gold2);border:1px solid rgba(245,166,35,.4);}
+.pp-badge{font-size:.68rem;padding:3px 10px;border-radius:20px;font-family:'Oxanium',sans-serif;font-weight:900;}
+.pp-badge.gold{background:rgba(245,166,35,.2);color:var(--gold2);border:1px solid rgba(245,166,35,.4);}
+.pp-badge.penalty{background:rgba(255,153,0,.18);color:#ffcc66;border:1px solid rgba(255,153,0,.4);}
+/* R1 ADMIN */
 .r1-adm{width:100%;max-width:820px;background:rgba(245,166,35,.05);border:1.5px solid rgba(245,166,35,.18);border-radius:20px;padding:20px;margin-bottom:14px;}
 .r1-adm h4{font-family:'Oxanium',sans-serif;font-size:.68rem;font-weight:900;color:var(--gold2);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;}
 .r1-adm-btns{display:flex;gap:9px;flex-wrap:wrap;}
 .r1-adm-btns .btn{flex:1;min-width:115px;}
+/* R2 */
 #s-r2{justify-content:flex-start;padding-top:16px;}
 .r2-hd{width:100%;max-width:720px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:50px;margin-bottom:16px;}
 .r2t{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:3px;color:var(--r2c);text-shadow:0 0 30px rgba(6,182,212,.5);}
+/* TIMER */
 .tm-stage{display:flex;flex-direction:column;align-items:center;margin:10px 0 6px;}
 .tm-ring{position:relative;width:96px;height:96px;}
 .tm-ring svg{transform:rotate(-90deg);}
@@ -164,6 +188,7 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 .tr-arc{fill:none;stroke:var(--ok);stroke-width:6;stroke-linecap:round;stroke-dasharray:240;stroke-dashoffset:0;transition:stroke-dashoffset .95s linear,stroke .4s;}
 .tr-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Oxanium',sans-serif;font-size:1.9rem;font-weight:900;text-shadow:0 0 20px currentColor;transition:color .4s;}
 .tm-lbl{font-size:.65rem;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-top:7px;font-family:'Oxanium',sans-serif;}
+/* TRUE/FALSE */
 .tf-stage{display:flex;gap:16px;width:100%;max-width:600px;margin:12px 0;}
 .tf-btn{flex:1;padding:28px 18px;border-radius:24px;border:none;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
 .tf-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.08),transparent);}
@@ -179,6 +204,10 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 .tf-krd{font-size:.72rem;color:var(--muted);letter-spacing:2px;}
 .tf-t .tf-word{color:#6effd8;}
 .tf-f .tf-word{color:#ffaaaa;}
+/* Answered status for player in R2 */
+.answered-box{width:100%;max-width:600px;padding:18px 24px;border-radius:18px;text-align:center;background:rgba(59,130,246,.08);border:1.5px solid rgba(59,130,246,.3);font-family:'Oxanium',sans-serif;font-size:1rem;font-weight:900;color:#93c5fd;display:none;margin:8px 0;}
+.answered-box.show{display:block;}
+/* R2 STATUS */
 .r2-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%;max-width:600px;margin-bottom:12px;}
 .r2-ps{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:12px;background:rgba(255,255,255,.04);border:1.5px solid var(--rim);transition:all .25s;min-width:118px;}
 .r2-ps.ans{border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.07);}
@@ -187,18 +216,22 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 .r2-pn{font-family:'Oxanium',sans-serif;font-size:.8rem;font-weight:800;flex:1;}
 .r2-pc{font-size:.72rem;color:var(--muted);}
 .r2-ps.ans .r2-pc{color:var(--gold);}
+/* ADMIN REVEAL (only admin sees this) */
 .rev{display:none;width:100%;max-width:600px;padding:20px 26px;border-radius:20px;text-align:center;margin:10px 0;border:2px solid;font-family:'Oxanium',sans-serif;font-size:1.25rem;font-weight:900;animation:scrIn .35s ease;}
 .rev.show{display:block;}
 .rev-t{border-color:var(--ok);background:rgba(6,214,160,.1);color:#6effd8;}
 .rev-f{border-color:var(--red);background:rgba(230,57,70,.1);color:#ffaaaa;}
+/* R2 ADMIN */
 .r2-adm{width:100%;max-width:720px;background:rgba(6,182,212,.05);border:1.5px solid rgba(6,182,212,.2);border-radius:20px;padding:20px;margin-bottom:14px;}
 .r2-adm h4{font-family:'Oxanium',sans-serif;font-size:.68rem;font-weight:900;color:var(--cyan);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;}
 .r2-adm-btns{display:flex;gap:9px;flex-wrap:wrap;}
 .r2-adm-btns .btn{flex:1;min-width:115px;}
+/* FINAL */
 #s-final{justify-content:flex-start;padding-top:20px;}
 .fin-hd{text-align:center;margin-top:50px;margin-bottom:28px;}
 .fin-hd h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,8vw,5rem);letter-spacing:4px;background:linear-gradient(140deg,#fff,var(--gold2),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 50px rgba(245,166,35,.5));}
 .fin-hd p{font-size:.7rem;color:var(--muted);letter-spacing:6px;text-transform:uppercase;margin-top:8px;}
+/* PODIUM */
 .podium{display:flex;align-items:flex-end;gap:12px;justify-content:center;margin-bottom:28px;width:100%;max-width:700px;}
 .pod-i{display:flex;flex-direction:column;align-items:center;text-align:center;}
 .pod-b{width:115px;border-radius:18px 18px 0 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:14px;position:relative;overflow:hidden;}
@@ -212,6 +245,7 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 .pod-emo{font-size:1.5rem;display:block;margin-bottom:3px;}
 .pod-nm{font-family:'Oxanium',sans-serif;font-size:.82rem;font-weight:900;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .pod-rk{font-size:.6rem;color:var(--muted);letter-spacing:2px;margin-top:2px;}
+/* QUAL */
 .qual-list{width:100%;max-width:560px;margin-bottom:22px;}
 .qual-title{font-family:'Oxanium',sans-serif;font-size:.7rem;font-weight:900;color:var(--gold2);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;}
 .qual-row{display:flex;align-items:center;gap:14px;padding:14px 20px;border-radius:16px;margin-bottom:9px;border:1.5px solid;animation:scrIn .4s ease both;}
@@ -225,13 +259,9 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
 .q-emo{font-size:1.5rem;}
 .q-name{font-family:'Oxanium',sans-serif;font-size:.95rem;font-weight:900;flex:1;}
 .q-sc{font-family:'Oxanium',sans-serif;font-size:1.3rem;font-weight:900;color:var(--gold);}
+/* CONFETTI */
 .ce{position:fixed;pointer-events:none;font-size:2rem;z-index:9999;animation:cef linear forwards;}
 @keyframes cef{from{transform:translateY(-60px) rotate(0);opacity:1;}to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
-/* Quick-login buttons */
-.qlogin{display:flex;flex-direction:column;gap:8px;margin-top:18px;}
-.qlogin-t{font-size:.62rem;color:var(--muted);letter-spacing:2px;text-align:center;margin-bottom:4px;font-family:'Oxanium',sans-serif;}
-.ql-btn{padding:11px 18px;border-radius:12px;border:1.5px solid var(--rim2);background:rgba(255,255,255,.04);color:var(--text);font-family:'Oxanium',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:10px;}
-.ql-btn:hover{background:rgba(255,255,255,.09);border-color:var(--gold);color:var(--gold2);}
 </style>
 </head>
 <body>
@@ -255,13 +285,18 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
     </div>
     <button class="btn bg bw" style="margin-top:6px" onclick="doLogin()">داخلبوون ✓</button>
 
-    <!-- QUICK LOGIN BUTTONS -->
+    <!-- PLAYER QUICK LOGIN -->
     <div class="qlogin">
-      <div class="qlogin-t">— یان یەکێک هەڵبژێرە —</div>
-      <button class="ql-btn" onclick="quickLogin('arin')">🔴 <span>ARIN</span> <span style="color:var(--muted);font-size:.72rem;margin-right:auto">یاریزان</span></button>
-      <button class="ql-btn" onclick="quickLogin('armand')">🔵 <span>ARMAND</span> <span style="color:var(--muted);font-size:.72rem;margin-right:auto">یاریزان</span></button>
-      <button class="ql-btn" onclick="quickLogin('lawin')">🟢 <span>LAWIN</span> <span style="color:var(--muted);font-size:.72rem;margin-right:auto">یاریزان</span></button>
-      <button class="ql-btn" onclick="quickLogin('admin')" style="border-color:rgba(245,166,35,.35);">⚙️ <span>ADMIN</span> <span style="color:var(--muted);font-size:.72rem;margin-right:auto">ئەدمین</span></button>
+      <div class="qlogin-t">— یاریزان هەڵبژێرە —</div>
+      <button class="ql-btn" onclick="quickLogin('arin')">🔴 <span>ARIN</span></button>
+      <button class="ql-btn" onclick="quickLogin('armand')">🔵 <span>ARMAND</span></button>
+      <button class="ql-btn" onclick="quickLogin('lawin')">🟢 <span>LAWIN</span></button>
+    </div>
+
+    <!-- SECRET ADMIN CODE — invisible until typed -->
+    <div class="admin-code-wrap">
+      <input class="admin-code-input" type="password" id="adminCode" maxlength="4" placeholder="····" autocomplete="off"
+        oninput="checkAdminCode(this.value)" />
     </div>
 
     <div style="text-align:center;margin-top:14px;font-size:.68rem;color:var(--muted)">Semi Finals — Quiz Tournament</div>
@@ -335,8 +370,8 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
     <h4>⚙️ کۆنترۆلی ئەدمین — Round 1</h4>
     <div class="r1-adm-btns">
       <button class="btn bk2 sm" onclick="adminCorrect()">✅ وەڵامی ڕاست (+50)</button>
-      <button class="btn br sm" onclick="adminWrong()">❌ وەڵامی غەلەت</button>
-      <button class="btn bb sm" onclick="adminResetBuzzer()">🔄 ڕیسێتی دوگمە</button>
+      <button class="btn br sm" onclick="adminWrong()">❌ غەلەت — لۆک + داهاتوو</button>
+      <button class="btn bb sm" onclick="adminResetBuzzer()">🔄 ڕیسێتی دوگمە (هەموو)</button>
       <button class="btn bg sm" onclick="adminNextR1Q()">⏭ پرسیاری داهاتوو</button>
       <button class="btn bp sm" onclick="adminGoR2()">⚡ بڕۆ Round 2</button>
     </div>
@@ -379,6 +414,8 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
       <button class="btn bb sm" onclick="adminNextR2Q()">⏭ پرسیاری داهاتوو</button>
       <button class="btn bgh sm" onclick="adminEndGame()">🏁 کۆتایی یاری</button>
     </div>
+    <!-- Admin sees reveal result -->
+    <div class="rev" id="r2Rev"></div>
   </div>
   <div class="tm-stage">
     <div class="tm-ring">
@@ -391,7 +428,10 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
     <div class="tm-lbl">چرکەی ماوە</div>
   </div>
   <div class="r2-row" id="r2Row"></div>
-  <div class="tf-stage">
+  <!-- Player answered status (no correct answer shown) -->
+  <div class="answered-box" id="answeredBox">✅ وەڵامت داوە — چاوەڕوانی ئەنجام...</div>
+  <!-- True/False buttons -->
+  <div class="tf-stage" id="tfStage">
     <button class="tf-btn tf-t" id="tfT" onclick="submitTF('true')">
       <span class="tf-ico">✅</span><span class="tf-word">TRUE</span><span class="tf-krd">ڕاست</span>
     </button>
@@ -399,7 +439,6 @@ hr.dv{border:none;border-top:1px solid rgba(255,255,255,.06);margin:20px 0;}
       <span class="tf-ico">❌</span><span class="tf-word">FALSE</span><span class="tf-krd">غەلەت</span>
     </button>
   </div>
-  <div class="rev" id="r2Rev"></div>
 </div>
 
 <!-- FINAL -->
@@ -419,25 +458,16 @@ async function fbG(p){try{const r=await fetch(FB+p+".json?_="+Date.now());if(!r.
 async function fbS(p,d){try{await fetch(FB+p+".json",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});}catch{}}
 async function fbM(p,d){try{await fetch(FB+p+".json",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});}catch{}}
 
-// ---- CREDENTIALS (array-based, no key lookup issues) ----
-const CREDS = [
+const CREDS=[
   {email:"arin230024.cgi@quiz.com",   pass:"password;2026@", name:"ARIN",   emo:"🔴", col:"#f87171", role:"player"},
   {email:"armand230024.cgi@quiz.com", pass:"password;2026@", name:"ARMAND", emo:"🔵", col:"#60a5fa", role:"player"},
   {email:"lawin230024.cgi@quiz.com",  pass:"password;2026@", name:"LAWIN",  emo:"🟢", col:"#4ade80", role:"player"},
   {email:"admin22.23@gmail.com",      pass:"1122aadd",       name:"ADMIN",  emo:"⚙️", col:"#f0b429", role:"admin"}
 ];
+const USERS={};CREDS.forEach(u=>{USERS[u.email]=u;});
+const PE=CREDS.filter(u=>u.role==="player").map(u=>u.email);
 
-// Build USERS map for compatibility with rest of code
-const USERS = {};
-CREDS.forEach(u => { USERS[u.email] = u; });
-const PE = CREDS.filter(u=>u.role==="player").map(u=>u.email);
-
-function findUser(email, pass) {
-  const e = email.trim().toLowerCase();
-  const p = pass.trim();
-  return CREDS.find(u => u.email === e && u.pass === p) || null;
-}
-
+function findUser(email,pass){const e=email.trim().toLowerCase();const p=pass.trim();return CREDS.find(u=>u.email===e&&u.pass===p)||null;}
 function sk(e){return e.replace(/[^a-zA-Z0-9]/g,"_");}
 
 let me=null,isAd=false,pollId=null,hbId=null,phase="hub",myTF=null,r2tid=null,lastQ2=0;
@@ -445,27 +475,32 @@ const CIRC=2*Math.PI*38;
 
 function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));const el=document.getElementById(id);if(el)el.classList.add("active");}
 
-function doLogin(){
-  const emailRaw = document.getElementById("lemail").value;
-  const passRaw  = document.getElementById("lpass").value;
-  const err = document.getElementById("lerr");
-
-  const u = findUser(emailRaw, passRaw);
-  if(!u){
-    err.textContent="❌ ئیمەیڵ یان پاسۆرد هەڵەیە";
-    err.classList.add("show");
-    return;
+// ---- FIX 1: SECRET ADMIN CODE ----
+function checkAdminCode(val){
+  if(val==="0022"){
+    document.getElementById("adminCode").value="";
+    me={...CREDS[3]};isAd=true;
+    document.getElementById("lerr").classList.remove("show");
+    enterHub();
   }
+}
+
+function doLogin(){
+  const emailRaw=document.getElementById("lemail").value;
+  const passRaw=document.getElementById("lpass").value;
+  const err=document.getElementById("lerr");
+  const u=findUser(emailRaw,passRaw);
+  if(!u){err.textContent="❌ ئیمەیڵ یان پاسۆرد هەڵەیە";err.classList.add("show");return;}
   err.classList.remove("show");
-  me = {...u}; isAd = u.role === "admin";
+  me={...u};isAd=u.role==="admin";
   enterHub();
 }
 
 function quickLogin(who){
-  const map = {arin:0, armand:1, lawin:2, admin:3};
-  const u = CREDS[map[who]];
-  if(!u) return;
-  me = {...u}; isAd = u.role === "admin";
+  const map={arin:0,armand:1,lawin:2};
+  const u=CREDS[map[who]];
+  if(!u)return;
+  me={...u};isAd=false;
   document.getElementById("lerr").classList.remove("show");
   enterHub();
 }
@@ -508,7 +543,7 @@ async function onVis(){
 
 async function resetGame(){
   const sc={};PE.forEach(e=>sc[sk(e)]=0);
-  await fbS("/game",{phase:"hub",r1:{qNum:1,open:true,order:[],first:null},r2:{qNum:1,go:false,tLeft:15,answers:{},revealed:null},scores:sc,cheatLog:[],ts:Date.now()});
+  await fbS("/game",{phase:"hub",r1:{qNum:1,open:true,order:[],penalized:[],first:null},r2:{qNum:1,go:false,tLeft:15,answers:{},revealed:null},scores:sc,cheatLog:[],ts:Date.now()});
 }
 
 async function poll(){
@@ -562,69 +597,183 @@ function showRound(lbl,num,sub,cb){
 }
 
 async function adjSc(key,delta){const g=await fbG("/game");if(!g)return;const nv=Math.max(0,(g.scores?.[key]||0)+delta);await fbM("/game/scores",{[key]:nv});notif((delta>0?"➕ ":"➖ ")+Math.abs(delta)+" خاڵ","nwarn");}
-async function adminStartR1(){await fbM("/game",{phase:"r1",r1:{qNum:1,open:true,order:[],first:null}});notif("▶ Round 1 دەستپێکرد!","nsuc");}
+async function adminStartR1(){await fbM("/game",{phase:"r1","r1/qNum":1,"r1/open":true,"r1/order":[],"r1/penalized":[],"r1/first":null});notif("▶ Round 1 دەستپێکرد!","nsuc");}
 async function adminResetAll(){if(!confirm("دڵنیایت؟"))return;clearInterval(r2tid);r2tid=null;await resetGame();phase="hub";myTF=null;lastQ2=0;go("s-hub");notif("↺ ڕیسێت کرا","ninf");}
 
+// ---- R1 ----
 function setupR1(){document.getElementById("r1Adm").style.display=isAd?"block":"none";document.getElementById("bkR1").style.display=isAd?"":"none";}
 
 function updR1(g){
-  const r1=g.r1||{};rndBar("r1Bar",g);
+  const r1=g.r1||{};
+  rndBar("r1Bar",g);
   document.getElementById("r1QNum").textContent="Q "+r1.qNum+" / 10";
-  const order=r1.order||[];const btn=document.getElementById("bzBtn");
-  const ico=document.getElementById("bzIco");const tx=document.getElementById("bzTx");
+  const order=r1.order||[];
+  const penalized=r1.penalized||[];
+  const btn=document.getElementById("bzBtn");
+  const ico=document.getElementById("bzIco");
+  const tx=document.getElementById("bzTx");
   const halos=["bh1","bh2","bh3"];
-  if(!r1.open||isAd){btn.className="bz-btn bz-locked";btn.disabled=true;ico.textContent="🔒";tx.textContent="LOCKED";halos.forEach(h=>document.getElementById(h).style.animationPlayState="paused");}
-  else if(!order.length){btn.className="bz-btn bz-ready";btn.disabled=false;ico.textContent="🔴";tx.textContent="BUZZ!";halos.forEach(h=>document.getElementById(h).style.animationPlayState="running");}
-  else{
-    const myK=sk(me?.email||""),myR=order.indexOf(myK);
-    if(myR===0){btn.className="bz-btn bz-pressed";ico.textContent="✅";tx.textContent="یەکەم!";}
-    else if(myR>0){btn.className="bz-btn bz-locked";ico.textContent="🏅";tx.textContent="#"+(myR+1);}
-    else{btn.className="bz-btn bz-locked";ico.textContent="⌛";tx.textContent=order.length+"✓";}
-    btn.disabled=true;halos.forEach(h=>document.getElementById(h).style.animationPlayState="paused");
+  const myK=sk(me?.email||"");
+  const myPenalized=penalized.includes(myK);
+  const myRank=order.indexOf(myK);
+
+  if(isAd){
+    btn.className="bz-btn bz-locked";btn.disabled=true;ico.textContent="🔒";tx.textContent="ADMIN";
+    halos.forEach(h=>document.getElementById(h).style.animationPlayState="paused");
+  } else if(myPenalized){
+    // FIX 2: player gave wrong answer — locked out THIS question
+    btn.className="bz-btn bz-penalized";btn.disabled=true;ico.textContent="⏸";tx.textContent="SKIP";
+    halos.forEach(h=>document.getElementById(h).style.animationPlayState="paused");
+  } else if(!r1.open){
+    btn.className="bz-btn bz-locked";btn.disabled=true;ico.textContent="🔒";tx.textContent="LOCKED";
+    halos.forEach(h=>document.getElementById(h).style.animationPlayState="paused");
+  } else if(myRank===0){
+    btn.className="bz-btn bz-pressed";btn.disabled=true;ico.textContent="✅";tx.textContent="یەکەم!";
+    halos.forEach(h=>document.getElementById(h).style.animationPlayState="paused");
+  } else if(myRank>0){
+    btn.className="bz-btn bz-locked";btn.disabled=true;ico.textContent="🏅";tx.textContent="#"+(myRank+1);
+    halos.forEach(h=>document.getElementById(h).style.animationPlayState="paused");
+  } else if(!order.length){
+    btn.className="bz-btn bz-ready";btn.disabled=false;ico.textContent="🔴";tx.textContent="BUZZ!";
+    halos.forEach(h=>document.getElementById(h).style.animationPlayState="running");
+  } else {
+    // Others buzzed but not me yet — I can still buzz
+    btn.className="bz-btn bz-ready";btn.disabled=false;ico.textContent="🔴";tx.textContent="BUZZ!";
+    halos.forEach(h=>document.getElementById(h).style.animationPlayState="running");
   }
+
+  // Press panel
   const ppW=document.getElementById("ppW"),ppL=document.getElementById("ppL");
-  if(!order.length){ppW.style.display="block";ppL.style.display="none";}
+  if(!order.length&&!penalized.length){ppW.style.display="block";ppL.style.display="none";}
   else{
     ppW.style.display="none";ppL.style.display="flex";ppL.innerHTML="";
-    order.forEach((key,idx)=>{
+    // Show non-penalized buzzed players first
+    const activeBuzzed=order.filter(k=>!penalized.includes(k));
+    activeBuzzed.forEach((key,idx)=>{
       const email=PE.find(e=>sk(e)===key);const u=email?USERS[email]:null;
       const item=document.createElement("div");item.className="pp-item"+(idx===0?" first":"");
-      item.innerHTML=`<div class="pp-rank">${idx===0?"👑":"#"+(idx+1)}</div><div class="pp-name" style="color:${u?.col||"#fff"}">${u?.emo||"?"} ${u?.name||key}</div>${idx===0?'<span class="pp-badge">⚡ یەکەم</span>':""}`;
+      item.innerHTML=`<div class="pp-rank">${idx===0?"👑":"#"+(idx+1)}</div><div class="pp-name" style="color:${u?.col||"#fff"}">${u?.emo||"?"} ${u?.name||key}</div>${idx===0?'<span class="pp-badge gold">⚡ یەکەم</span>':""}`;
       ppL.appendChild(item);
     });
+    // Show penalized players
+    penalized.forEach(key=>{
+      const email=PE.find(e=>sk(e)===key);const u=email?USERS[email]:null;
+      const item=document.createElement("div");item.className="pp-item penalized";
+      item.innerHTML=`<div class="pp-rank">⏸</div><div class="pp-name" style="color:${u?.col||"#fff"}">${u?.emo||"?"} ${u?.name||key}</div><span class="pp-badge penalty">غەلەت — Skip</span>`;
+      ppL.appendChild(item);
+    });
+    if(!activeBuzzed.length&&!penalized.length){ppW.style.display="block";ppL.style.display="none";}
   }
 }
 
 async function pressBuzzer(){
   if(!me||isAd)return;
   const g=await fbG("/game");if(!g||!g.r1?.open)return;
-  const order=[...(g.r1.order||[])];const myK=sk(me.email);
-  if(order.includes(myK))return;
-  order.push(myK);await fbM("/game/r1",{order,first:order[0]});
+  const order=[...(g.r1.order||[])];
+  const penalized=[...(g.r1.penalized||[])];
+  const myK=sk(me.email);
+  if(order.includes(myK)||penalized.includes(myK))return;
+  order.push(myK);
+  await fbM("/game/r1",{order,first:order[0]});
   sndBuzz();notif("⚡ دوگمەکەت داگیرا!","nsuc");
 }
 
-async function adminCorrect(){const g=await fbG("/game");if(!g)return;const first=g.r1?.order?.[0];if(!first){notif("هیچ کەس دوگمەی نەداوە","nerr");return;}const nv=(g.scores?.[first]||0)+50;await fbM("/game/scores",{[first]:nv});notif("✅ +50 خاڵ","nsuc");confetti();}
-async function adminWrong(){notif("❌ وەڵامی غەلەت — پرسیار بۆ یاریزانی دووەم","nwarn");}
-async function adminResetBuzzer(){await fbM("/game/r1",{order:[],first:null,open:true});notif("🔄 دوگمە ڕیسێت","ninf");}
-async function adminNextR1Q(){const g=await fbG("/game");if(!g)return;const q=(g.r1?.qNum||1)+1;if(q>10){notif("١٠ پرسیار تەواو بوون!","nwarn");return;}await fbM("/game/r1",{qNum:q,order:[],first:null,open:true});notif("⏭ پرسیاری "+q,"ninf");}
+async function adminCorrect(){
+  const g=await fbG("/game");if(!g)return;
+  // Find first non-penalized buzzer
+  const order=g.r1?.order||[];
+  const penalized=g.r1?.penalized||[];
+  const first=order.find(k=>!penalized.includes(k));
+  if(!first){notif("هیچ کەس دوگمەی نەداوە","nerr");return;}
+  const nv=(g.scores?.[first]||0)+50;
+  await fbM("/game/scores",{[first]:nv});
+  notif("✅ +50 خاڵ","nsuc");confetti();
+}
+
+// FIX 2: Wrong answer — penalize first buzzer, reopen for others
+async function adminWrong(){
+  const g=await fbG("/game");if(!g)return;
+  const order=[...(g.r1?.order||[])];
+  const penalized=[...(g.r1?.penalized||[])];
+  const first=order.find(k=>!penalized.includes(k));
+  if(!first){notif("هیچ کەس دوگمەی نەداوە","nerr");return;}
+  penalized.push(first);
+  // Remove penalized from order
+  const newOrder=order.filter(k=>!penalized.includes(k));
+  await fbM("/game/r1",{order:newOrder,penalized,first:newOrder[0]||null,open:true});
+  const email=PE.find(e=>sk(e)===first);
+  const name=email?USERS[email].name:first;
+  notif("❌ "+name+" — لۆک کرا. داهاتوو دوگمە بدات!","nwarn");
+}
+
+async function adminResetBuzzer(){
+  // Full reset — clear all including penalties
+  await fbM("/game/r1",{order:[],penalized:[],first:null,open:true});
+  notif("🔄 هەموو دوگمەکان ڕیسێت کران","ninf");
+}
+
+async function adminNextR1Q(){
+  const g=await fbG("/game");if(!g)return;
+  const q=(g.r1?.qNum||1)+1;
+  if(q>10){notif("١٠ پرسیار تەواو بوون!","nwarn");return;}
+  // New question = clear penalties and order
+  await fbM("/game/r1",{qNum:q,order:[],penalized:[],first:null,open:true});
+  notif("⏭ پرسیاری "+q,"ninf");
+}
+
 async function adminGoR2(){clearInterval(r2tid);r2tid=null;await fbM("/game",{phase:"r2",r2:{qNum:1,go:false,tLeft:15,answers:{},revealed:null}});notif("⚡ بڕۆ Round 2","nsuc");}
 
-function setupR2(){document.getElementById("r2Adm").style.display=isAd?"block":"none";document.getElementById("bkR2").style.display=isAd?"":"none";myTF=null;setTF(true,null);lastQ2=0;}
+// ---- R2 ----
+function setupR2(){
+  document.getElementById("r2Adm").style.display=isAd?"block":"none";
+  document.getElementById("bkR2").style.display=isAd?"":"none";
+  myTF=null;
+  setTF(true,null);
+  document.getElementById("answeredBox").classList.remove("show");
+  if(!isAd)document.getElementById("tfStage").style.display="flex";
+  lastQ2=0;
+}
 
 function updR2(g){
-  const r2=g.r2||{};rndBar("r2Bar",g);
+  const r2=g.r2||{};
+  rndBar("r2Bar",g);
   document.getElementById("r2QNum").textContent="Q "+r2.qNum+" / 10";
-  if(r2.qNum!==lastQ2){lastQ2=r2.qNum;myTF=null;setTF(true,null);document.getElementById("r2Rev").className="rev";clearInterval(r2tid);r2tid=null;}
+
+  // Reset on new question
+  if(r2.qNum!==lastQ2){
+    lastQ2=r2.qNum;
+    myTF=null;
+    setTF(true,null);
+    document.getElementById("answeredBox").classList.remove("show");
+    if(!isAd)document.getElementById("tfStage").style.display="flex";
+    // Admin: clear reveal box on new question
+    if(isAd){document.getElementById("r2Rev").className="rev";}
+    clearInterval(r2tid);r2tid=null;
+  }
+
   setTimer(r2.tLeft??15,15);
   rndR2Status(r2.answers||{});
+
+  // Start local countdown if timer running
   if(r2.go&&(r2.tLeft??0)>0&&!r2tid){
     let t=r2.tLeft??15;
-    r2tid=setInterval(async()=>{t--;setTimer(t,15);if(t<=0){clearInterval(r2tid);r2tid=null;setTF(false,myTF);if(isAd)await fbM("/game/r2",{go:false,tLeft:0});}},1000);
+    r2tid=setInterval(async()=>{
+      t--;setTimer(t,15);
+      if(t<=0){
+        clearInterval(r2tid);r2tid=null;
+        // Lock buttons when time ends
+        setTF(false,myTF);
+        if(isAd)await fbM("/game/r2",{go:false,tLeft:0});
+      }
+    },1000);
   }
   if(!r2.go&&r2tid){clearInterval(r2tid);r2tid=null;}
   if((r2.tLeft??15)<=0)setTF(false,myTF);
-  if(r2.revealed!==null&&r2.revealed!==undefined)showRev(r2.revealed);
+
+  // FIX 3: Only admin sees the reveal
+  if(isAd && r2.revealed!==null && r2.revealed!==undefined){
+    showRevAdmin(r2.revealed);
+  }
 }
 
 function setTimer(t,tot){
@@ -637,16 +786,26 @@ function setTimer(t,tot){
 
 function rndR2Status(ans){
   const row=document.getElementById("r2Row");row.innerHTML="";
-  PE.forEach(e=>{const u=USERS[e];const a=!!ans[sk(e)];const d=document.createElement("div");d.className="r2-ps"+(a?" ans":"");d.innerHTML=`<div class="r2-dot"></div><span class="r2-pn" style="color:${u.col}">${u.emo} ${u.name}</span><span class="r2-pc">${a?"✓ وەڵامی داوە":"⏳"}</span>`;row.appendChild(d);});
+  PE.forEach(e=>{
+    const u=USERS[e];const a=!!ans[sk(e)];
+    const d=document.createElement("div");d.className="r2-ps"+(a?" ans":"");
+    d.innerHTML=`<div class="r2-dot"></div><span class="r2-pn" style="color:${u.col}">${u.emo} ${u.name}</span><span class="r2-pc">${a?"✓ وەڵامی داوە":"⏳"}</span>`;
+    row.appendChild(d);
+  });
 }
 
 async function submitTF(ans){
   if(!me||isAd||myTF!==null)return;
-  const g=await fbG("/game/r2");if(!g||(!g.go&&(g.tLeft||0)<=0))return;
-  myTF=ans;setTF(false,ans);
+  const g=await fbG("/game/r2");
+  if(!g||(!g.go&&(g.tLeft||0)<=0))return;
+  myTF=ans;
+  // Hide buttons, show "answered" message — no correct answer shown
+  setTF(false,ans);
+  document.getElementById("tfStage").style.display="none";
+  document.getElementById("answeredBox").classList.add("show");
   const answers=g.answers||{};answers[sk(me.email)]=ans;
   await fbM("/game/r2",{answers});
-  notif(ans==="true"?"✅ ڕاست هەڵبژێردت":"❌ غەلەت هەڵبژێردت","ninf");sndClick();
+  sndClick();
 }
 
 function setTF(en,chosen){
@@ -656,35 +815,59 @@ function setTF(en,chosen){
   fBtn.className="tf-btn tf-f"+(chosen==="false"?" cf":"");
 }
 
-function showRev(correct){
+// FIX 3: Only admin sees reveal
+function showRevAdmin(correct){
+  if(!isAd)return;
   const rev=document.getElementById("r2Rev");
   rev.className="rev show "+(correct?"rev-t":"rev-f");
-  rev.innerHTML=correct?"✅ وەڵامی ڕاست: TRUE — ڕاست":"❌ وەڵامی ڕاست: FALSE — غەلەت";
+  rev.innerHTML=correct?"✅ وەڵامی ڕاست: TRUE":"❌ وەڵامی ڕاست: FALSE";
 }
 
 async function adminStartTimer(){await fbM("/game/r2",{go:true,tLeft:15});notif("▶ کاتژمێر دەستپێکرد","nsuc");}
 
+// FIX 4: Give points to players who answered correctly BEFORE time runs out
 async function adminReveal(correct){
   const g=await fbG("/game");if(!g)return;
-  const r2=g.r2||{};const answers=r2.answers||{};const scores={...g.scores};
+  const r2=g.r2||{};
+  const answers=r2.answers||{};
+  const scores={...g.scores};
   const ca=correct?"true":"false";
-  PE.forEach(e=>{const k=sk(e);if(answers[k]===ca)scores[k]=(scores[k]||0)+50;});
+  // Award 50 pts to anyone who answered correctly (whether time expired or not)
+  PE.forEach(e=>{
+    const k=sk(e);
+    if(answers[k]===ca){
+      scores[k]=(scores[k]||0)+50;
+    }
+  });
   await fbM("/game",{scores,"r2/revealed":correct,"r2/go":false});
-  notif("✅ وەڵامی ڕاست: "+(correct?"TRUE":"FALSE")+" — خاڵ نرا","nsuc");confetti();
+  notif("✅ وەڵامی ڕاست: "+(correct?"TRUE":"FALSE")+" — خاڵ نرا","nsuc");
+  confetti();
 }
 
 async function adminNextR2Q(){
-  const g=await fbG("/game");if(!g)return;const q=(g.r2?.qNum||1)+1;
+  const g=await fbG("/game");if(!g)return;
+  const q=(g.r2?.qNum||1)+1;
   if(q>10){notif("١٠ پرسیار تەواو بوون!","nwarn");return;}
   clearInterval(r2tid);r2tid=null;
-  await fbM("/game/r2",{qNum:q,go:false,tLeft:15,answers:{},revealed:null});notif("⏭ پرسیاری "+q,"ninf");
+  await fbM("/game/r2",{qNum:q,go:false,tLeft:15,answers:{},revealed:null});
+  notif("⏭ پرسیاری "+q,"ninf");
 }
 
-async function adminEndGame(){clearInterval(r2tid);r2tid=null;await fbM("/game",{phase:"final"});const g=await fbG("/game");if(g)buildFinal(g);}
+async function adminEndGame(){
+  clearInterval(r2tid);r2tid=null;
+  await fbM("/game",{phase:"final"});
+  const g=await fbG("/game");
+  if(g)buildFinal(g);
+}
 
 function rndBar(id,g){
   const bar=document.getElementById(id);bar.innerHTML="";
-  PE.forEach(e=>{const u=USERS[e];const pts=g?.scores?.[sk(e)]??0;const d=document.createElement("div");d.className="sc";d.style.setProperty("--pc",u.col);d.innerHTML=`<div class="sc-top"></div><div class="sc-body"><div class="sc-emo">${u.emo}</div><div class="sc-nam">${u.name}</div><div class="sc-pts${isAd?"":" blur"}">${isAd?pts:"—"}</div></div>`;bar.appendChild(d);});
+  PE.forEach(e=>{
+    const u=USERS[e];const pts=g?.scores?.[sk(e)]??0;
+    const d=document.createElement("div");d.className="sc";d.style.setProperty("--pc",u.col);
+    d.innerHTML=`<div class="sc-top"></div><div class="sc-body"><div class="sc-emo">${u.emo}</div><div class="sc-nam">${u.name}</div><div class="sc-pts${isAd?"":" blur"}">${isAd?pts:"—"}</div></div>`;
+    bar.appendChild(d);
+  });
 }
 
 function buildFinal(g){
