@@ -456,15 +456,33 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 
   <div class="r2-adm" id="r2Adm" style="display:none">
     <h4>⚙️ کۆنترۆلی Round 2</h4>
-    <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px">پرسیار لە Discord بدە ← کاتژمێر دەستپێبکە ← وەڵام ئاشکرا بکە</div>
-    <div class="r2-adm-btns">
-      <button class="btn bg sm" onclick="adminStartTimer()">▶ کاتژمێر</button>
-      <button class="btn bk2 sm" onclick="adminReveal(true)">✅ وەڵام: TRUE</button>
-      <button class="btn br sm" onclick="adminReveal(false)">❌ وەڵام: FALSE</button>
-      <button class="btn bb sm" onclick="adminNextR2Q()">⏭ پرسیاری داهاتوو</button>
-      <button class="btn bgh sm" onclick="adminEndGame()">🏁 کۆتایی</button>
+
+    <!-- STEP 1: Admin must pick the correct answer FIRST -->
+    <div style="font-size:.75rem;color:var(--gold2);font-family:'Oxanium',sans-serif;font-weight:900;letter-spacing:2px;margin-bottom:8px;">
+      ① پێشتر وەڵامی ڕاست دیاری بکە:
     </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <button class="btn bk2 sm" id="preT" onclick="adminPreSelect(true)"  style="flex:1">✅ TRUE — ڕاست</button>
+      <button class="btn br  sm" id="preF" onclick="adminPreSelect(false)" style="flex:1">❌ FALSE — غەلەت</button>
+    </div>
+    <div id="preSelDisplay" style="display:none;padding:9px 16px;border-radius:12px;font-family:'Oxanium',sans-serif;font-size:.82rem;font-weight:900;text-align:center;margin-bottom:12px;"></div>
+
+    <!-- STEP 2: Start timer (only enabled after answer pre-selected) -->
+    <div style="font-size:.75rem;color:var(--gold2);font-family:'Oxanium',sans-serif;font-weight:900;letter-spacing:2px;margin-bottom:8px;">
+      ② کاتژمێر دەستپێبکە:
+    </div>
+    <div class="r2-adm-btns" style="margin-bottom:14px;">
+      <button class="btn bg sm" id="startTimerBtn" onclick="adminStartTimer()" disabled style="flex:2">▶ دەستپێکردنی کاتژمێر (١٥ چرکە)</button>
+    </div>
+
+    <!-- STEP 3: After timer ends — scores auto-added, admin sees result -->
     <div class="rev-adm" id="r2RevAdm"></div>
+
+    <!-- Navigation -->
+    <div class="r2-adm-btns" style="margin-top:10px;">
+      <button class="btn bb sm" onclick="adminNextR2Q()">⏭ پرسیاری داهاتوو</button>
+      <button class="btn bgh sm" onclick="adminEndGame()">🏁 کۆتایی یاری</button>
+    </div>
   </div>
 
   <div class="tm-stage">
@@ -904,32 +922,71 @@ async function adminNextR1Q(){
 
 async function adminGoR2(){
   stopLocalTimer();
-  // BUG FIX 1: When going to R2, set phase:"r2" with full r2 reset
-  // Players will see the round overlay then go to r2 screen
-  await fbS("/game/r2", {qNum:1, go:false, tLeft:15, answers:{}, revealed:null});
+  await fbS("/game/r2", {qNum:1, go:false, tLeft:15, answers:{}, revealed:null, correctAnswer:null});
   await fbM("/game", {phase:"r2"});
   notif("⚡ بڕۆ Round 2", "nsuc");
 }
 
 /* ======= ROUND 2 ======= */
+let adminPreAnswer = null; // null | true | false — set BEFORE starting timer
+
 function setupR2(){
   document.getElementById("r2Adm").style.display   = isAd ? "block" : "none";
   document.getElementById("bkR2").style.display    = isAd ? "" : "none";
-  // BUG FIX 5: Buttons always start DISABLED — only enabled when go===true
   document.getElementById("tfStage").style.display  = isAd ? "none" : "flex";
   document.getElementById("tfT").disabled = true;
   document.getElementById("tfF").disabled = true;
   document.getElementById("answeredMsg").classList.remove("show");
-  if(isAd) document.getElementById("r2RevAdm").className = "rev-adm";
+  if(isAd){
+    document.getElementById("r2RevAdm").className = "rev-adm";
+    resetPreSelect();
+  }
   myTF = null; lastQ2 = 0;
   stopLocalTimer();
 }
 
-// BUG FIX 3: All timer logic consolidated here.
-// We only start the local countdown once per question per "go" signal.
-// Poll updates display but does NOT restart the interval.
+// Admin clicks TRUE or FALSE BEFORE starting timer — stores the correct answer
+async function adminPreSelect(correct){
+  adminPreAnswer = correct;
+  // Save to Firebase so all clients can read it
+  await fbM("/game/r2", {correctAnswer: correct});
+
+  // Update UI
+  const disp = document.getElementById("preSelDisplay");
+  disp.style.display = "block";
+  if(correct){
+    disp.style.background = "rgba(6,214,160,.15)";
+    disp.style.border = "1.5px solid rgba(6,214,160,.5)";
+    disp.style.color = "#6effd8";
+    disp.textContent = "✅ وەڵامی ڕاست: TRUE — ئامادەی کاتژمێر";
+  } else {
+    disp.style.background = "rgba(230,57,70,.15)";
+    disp.style.border = "1.5px solid rgba(230,57,70,.5)";
+    disp.style.color = "#ffaaaa";
+    disp.textContent = "❌ وەڵامی ڕاست: FALSE — ئامادەی کاتژمێر";
+  }
+
+  // Style the selected button
+  document.getElementById("preT").style.opacity = correct ? "1" : "0.4";
+  document.getElementById("preF").style.opacity = correct ? "0.4" : "1";
+
+  // Enable the start timer button now
+  document.getElementById("startTimerBtn").disabled = false;
+  notif((correct ? "✅ TRUE" : "❌ FALSE") + " — ئامادەی کاتژمێر", "nsuc");
+}
+
+function resetPreSelect(){
+  adminPreAnswer = null;
+  document.getElementById("preSelDisplay").style.display = "none";
+  document.getElementById("startTimerBtn").disabled = true;
+  document.getElementById("preT").style.opacity = "1";
+  document.getElementById("preF").style.opacity = "1";
+  document.getElementById("r2RevAdm").className = "rev-adm";
+}
+
+// All timer logic consolidated — only starts once per question
 function startLocalTimer(startValue){
-  stopLocalTimer(); // always kill any existing interval first
+  stopLocalTimer();
   r2LocalLeft = startValue;
   r2TimerRunning = true;
   setTimer(r2LocalLeft, 15);
@@ -940,11 +997,10 @@ function startLocalTimer(startValue){
 
     if(r2LocalLeft <= 0){
       stopLocalTimer();
-      // Disable buttons
       setTF(false, myTF);
-      // Admin writes tLeft:0 to Firebase
+      // When timer ends, admin client automatically scores and reveals
       if(isAd){
-        await fbM("/game/r2", {go:false, tLeft:0});
+        await doAutoScore();
       }
     }
   }, 1000);
@@ -955,13 +1011,46 @@ function stopLocalTimer(){
   r2TimerRunning = false;
 }
 
+// Called automatically when timer hits 0 (admin client only)
+async function doAutoScore(){
+  const g = await fbG("/game");
+  if(!g || !g.r2) return;
+
+  const correctAnswer = g.r2.correctAnswer; // pre-set by admin before timer started
+  if(correctAnswer === null || correctAnswer === undefined) return;
+
+  const answers = g.r2.answers || {};
+  const scores  = {...(g.scores || {})};
+  const ca = correctAnswer ? "true" : "false";
+
+  let winners = [];
+  PE.forEach(e => {
+    const k = sk(e);
+    if(answers[k] === ca){
+      scores[k] = (scores[k] || 0) + 50;
+      winners.push(USERS[e].name);
+    }
+  });
+
+  // Write scores + mark revealed + stop timer
+  await fbM("/game/scores", scores);
+  await fbM("/game/r2", {revealed: correctAnswer, go: false, tLeft: 0});
+
+  if(winners.length > 0){
+    notif("🎉 " + winners.join(" + ") + " — هەر کەسێک +50 خاڵی وەرگرت", "nsuc");
+    confetti();
+  } else {
+    notif("⏱ کاتژمێر تەواو بوو — کەسێک وەڵامی ڕاست نەداوە", "nwarn");
+  }
+}
+
 function updR2(g){
   if(currentPhase !== "r2") return;
   const r2 = g.r2 || {};
   rndBar("r2Bar", g);
   document.getElementById("r2QNum").textContent = "Q " + r2.qNum + " / 10";
 
-  // BUG FIX 3: Detect question change → full reset
+  // Detect question change → full reset
   if(r2.qNum !== lastQ2){
     lastQ2 = r2.qNum;
     myTF = null;
@@ -970,21 +1059,18 @@ function updR2(g){
     document.getElementById("answeredMsg").classList.remove("show");
     if(!isAd){
       document.getElementById("tfStage").style.display = "flex";
-      // BUG FIX 5: Keep buttons disabled until timer actually starts
       setTF(false, null);
     }
-    if(isAd) document.getElementById("r2RevAdm").className = "rev-adm";
+    if(isAd) resetPreSelect();
     setTimer(15, 15);
   }
 
   rndR2Status(r2.answers || {});
 
-  // BUG FIX 3: Only start local timer once when server says go:true
-  // If already running, do NOT restart it — just let it tick
+  // Only start local timer once when server says go:true
   if(r2.go && !r2TimerRunning && (r2.tLeft ?? 0) > 0){
-    // Sync with server's remaining time on first go signal
     startLocalTimer(r2.tLeft ?? 15);
-    // BUG FIX 5: Enable buttons now that timer has started (players only)
+    // Enable player buttons when timer starts
     if(!isAd && !myTF){
       setTF(true, null);
     }
@@ -997,11 +1083,13 @@ function updR2(g){
     setTimer(Math.max(0, r2.tLeft ?? 0), 15);
   }
 
-  // Reveal display (admin only)
-  if(isAd && r2.revealed !== null && r2.revealed !== undefined){
+  // Show reveal result to ALL clients (not just admin) after scoring
+  if(r2.revealed !== null && r2.revealed !== undefined){
     const rev = document.getElementById("r2RevAdm");
-    rev.className = "rev-adm show " + (r2.revealed ? "rev-t" : "rev-f");
-    rev.textContent = r2.revealed ? "✅ وەڵامی ڕاست: TRUE" : "❌ وەڵامی ڕاست: FALSE";
+    if(isAd){
+      rev.className = "rev-adm show " + (r2.revealed ? "rev-t" : "rev-f");
+      rev.textContent = r2.revealed ? "✅ وەڵامی ڕاست: TRUE — خاڵ زیادکرا" : "❌ وەڵامی ڕاست: FALSE — خاڵ زیادکرا";
+    }
   }
 }
 
@@ -1054,31 +1142,16 @@ function setTF(en, chosen){
 }
 
 async function adminStartTimer(){
-  await fbM("/game/r2", {go:true, tLeft:15});
+  if(adminPreAnswer === null){
+    notif("⚠️ پێشتر وەڵامی ڕاست دیاری بکە!", "nerr");
+    return;
+  }
+  // Lock the pre-select buttons so admin can't change answer during countdown
+  document.getElementById("preT").disabled = true;
+  document.getElementById("preF").disabled = true;
+  document.getElementById("startTimerBtn").disabled = true;
+  await fbM("/game/r2", {go:true, tLeft:15, correctAnswer: adminPreAnswer});
   notif("▶ کاتژمێر دەستپێکرد", "nsuc");
-}
-
-// BUG FIX 4: adminReveal — correctly update scores using proper Firebase paths
-async function adminReveal(correct){
-  const g = await fbG("/game");
-  if(!g) return;
-  const answers = g.r2?.answers || {};
-  const scores  = {...(g.scores || {})};
-  const ca = correct ? "true" : "false";
-
-  PE.forEach(e => {
-    const k = sk(e);
-    if(answers[k] === ca){
-      scores[k] = (scores[k] || 0) + 50;
-    }
-  });
-
-  // Write scores and r2 state separately with correct paths
-  await fbM("/game/scores", scores);
-  await fbM("/game/r2", {revealed: correct, go: false});
-
-  notif("✅ وەڵامی ڕاست: " + (correct?"TRUE":"FALSE") + " — خاڵ نرا", "nsuc");
-  confetti();
 }
 
 async function adminNextR2Q(){
@@ -1086,8 +1159,12 @@ async function adminNextR2Q(){
   const q = (g.r2?.qNum || 1) + 1;
   if(q > 10){ notif("١٠ پرسیار تەواو بوون!", "nwarn"); return; }
   stopLocalTimer();
+  // Re-enable pre-select buttons for next question
+  document.getElementById("preT").disabled = false;
+  document.getElementById("preF").disabled = false;
+  adminPreAnswer = null;
   // Write full r2 state reset
-  await fbS("/game/r2", {qNum:q, go:false, tLeft:15, answers:{}, revealed:null});
+  await fbS("/game/r2", {qNum:q, go:false, tLeft:15, answers:{}, revealed:null, correctAnswer:null});
   notif("⏭ پرسیاری " + q, "ninf");
 }
 
